@@ -1,6 +1,6 @@
 {
-  "tradingRoot": "C:\\TradingRoot",
-  "defaultDataRoot": "C:\\TradingData",
+  "tradingRoot": "C:\\Projects\\FinancialData",
+  "defaultDataRoot": "C:\\Projects\\FinancialData\\TradingData",
   "instances": [
     {
       "name": "AfterPrime_MT4_Demo_Instance",

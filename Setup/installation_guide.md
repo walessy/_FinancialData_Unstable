@@ -5,7 +5,7 @@ This guide walks you through setting up a complete multi-platform trading enviro
 
 ## Architecture
 ```
-TradingRoot/
+FinancialData/
 ├── PlatformInstallations/     # Raw platform setup files
 ├── InstanceData/             # Junction points to data folders
 ├── Setup/                    # Configuration files and scripts
@@ -34,11 +34,11 @@ TradingRoot/
 4. Run the script:
 
 ```powershell
-# Default installation to C:\TradingRoot
+# Default installation to C:\Projects\FinancialData
 .\1\ Level\ 1\ Trading\ Environment\ Setup.ps1
 
 # Custom location
-.\1\ Level\ 1\ Trading\ Environment\ Setup.ps1 -TradingRootPath "D:\MyTradingSetup"
+.\1\ Level\ 1\ Trading\ Environment\ Setup.ps1 -TradingRootPath "D:\MyTradingEnvironment"
 ```
 
 ### Level 1 Results
@@ -100,8 +100,8 @@ Level 2 creates configured, runnable instances from your platform installations 
 
 ```json
 {
-  "tradingRoot": "C:\\TradingRoot",
-  "defaultDataRoot": "D:\\TradingData",
+  "tradingRoot": "C:\\Projects\\FinancialData",
+  "defaultDataRoot": "C:\\Projects\\FinancialData\\TradingData",
   "instances": [
     {
       "name": "AfterPrime_MT4_Live_Instance",
@@ -185,14 +185,162 @@ The script automatically detects:
 
 ---
 
-## Step 5: Using Your Trading Environment
+## Step 6: Automated Startup Management (Level 3)
+
+### Overview
+Level 3 creates Windows scheduled tasks for automatic platform startup, monitoring, and management. This provides enterprise-grade process management with auto-restart capabilities.
+
+### Startup Configuration Setup
+
+1. **Create startup-config.json** in your TradingRoot directory:
+
+```json
+{
+  "startupSettings": {
+    "autoStart": true,
+    "globalStartupDelay": 30,
+    "taskFolder": "TradingPlatforms",
+    "runAsUser": "INTERACTIVE",
+    "createShortcuts": true,
+    "logDirectory": "C:\\Projects\\FinancialData\\Logs"
+  },
+  "instances": [
+    {
+      "name": "AfterPrime_MT4_Live_Instance",
+      "enabled": true,
+      "autoStart": true,
+      "startupDelay": 0,
+      "executable": "terminal.exe",
+      "arguments": "/portable",
+      "taskName": "AfterPrime_MT4_Live",
+      "priority": "high",
+      "maxRestarts": 5,
+      "restartDelay": 30,
+      "memoryLimit": "1GB"
+    }
+  ]
+}
+```
+
+### Basic Level 3 Features
+
+#### Initial Task Setup
+```powershell
+# Create all scheduled tasks
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Setup
+
+# Preview what would be created
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action WhatIf
+```
+
+#### What Level 3 Does (Basic)
+- ✅ Creates Windows scheduled tasks for each enabled instance
+- ✅ Configures auto-start with system boot (with delays)
+- ✅ Sets up auto-restart policies for crashed platforms
+- ✅ Creates desktop shortcuts for manual task control
+- ✅ Organizes tasks in dedicated "TradingPlatforms" folder
+
+---
+
+## Step 7: Platform Management Operations
+
+### Daily Operations
+```powershell
+# Start all enabled trading platforms
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Start
+
+# Stop all running platforms
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Stop
+
+# Check status of all platforms
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Status
+```
+
+### Advanced Management
+```powershell
+# Restart specific platform
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Restart -InstanceName "AfterPrime_MT4_Live"
+
+# Start only specific platform
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Start -InstanceName "AfterPrime_MT4_Live"
+
+# Remove all scheduled tasks
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Remove
+```
+
+### Task Scheduler Benefits
+- 🔄 **Auto-restart**: Crashed platforms automatically restart (configurable attempts)
+- ⏰ **Staggered startup**: Platforms start with delays to avoid resource conflicts
+- 🎯 **Priority control**: Set CPU priority per platform (high/normal/low)
+- 📊 **Status monitoring**: Built-in status reporting and logging
+- 🖥️ **Desktop integration**: Shortcuts created for easy manual control
+- 🛡️ **Resource limits**: Memory and CPU limits per platform
+
+---
+
+## Step 8: Configuration Management
+
+### Startup Configuration Options
+- **autoStart**: Enable/disable auto-start with Windows
+- **startupDelay**: Individual delays per platform (seconds)
+- **priority**: CPU priority (high/normal/low)
+- **maxRestarts**: Auto-restart attempts before giving up
+- **restartDelay**: Time between restart attempts (seconds)
+- **memoryLimit**: Memory usage limits per platform
+
+### Dynamic Configuration Changes
+1. **Modify startup-config.json** to change startup behavior
+2. **Re-run Level 3 Setup** to apply changes:
+```powershell
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Setup
+```
+3. **Check updated status**:
+```powershell
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Status
+```
+
+### Instance Priority Examples
+```json
+{
+  "instances": [
+    {
+      "name": "Live_Trading_Instance",
+      "priority": "high",
+      "autoStart": true,
+      "startupDelay": 0
+    },
+    {
+      "name": "Demo_Testing_Instance", 
+      "priority": "normal",
+      "autoStart": false,
+      "startupDelay": 60
+    }
+  ]
+}
+```
 
 ### Starting Platforms
+
+**Automated (Recommended):**
+- Platforms auto-start with Windows (if configured)
+- Use desktop shortcuts created by Level 3
+- Control via Task Scheduler commands
+
+**Manual:**
 1. Navigate to `PlatformInstances\[InstanceName]`
 2. Run the platform executable:
    - **MT4**: `terminal.exe`
    - **MT5**: `terminal64.exe`
    - **TraderEvolution**: Main application executable
+
+**Task Management:**
+```powershell
+# Quick status check
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Status
+
+# Start all platforms
+.\3\ Level\ 3\ Task\ Scheduler\ Manager.ps1 -Action Start
+```
 
 ### Data Management
 - **Data Location**: Actual data stored in configured data folders
@@ -212,8 +360,8 @@ The script automatically detects:
 ### Multiple Broker Setup
 ```json
 {
-  "tradingRoot": "C:\\TradingRoot",
-  "defaultDataRoot": "D:\\TradingData",
+  "tradingRoot": "C:\\Projects\\FinancialData",
+  "defaultDataRoot": "C:\\Projects\\FinancialData\\TradingData",
   "instances": [
     {
       "name": "AfterPrime_MT4_Live",
@@ -274,10 +422,12 @@ The script automatically detects:
 - Check if target junction already exists
 - Verify data folder path is accessible
 
-**Monitoring Not Working**
-- Ensure config file path is correct
-- Check file permissions
-- Verify JSON syntax is valid
+**Level 4 Advanced Automation Fails**
+- Check advanced-automation-config.json syntax and paths
+- Verify market hours and session configurations
+- Review dependency chains for circular references
+- Check system resources meet minimum requirements
+- Use -Action Status to see detailed health information
 
 ### Best Practices
 
@@ -295,6 +445,16 @@ The script automatically detects:
 - Use SSDs for platform instances
 - Separate data storage for heavy history data
 - Monitor disk space usage
+- Set appropriate memory limits in startup-config.json
+- Use priority settings to manage CPU allocation
+
+**Enterprise Automation**
+- Configure market hours for your trading timezone
+- Set up dependency chains to prevent startup conflicts
+- Use health monitoring to proactively detect issues
+- Implement emergency shutdown thresholds
+- Configure session-aware startup for global markets
+- Use performance monitoring for optimal resource allocation
 
 ---
 
@@ -302,10 +462,12 @@ The script automatically detects:
 
 After completing this setup:
 
-1. **Install Trading Tools**: Add EAs, indicators, and trading scripts
-2. **Configure Accounts**: Set up live/demo accounts in each instance  
-3. **Backup Strategy**: Implement regular backup of configurations and data
-4. **Monitoring Setup**: Consider automated monitoring of trading activities
-5. **Scale Up**: Add more brokers and instances as needed
+1. **Choose Automation Level**: Start with Level 3 for basic automation, upgrade to Level 4 for enterprise features
+2. **Configure Market Awareness**: Set up trading hours and session management
+3. **Install Trading Tools**: Add EAs, indicators, and trading scripts
+4. **Configure Accounts**: Set up live/demo accounts in each instance  
+5. **Implement Monitoring**: Use built-in health monitoring and performance optimization
+6. **Backup Strategy**: Implement regular backup of configurations and data
+7. **Scale Up**: Add more brokers and instances as needed
 
 Your trading environment is now ready for professional multi-platform trading operations!

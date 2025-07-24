@@ -2,7 +2,7 @@
 # This script installs Chocolatey, R, WPF dependencies and creates directory structure
 
 param(
-    [string]$TradingRootPath = "C:\TradingRoot"
+    [string]$TradingRootPath = "C:\Projects\FinancialData"
 )
 
 # Ensure script runs as Administrator
