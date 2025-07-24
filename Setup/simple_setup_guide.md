@@ -14,7 +14,7 @@ C:\Projects\FinancialData\
 └── Setup\
     ├── 1 Level 1 Trading Environment Setup.ps1
     ├── 2 Level2-Clean.ps1
-    └── 3 SimpleTradingManager.ps1
+    └── 3 SimpleTradingManager.ps1  # ← UNIFIED SCRIPT (replaces all startup scripts)
 ```
 
 ---
@@ -40,6 +40,9 @@ cd "C:\"
    ```
    PlatformInstallations\
    ├── AfterPrime_MT4_Demo\
+   │   ├── terminal.exe
+   │   └── ShortCutImage\          # ← Custom icons (optional)
+   │       └── icon.ico
    ├── AfterPrime_MT4_Live\
    └── AfterPrime_MT5-Live\
    ```
@@ -70,6 +73,13 @@ Create `instances-config.json` in your trading root:
       "serverSettings": {
         "server": "AfterPrime-Demo",
         "autoLogin": false
+      },
+      "startupSettings": {
+        "autoStart": true,
+        "startupDelay": 0,
+        "executable": "terminal.exe",
+        "arguments": "/portable",
+        "priority": "normal"
       }
     }
   ]
@@ -95,23 +105,30 @@ This creates separate, runnable copies of each platform.
 
 ---
 
-## Step 5: Setup Automatic Startup (Level 3)
+## Step 5: Setup Complete Automation (Level 3 - Unified)
 
 ```powershell
-# Install automatic startup (uses Windows startup folder)
+# Install complete automation (startup + shortcuts + icons)
 .\Setup\'3 SimpleTradingManager.ps1' -Action Install
 ```
 
-**That's it!** Platforms will now start automatically when you log in.
+**What this does:**
+- ✅ Sets up automatic startup when you log in
+- ✅ Creates desktop shortcuts with custom icons
+- ✅ Configures all enabled platforms
+- ✅ Applies startup delays to prevent conflicts
+
+**That's it!** Platforms will now start automatically when you log in, and you'll have desktop shortcuts with custom icons.
 
 ---
 
 ## Daily Usage
 
-### Check Status
+### Check Everything
 ```powershell
 .\Setup\'3 SimpleTradingManager.ps1' -Action Status
 ```
+**Shows:** Running platforms, auto-start status, shortcut count
 
 ### Manual Control
 ```powershell
@@ -121,8 +138,46 @@ This creates separate, runnable copies of each platform.
 # Stop all platforms
 .\Setup\'3 SimpleTradingManager.ps1' -Action Stop
 
-# Remove automatic startup
+# Remove all automation
 .\Setup\'3 SimpleTradingManager.ps1' -Action Remove
+
+# Get detailed help
+.\Setup\'3 SimpleTradingManager.ps1' -Action Help
+```
+
+### Advanced Options
+```powershell
+# Install without desktop shortcuts
+.\Setup\'3 SimpleTradingManager.ps1' -Action Install -CreateShortcuts:$false
+
+# Silent operation (for scripts)
+.\Setup\'3 SimpleTradingManager.ps1' -Action Start -Quiet
+
+# Reinstall automation (updates changes)
+.\Setup\'3 SimpleTradingManager.ps1' -Action Remove
+.\Setup\'3 SimpleTradingManager.ps1' -Action Install
+```
+
+---
+
+## Custom Icons
+
+**Automatic Icon Detection:**
+1. Place `.ico` files in `PlatformInstallations\[BrokerName]\ShortCutImage\` folder
+2. Script automatically finds and uses them for shortcuts
+3. Fallback to platform executable icon if none found
+
+**Example Structure:**
+```
+PlatformInstallations\
+├── AfterPrime_MT4_Demo\
+│   ├── terminal.exe
+│   └── ShortCutImage\
+│       └── mt4_icon.ico        # ← Custom icon
+└── AfterPrime_MT5-Live\
+    ├── terminal64.exe
+    └── ShortCutImage\
+        └── mt5_icon.ico        # ← Custom icon
 ```
 
 ---
@@ -137,11 +192,41 @@ This creates separate, runnable copies of each platform.
      "platform": "MT4",
      "source": "NewBroker_MT4",
      "destination": "NewBroker_MT4_Instance",
-     "enabled": true
+     "enabled": true,
+     "startupSettings": {
+       "autoStart": true,
+       "startupDelay": 15
+     }
    }
    ```
 3. **Create the instance**: `.\Setup\'2 Level2-Clean.ps1'`
-4. **Update startup**: `.\Setup\'3 SimpleTradingManager.ps1' -Action Install`
+4. **Update automation**: `.\Setup\'3 SimpleTradingManager.ps1' -Action Install`
+
+---
+
+## Configuration Control
+
+### Enable/Disable Platforms
+```json
+{
+  "enabled": true,        // Platform exists and can be used
+  "startupSettings": {
+    "autoStart": true     // Starts automatically with Windows
+  }
+}
+```
+
+**Combinations:**
+- `enabled: false` = Platform completely disabled
+- `enabled: true, autoStart: false` = Platform available but manual start only
+- `enabled: true, autoStart: true` = Platform starts automatically
+
+### Platform Types
+- **MT4**: Uses `terminal.exe`
+- **MT5**: Uses `terminal64.exe`  
+- **TraderEvolution**: Uses `TradeTerminal.exe`
+
+Script automatically detects correct executable based on `platform` field.
 
 ---
 
@@ -158,11 +243,14 @@ Unblock-File ".\Setup\*.ps1"
 
 ### Platforms Don't Start
 ```powershell
+# Check detailed status
+.\Setup\'3 SimpleTradingManager.ps1' -Action Status
+
 # Check if instances were created
 Get-ChildItem "PlatformInstances" -Directory
 
-# Check if executables exist
-.\Setup\'3 SimpleTradingManager.ps1' -Action Status
+# Test manual start
+.\Setup\'3 SimpleTradingManager.ps1' -Action Start
 ```
 
 ### Level 2 Fails - Source Not Found
@@ -175,8 +263,23 @@ Get-ChildItem "PlatformInstances" -Directory
 # Check if startup file was created
 Get-ChildItem "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup" -Filter "*.bat"
 
-# Test manually
+# Test startup file manually
 & "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\StartTradingPlatforms.bat"
+
+# Reinstall automation
+.\Setup\'3 SimpleTradingManager.ps1' -Action Remove
+.\Setup\'3 SimpleTradingManager.ps1' -Action Install
+```
+
+### Desktop Shortcuts Issues
+```powershell
+# Check if shortcuts exist
+$desktop = [Environment]::GetFolderPath("Desktop")
+Get-ChildItem $desktop -Filter "*Instance*.lnk"
+
+# Recreate shortcuts only
+.\Setup\'3 SimpleTradingManager.ps1' -Action Remove
+.\Setup\'3 SimpleTradingManager.ps1' -Action Install -CreateShortcuts:$true
 ```
 
 ---
@@ -185,6 +288,10 @@ Get-ChildItem "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup" -Filt
 
 ### Reset Everything
 ```powershell
+# Stop and remove all automation
+.\Setup\'3 SimpleTradingManager.ps1' -Action Stop
+.\Setup\'3 SimpleTradingManager.ps1' -Action Remove
+
 # Remove instances (keeps data)
 Remove-Item "PlatformInstances" -Recurse -Force
 Remove-Item "InstanceData" -Recurse -Force
@@ -192,44 +299,36 @@ Remove-Item "InstanceData" -Recurse -Force
 # Recreate instances
 .\Setup\'2 Level2-Clean.ps1'
 
-# Reinstall startup
+# Reinstall automation
 .\Setup\'3 SimpleTradingManager.ps1' -Action Install
 ```
 
-### Reset Just Startup
+### Update Configuration
 ```powershell
-.\Setup\'3 SimpleTradingManager.ps1' -Action Remove
-.\Setup\'3 SimpleTradingManager.ps1' -Action Install
+# After editing instances-config.json:
+.\Setup\'2 Level2-Clean.ps1'                              # Recreate instances
+.\Setup\'3 SimpleTradingManager.ps1' -Action Install      # Update automation
 ```
 
 ---
 
-## Configuration Tips
-
-### Enable/Disable Platforms
-Edit `instances-config.json` - set `"enabled": true` or `"enabled": false`, then reinstall startup.
-
-### Platform Types
-- **MT4**: Uses `terminal.exe`
-- **MT5**: Uses `terminal64.exe`  
-- **TraderEvolution**: Uses `TraderEvolution.exe`
-
-Level 3 automatically determines the correct executable based on the `"platform"` field.
-
-### Data Management
+## Data Management
 - **Actual data**: Stored in `TradingData\` folder
 - **Access data**: Through junctions in `InstanceData\`
 - **Backup**: Backup both `PlatformInstances\` and `TradingData\` folders
+- **Custom icons**: Store in `PlatformInstallations\[Broker]\ShortCutImage\`
 
 ---
 
-## That's It!
+## Summary
 
-Your trading environment is now set up with:
+Your unified trading environment provides:
 - ✅ Multiple isolated platform instances
 - ✅ Automatic startup when you log in  
+- ✅ Desktop shortcuts with custom icons
 - ✅ Simple manual control
 - ✅ Easy to add new platforms
 - ✅ Works with standard user privileges
+- ✅ One script handles everything
 
 Just configure your trading accounts in each platform instance and you're ready to trade!

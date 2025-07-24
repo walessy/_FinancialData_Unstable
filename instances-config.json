@@ -1,6 +1,14 @@
 {
   "tradingRoot": "C:\\Projects\\FinancialData",
   "defaultDataRoot": "C:\\Projects\\FinancialData\\TradingData",
+  "startupSettings": {
+    "autoStart": true,
+    "globalStartupDelay": 30,
+    "taskFolder": "TradingPlatforms",
+    "runAsUser": "INTERACTIVE",
+    "createShortcuts": true,
+    "logDirectory": "C:\\Projects\\FinancialData\\Logs"
+  },
   "instances": [
     {
       "name": "AfterPrime_MT4_Demo_Instance",
@@ -17,10 +25,16 @@
         "server": "AfterPrime-Demo",
         "autoLogin": false
       },
-      "customSettings": {
-        "maxBars": 50000,
-        "historyCenter": true,
-        "sounds": true
+      "startupSettings": {
+        "autoStart": true,
+        "startupDelay": 0,
+        "executable": "terminal.exe",
+        "arguments": "/portable",
+        "taskName": "AfterPrime_MT4_Demo",
+        "priority": "normal",
+        "maxRestarts": 5,
+        "restartDelay": 30,
+        "memoryLimit": "1GB"
       }
     },
     {
@@ -38,10 +52,43 @@
         "server": "AfterPrime-Live",
         "autoLogin": false
       },
-      "customSettings": {
-        "maxBars": 100000,
-        "historyCenter": true,
-        "sounds": false
+      "startupSettings": {
+        "autoStart": true,
+        "startupDelay": 10,
+        "executable": "terminal.exe",
+        "arguments": "/portable",
+        "taskName": "AfterPrime_MT4_Live",
+        "priority": "high",
+        "maxRestarts": 5,
+        "restartDelay": 30,
+        "memoryLimit": "1.5GB"
+      }
+    },
+    {
+      "name": "AfterPrime_MT5_Demo_Instance",
+      "broker": "AfterPrime",
+      "platform": "MT5",
+      "source": "AfterPrime_MT5-Demo",
+      "destination": "AfterPrime_MT5_Demo_Instance",
+      "dataFolder": "AfterPrime_MT5_Demo",
+      "junctionName": "AfterPrime_MT5_Demo_Data",
+      "portableMode": true,
+      "accountType": "demo",
+      "enabled": true,
+      "serverSettings": {
+        "server": "AfterPrime-Demo",
+        "autoLogin": false
+      },
+      "startupSettings": {
+        "autoStart": true,
+        "startupDelay": 20,
+        "executable": "terminal64.exe",
+        "arguments": "/portable",
+        "taskName": "AfterPrime_MT5_Demo",
+        "priority": "high",
+        "maxRestarts": 5,
+        "restartDelay": 30,
+        "memoryLimit": "2GB"
       }
     },
     {
@@ -49,7 +96,7 @@
       "broker": "AfterPrime",
       "platform": "MT5",
       "source": "AfterPrime_MT5-Live",
-      "destination": "AfterPrime_MT5_Live_Instance", 
+      "destination": "AfterPrime_MT5_Live_Instance",
       "dataFolder": "AfterPrime_MT5_Live",
       "junctionName": "AfterPrime_MT5_Live_Data",
       "portableMode": true,
@@ -59,10 +106,16 @@
         "server": "AfterPrime-Live",
         "autoLogin": false
       },
-      "customSettings": {
-        "maxBars": 100000,
-        "newsEnabled": true,
-        "mailEnabled": false
+      "startupSettings": {
+        "autoStart": true,
+        "startupDelay": 30,
+        "executable": "terminal64.exe",
+        "arguments": "/portable",
+        "taskName": "AfterPrime_MT5_Live",
+        "priority": "high",
+        "maxRestarts": 5,
+        "restartDelay": 30,
+        "memoryLimit": "2GB"
       }
     },
     {
@@ -72,7 +125,7 @@
       "source": "AfterPrime_TraderEvolution-Live",
       "destination": "AfterPrime_TraderEvolution_Live_Instance",
       "dataFolder": "AfterPrime_TraderEvolution_Live",
-      "junctionName": "AfterPrime_TE_Live_Data", 
+      "junctionName": "AfterPrime_TE_Live_Data",
       "portableMode": true,
       "accountType": "live",
       "enabled": true,
@@ -80,10 +133,16 @@
         "server": "AfterPrime-TE-Live",
         "autoLogin": false
       },
-      "customSettings": {
-        "theme": "dark",
-        "autoSave": true,
-        "notifications": true
+      "startupSettings": {
+        "autoStart": false,
+        "startupDelay": 40,
+        "executable": "TradeTerminal.exe",
+        "arguments": "",
+        "taskName": "AfterPrime_TE_Live",
+        "priority": "normal",
+        "maxRestarts": 3,
+        "restartDelay": 60,
+        "memoryLimit": "1.5GB"
       }
     },
     {
@@ -93,7 +152,7 @@
       "source": "AfterPrime_TraderEvolution-Demo",
       "destination": "AfterPrime_TraderEvolution_Demo_Instance",
       "dataFolder": "AfterPrime_TraderEvolution_Demo",
-      "junctionName": "AfterPrime_TE_Demo_Data", 
+      "junctionName": "AfterPrime_TE_Demo_Data",
       "portableMode": true,
       "accountType": "demo",
       "enabled": true,
@@ -101,10 +160,16 @@
         "server": "AfterPrime-TE-Demo",
         "autoLogin": false
       },
-      "customSettings": {
-        "theme": "dark",
-        "autoSave": true,
-        "notifications": true
+      "startupSettings": {
+        "autoStart": false,
+        "startupDelay": 50,
+        "executable": "TradeTerminal.exe",
+        "arguments": "",
+        "taskName": "AfterPrime_TE_Demo",
+        "priority": "low",
+        "maxRestarts": 3,
+        "restartDelay": 60,
+        "memoryLimit": "1GB"
       }
     }
   ]
