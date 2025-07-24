@@ -17,8 +17,8 @@
       "arguments": "/portable",
       "taskName": "AfterPrime_MT4_Demo",
       "priority": "normal",
-      "maxRestarts": 3,
-      "restartDelay": 60,
+      "maxRestarts": 5,
+      "restartDelay": 30,
       "memoryLimit": "1GB"
     },
     {
@@ -32,7 +32,7 @@
       "priority": "high",
       "maxRestarts": 5,
       "restartDelay": 30,
-      "memoryLimit": "1GB"
+      "memoryLimit": "1.5GB"
     },
     {
       "name": "AfterPrime_MT5_Live_Instance",
@@ -50,7 +50,7 @@
     {
       "name": "AfterPrime_TraderEvolution_Live_Instance",
       "enabled": true,
-      "autoStart": false,
+      "autoStart": true,
       "startupDelay": 30,
       "executable": "TraderEvolution.exe",
       "arguments": "",
@@ -62,16 +62,16 @@
     },
     {
       "name": "AfterPrime_TraderEvolution_Demo_Instance",
-      "enabled": false,
-      "autoStart": false,
+      "enabled": true,
+      "autoStart": true,
       "startupDelay": 40,
       "executable": "TraderEvolution.exe",
       "arguments": "",
       "taskName": "AfterPrime_TE_Demo",
-      "priority": "normal",
+      "priority": "low",
       "maxRestarts": 3,
       "restartDelay": 60,
-      "memoryLimit": "1.5GB"
+      "memoryLimit": "1GB"
     }
   ]
 }

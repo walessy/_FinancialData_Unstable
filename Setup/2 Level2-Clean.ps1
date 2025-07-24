@@ -324,9 +324,9 @@ foreach ($instance in $config.instances) {
 # Summary
 Write-Host "`n=== Level 2 Complete ===" -ForegroundColor Green
 Write-Host "Instances processed:" -ForegroundColor Cyan
-Write-Host "  ✓ Created: $successCount" -ForegroundColor Green
+Write-Host "  ? Created: $successCount" -ForegroundColor Green
 Write-Host "  - Skipped: $skipCount" -ForegroundColor Yellow
-Write-Host "  ✗ Removed: $removeCount" -ForegroundColor Red
+Write-Host "  ? Removed: $removeCount" -ForegroundColor Red
 
 if ($Monitor) {
     Write-Host "`n--- Starting File Monitor ---" -ForegroundColor Cyan
