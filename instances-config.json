@@ -1,0 +1,111 @@
+{
+  "tradingRoot": "C:\\TradingRoot",
+  "defaultDataRoot": "C:\\TradingData",
+  "instances": [
+    {
+      "name": "AfterPrime_MT4_Demo_Instance",
+      "broker": "AfterPrime",
+      "platform": "MT4",
+      "source": "AfterPrime_MT4_Demo",
+      "destination": "AfterPrime_MT4_Demo_Instance",
+      "dataFolder": "AfterPrime_MT4_Demo",
+      "junctionName": "AfterPrime_MT4_Demo_Data",
+      "portableMode": true,
+      "accountType": "demo",
+      "enabled": true,
+      "serverSettings": {
+        "server": "AfterPrime-Demo",
+        "autoLogin": false
+      },
+      "customSettings": {
+        "maxBars": 50000,
+        "historyCenter": true,
+        "sounds": true
+      }
+    },
+    {
+      "name": "AfterPrime_MT4_Live_Instance",
+      "broker": "AfterPrime",
+      "platform": "MT4",
+      "source": "AfterPrime_MT4_Live",
+      "destination": "AfterPrime_MT4_Live_Instance",
+      "dataFolder": "AfterPrime_MT4_Live",
+      "junctionName": "AfterPrime_MT4_Live_Data",
+      "portableMode": true,
+      "accountType": "live",
+      "enabled": true,
+      "serverSettings": {
+        "server": "AfterPrime-Live",
+        "autoLogin": false
+      },
+      "customSettings": {
+        "maxBars": 100000,
+        "historyCenter": true,
+        "sounds": false
+      }
+    },
+    {
+      "name": "AfterPrime_MT5_Live_Instance",
+      "broker": "AfterPrime",
+      "platform": "MT5",
+      "source": "AfterPrime_MT5-Live",
+      "destination": "AfterPrime_MT5_Live_Instance", 
+      "dataFolder": "AfterPrime_MT5_Live",
+      "junctionName": "AfterPrime_MT5_Live_Data",
+      "portableMode": true,
+      "accountType": "live",
+      "enabled": true,
+      "serverSettings": {
+        "server": "AfterPrime-Live",
+        "autoLogin": false
+      },
+      "customSettings": {
+        "maxBars": 100000,
+        "newsEnabled": true,
+        "mailEnabled": false
+      }
+    },
+    {
+      "name": "AfterPrime_TraderEvolution_Live_Instance",
+      "broker": "AfterPrime",
+      "platform": "TraderEvolution",
+      "source": "AfterPrime_TraderEvolution-Live",
+      "destination": "AfterPrime_TraderEvolution_Live_Instance",
+      "dataFolder": "AfterPrime_TraderEvolution_Live",
+      "junctionName": "AfterPrime_TE_Live_Data", 
+      "portableMode": true,
+      "accountType": "live",
+      "enabled": true,
+      "serverSettings": {
+        "server": "AfterPrime-TE-Live",
+        "autoLogin": false
+      },
+      "customSettings": {
+        "theme": "dark",
+        "autoSave": true,
+        "notifications": true
+      }
+    },
+    {
+      "name": "AfterPrime_TraderEvolution_Demo_Instance",
+      "broker": "AfterPrime",
+      "platform": "TraderEvolution",
+      "source": "AfterPrime_TraderEvolution-Demo",
+      "destination": "AfterPrime_TraderEvolution_Demo_Instance",
+      "dataFolder": "AfterPrime_TraderEvolution_Demo",
+      "junctionName": "AfterPrime_TE_Demo_Data", 
+      "portableMode": true,
+      "accountType": "demo",
+      "enabled": true,
+      "serverSettings": {
+        "server": "AfterPrime-TE-Demo",
+        "autoLogin": false
+      },
+      "customSettings": {
+        "theme": "dark",
+        "autoSave": true,
+        "notifications": true
+      }
+    }
+  ]
+}
