@@ -1,4 +1,4 @@
-# 3 SimpleTradingManager.ps1
+# 3 trading_manager.ps1
 # Unified Trading Platform Startup Manager
 # Handles all trading platform automation - no separate startup script needed
 # Works with standard user privileges after initial setup
@@ -442,7 +442,7 @@ timeout /t 3 /nobreak >nul
         Write-Host "`n=== Trading Platform Manager Help ===" -ForegroundColor Green
         Write-Host ""
         Write-Host "USAGE:" -ForegroundColor Cyan
-        Write-Host "  .\Setup\'3 SimpleTradingManager.ps1' [-Action] <Action> [Options]"
+        Write-Host "  .\Setup\'3 trading_manager.ps1' [-Action] <Action> [Options]"
         Write-Host ""
         Write-Host "ACTIONS:" -ForegroundColor Cyan
         Write-Host "  Install   Set up automatic startup and create desktop shortcuts" -ForegroundColor White
@@ -457,9 +457,9 @@ timeout /t 3 /nobreak >nul
         Write-Host "  -Quiet             Suppress non-essential output" -ForegroundColor White
         Write-Host ""
         Write-Host "EXAMPLES:" -ForegroundColor Cyan
-        Write-Host "  .\Setup\'3 SimpleTradingManager.ps1' -Action Install" -ForegroundColor Gray
-        Write-Host "  .\Setup\'3 SimpleTradingManager.ps1' -Action Start -Quiet" -ForegroundColor Gray
-        Write-Host "  .\Setup\'3 SimpleTradingManager.ps1' -Action Install -CreateShortcuts:$false" -ForegroundColor Gray
+        Write-Host "  .\Setup\'3 trading_manager.ps1' -Action Install" -ForegroundColor Gray
+        Write-Host "  .\Setup\'3 trading_manager.ps1' -Action Start -Quiet" -ForegroundColor Gray
+        Write-Host "  .\Setup\'3 trading_manager.ps1' -Action Install -CreateShortcuts:$false" -ForegroundColor Gray
         Write-Host ""
         Write-Host "CONFIGURATION:" -ForegroundColor Cyan
         Write-Host "  Edit instances-config.json to add/remove platforms" -ForegroundColor White
@@ -472,10 +472,10 @@ timeout /t 3 /nobreak >nul
 # Show usage instructions (unless Help was called or Quiet mode)
 if ($Action -ne "Help" -and -not $Quiet) {
     Write-Host "`n=== Quick Usage ===" -ForegroundColor Cyan
-    Write-Host ".\Setup\'3 SimpleTradingManager.ps1' -Action Install   # Set up automatic startup" 
-    Write-Host ".\Setup\'3 SimpleTradingManager.ps1' -Action Start     # Start platforms now"
-    Write-Host ".\Setup\'3 SimpleTradingManager.ps1' -Action Stop      # Stop all platforms"
-    Write-Host ".\Setup\'3 SimpleTradingManager.ps1' -Action Status    # Check what's running"
-    Write-Host ".\Setup\'3 SimpleTradingManager.ps1' -Action Remove    # Remove automation"
-    Write-Host ".\Setup\'3 SimpleTradingManager.ps1' -Action Help      # Show detailed help"
+    Write-Host ".\Setup\'3 trading_manager.ps1' -Action Install   # Set up automatic startup" 
+    Write-Host ".\Setup\'3 trading_manager.ps1' -Action Start     # Start platforms now"
+    Write-Host ".\Setup\'3 trading_manager.ps1' -Action Stop      # Stop all platforms"
+    Write-Host ".\Setup\'3 trading_manager.ps1' -Action Status    # Check what's running"
+    Write-Host ".\Setup\'3 trading_manager.ps1' -Action Remove    # Remove automation"
+    Write-Host ".\Setup\'3 trading_manager.ps1' -Action Help      # Show detailed help"
 }

@@ -1,4 +1,4 @@
-# 1 Level 1 Trading Environment Setup.ps1
+ # 1 Level 1 Trading Environment Setup.ps1
 # This script installs Chocolatey, R, WPF dependencies and creates directory structure
 
 param(

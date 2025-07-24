@@ -134,7 +134,7 @@
         "autoLogin": false
       },
       "startupSettings": {
-        "autoStart": false,
+        "autoStart": true,
         "startupDelay": 40,
         "executable": "TradeTerminal.exe",
         "arguments": "",
@@ -161,7 +161,7 @@
         "autoLogin": false
       },
       "startupSettings": {
-        "autoStart": false,
+        "autoStart": true,
         "startupDelay": 50,
         "executable": "TradeTerminal.exe",
         "arguments": "",
