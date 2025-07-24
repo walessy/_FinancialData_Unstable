@@ -3,7 +3,7 @@
 
 param(
     [string]$ConfigFile = "advanced-automation-config.json",
-    [ValidateSet("Setup", "Start", "Stop", "Monitor", "Status", "Health", "Optimize", "Emergency", "Credentials")]
+    [ValidateSet("Setup", "Start", "Stop", "Monitor", "Status", "Health", "Optimize", "Emergency", "UpdateHolidays", "Credentials")]
     [string]$Action = "Start",
     [string]$InstanceName = "",
     [switch]$Force,
@@ -111,10 +111,11 @@ function Test-MarketSession {
     }
     
     # Check if session is affected by holidays
-    if ($session.affectedByHolidays) {
+    if ($session.affectedByHolidays -and $session.holidayList) {
         $todayString = (Get-Date).ToString("yyyy-MM-dd")
-        if ($Config.marketSettings.marketHolidays.holidays -contains $todayString) {
-            Write-AdvancedLog "Session $SessionName closed - Market holiday" "INFO" "MARKET"
+        $holidayList = $Config.marketSettings.marketHolidays.($session.holidayList)
+        if ($holidayList -and ($holidayList -contains $todayString)) {
+            Write-AdvancedLog "Session $SessionName closed - Regional holiday ($($session.holidayList))" "INFO" "MARKET"
             return $false
         }
     }
@@ -455,7 +456,173 @@ function Start-ContinuousMonitoring {
     Write-AdvancedLog "Continuous monitoring stopped" "INFO" "MONITOR"
 }
 
-# Credential management
+# Automated holiday data fetching
+function Update-HolidayData {
+    param([object]$Config, [string]$Year = (Get-Date).Year)
+    
+    Write-AdvancedLog "Updating holiday data for year $Year..." "INFO" "HOLIDAY_UPDATE"
+    
+    $updatedHolidays = @{
+        usHolidays = @()
+        ukHolidays = @()
+        japanHolidays = @()
+        euHolidays = @()
+        australiaHolidays = @()
+        globalHolidays = @()
+    }
+    
+    # Define country mappings for different APIs
+    $countryMappings = @{
+        usHolidays = @{ country = "US"; name = "United States" }
+        ukHolidays = @{ country = "GB"; name = "United Kingdom" }
+        japanHolidays = @{ country = "JP"; name = "Japan" }
+        euHolidays = @{ country = "DE"; name = "Germany" }  # Using Germany as EU representative
+        australiaHolidays = @{ country = "AU"; name = "Australia" }
+    }
+    
+    # Try multiple holiday data sources in order of preference
+    $dataSources = @(
+        @{
+            Name = "TradingHours"
+            Function = { param($country, $year) Get-TradingHoursData -Country $country -Year $year }
+        },
+        @{
+            Name = "AbstractAPI"
+            Function = { param($country, $year) Get-AbstractAPIData -Country $country -Year $year }
+        },
+        @{
+            Name = "Fallback"
+            Function = { param($country, $year) Get-FallbackHolidayData -Country $country -Year $year }
+        }
+    )
+    
+    foreach ($holidayRegion in $countryMappings.Keys) {
+        $countryInfo = $countryMappings[$holidayRegion]
+        $holidays = @()
+        
+        foreach ($source in $dataSources) {
+            try {
+                Write-AdvancedLog "Fetching $holidayRegion from $($source.Name)..." "DEBUG" "HOLIDAY_UPDATE"
+                $holidays = & $source.Function $countryInfo.country $Year
+                if ($holidays.Count -gt 0) {
+                    Write-AdvancedLog "Successfully fetched $($holidays.Count) holidays for $holidayRegion from $($source.Name)" "INFO" "HOLIDAY_UPDATE"
+                    break
+                }
+            }
+            catch {
+                Write-AdvancedLog "Failed to fetch from $($source.Name): $($_.Exception.Message)" "WARN" "HOLIDAY_UPDATE"
+            }
+        }
+        
+        $updatedHolidays[$holidayRegion] = $holidays
+    }
+    
+    # Update configuration
+    $Config.marketSettings.marketHolidays = $updatedHolidays
+    
+    # Save updated configuration
+    $configPath = Join-Path (Get-Location) "advanced-automation-config.json"
+    $Config | ConvertTo-Json -Depth 10 | Out-File -FilePath $configPath -Encoding UTF8
+    
+    Write-AdvancedLog "Holiday data updated and saved to configuration" "INFO" "HOLIDAY_UPDATE"
+    return $updatedHolidays
+}
+
+# Fetch holiday data from TradingHours.com (free tier available)
+function Get-TradingHoursData {
+    param([string]$Country, [string]$Year)
+    
+    $holidays = @()
+    
+    # Map countries to exchange codes for TradingHours API
+    $exchangeMap = @{
+        "US" = "us.nyse"
+        "GB" = "gb.lse"
+        "JP" = "jp.jpx"
+        "DE" = "de.xetra"
+        "AU" = "au.asx"
+    }
+    
+    $exchangeCode = $exchangeMap[$Country]
+    if (-not $exchangeCode) { return $holidays }
+    
+    try {
+        # Note: This would require API key for production use
+        $apiUrl = "https://api.tradinghours.com/v3/markets/holidays?fin_id=$exchangeCode&start=$Year-01-01&end=$Year-12-31"
+        
+        # For demo purposes, we'll use a mock response structure
+        # In production, replace this with actual API call:
+        # $response = Invoke-RestMethod -Uri $apiUrl -Headers @{"Authorization" = "Bearer YOUR_API_KEY"}
+        
+        Write-AdvancedLog "TradingHours API call would be made to: $apiUrl" "DEBUG" "HOLIDAY_UPDATE"
+        
+    }
+    catch {
+        Write-AdvancedLog "TradingHours API error: $($_.Exception.Message)" "ERROR" "HOLIDAY_UPDATE"
+    }
+    
+    return $holidays
+}
+
+# Fetch holiday data from AbstractAPI (free tier available)
+function Get-AbstractAPIData {
+    param([string]$Country, [string]$Year)
+    
+    $holidays = @()
+    
+    try {
+        # Note: Requires free API key from abstractapi.com
+        $apiUrl = "https://api.abstractapi.com/holidays/v1/?api_key=YOUR_API_KEY&country=$Country&year=$Year"
+        
+        # For demo purposes, we'll use a mock response
+        # In production, replace this with actual API call:
+        # $response = Invoke-RestMethod -Uri $apiUrl
+        
+        Write-AdvancedLog "AbstractAPI call would be made to: $apiUrl" "DEBUG" "HOLIDAY_UPDATE"
+        
+    }
+    catch {
+        Write-AdvancedLog "AbstractAPI error: $($_.Exception.Message)" "ERROR" "HOLIDAY_UPDATE"
+    }
+    
+    return $holidays
+}
+
+# Fallback holiday data (static reliable holidays)
+function Get-FallbackHolidayData {
+    param([string]$Country, [string]$Year)
+    
+    Write-AdvancedLog "Using fallback holiday data for $Country" "INFO" "HOLIDAY_UPDATE"
+    
+    # Static holiday data based on our research (current comprehensive list)
+    $fallbackData = @{
+        "US" = @(
+            "$Year-01-01", "$Year-01-20", "$Year-02-17", "$Year-04-18",
+            "$Year-05-26", "$Year-06-19", "$Year-07-04", "$Year-09-01",
+            "$Year-11-27", "$Year-12-25"
+        )
+        "GB" = @(
+            "$Year-01-01", "$Year-04-18", "$Year-04-21", "$Year-05-05",
+            "$Year-05-26", "$Year-08-25", "$Year-12-25", "$Year-12-26"
+        )
+        "JP" = @(
+            "$Year-01-01", "$Year-01-13", "$Year-02-11", "$Year-02-23",
+            "$Year-03-20", "$Year-04-29", "$Year-05-03", "$Year-05-04",
+            "$Year-05-05", "$Year-07-21", "$Year-08-11", "$Year-09-15",
+            "$Year-09-23", "$Year-10-13", "$Year-11-03", "$Year-11-23"
+        )
+        "DE" = @(
+            "$Year-01-01", "$Year-04-18", "$Year-04-21", "$Year-05-01",
+            "$Year-05-29", "$Year-08-15", "$Year-11-01", "$Year-12-25", "$Year-12-26"
+        )
+        "AU" = @(
+            "$Year-01-01", "$Year-01-27", "$Year-04-18", "$Year-04-21",
+            "$Year-04-25", "$Year-06-09", "$Year-12-25", "$Year-12-26"
+        )
+    }
+    
+    return $fallbackData[$Country] ?? @()
+}
 function Set-InstanceCredentials {
     param([string]$CredentialId, [string]$Username, [string]$Password)
     
@@ -595,6 +762,33 @@ switch ($Action) {
     
     "Emergency" {
         Invoke-EmergencyShutdown -Config $global:config -Reason "Manual emergency shutdown requested"
+    }
+    
+    "UpdateHolidays" {
+        Write-AdvancedLog "Updating holiday configuration..." "INFO" "SETUP"
+        
+        $year = (Get-Date).Year
+        if ($InstanceName -match '^\d{4}
+        Write-Host "=== Credential Management ===" -ForegroundColor Yellow
+        Write-Host "This feature requires manual implementation of credential storage"
+        Write-Host "Use Windows Credential Manager or implement secure credential vault"
+    }
+}
+
+Write-AdvancedLog "Level 4 Advanced Automation Manager completed action: $Action" "INFO" "SYSTEM") {
+            $year = [int]$InstanceName
+            Write-AdvancedLog "Using specified year: $year" "INFO" "SETUP"
+        }
+        
+        $updatedHolidays = Update-HolidayData -Config $global:config -Year $year
+        
+        Write-Host "`n=== Holiday Data Updated ===" -ForegroundColor Green
+        foreach ($region in $updatedHolidays.Keys) {
+            $count = $updatedHolidays[$region].Count
+            Write-Host "$region`: $count holidays" -ForegroundColor Cyan
+        }
+        
+        Write-AdvancedLog "Holiday configuration updated for year $year" "INFO" "SETUP"
     }
     
     "Credentials" {

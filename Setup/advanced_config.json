@@ -23,10 +23,32 @@
       "sunday": {"start": "17:00", "end": "23:59", "enabled": true}
     },
     "marketHolidays": {
-      "description": "US market holidays when trading sessions are closed",
-      "holidays": [
-        "2025-01-01", "2025-01-20", "2025-02-17", "2025-05-26", 
-        "2025-06-19", "2025-07-04", "2025-09-01", "2025-11-27", "2025-12-25"
+      "description": "Global market holidays by region",
+      "usHolidays": [
+        "2025-01-01", "2025-01-20", "2025-02-17", "2025-04-18", 
+        "2025-05-26", "2025-06-19", "2025-07-04", "2025-09-01", 
+        "2025-11-27", "2025-12-25"
+      ],
+      "ukHolidays": [
+        "2025-01-01", "2025-04-18", "2025-04-21", "2025-05-05", 
+        "2025-05-26", "2025-08-25", "2025-12-25", "2025-12-26"
+      ],
+      "japanHolidays": [
+        "2025-01-01", "2025-01-13", "2025-02-11", "2025-02-23", 
+        "2025-03-20", "2025-04-29", "2025-05-03", "2025-05-04", 
+        "2025-05-05", "2025-07-21", "2025-08-11", "2025-09-15", 
+        "2025-09-23", "2025-10-13", "2025-11-03", "2025-11-23"
+      ],
+      "euHolidays": [
+        "2025-01-01", "2025-04-18", "2025-04-21", "2025-05-01", 
+        "2025-05-29", "2025-08-15", "2025-11-01", "2025-12-25", "2025-12-26"
+      ],
+      "australiaHolidays": [
+        "2025-01-01", "2025-01-27", "2025-04-18", "2025-04-21", 
+        "2025-04-25", "2025-06-09", "2025-12-25", "2025-12-26"
+      ],
+      "globalHolidays": [
+        "2025-01-01", "2025-12-25"
       ]
     },
     "marketSessions": {
@@ -34,25 +56,36 @@
         "start": "17:00", 
         "end": "02:00",
         "timezone": "Australia/Sydney",
-        "affectedByHolidays": false
+        "affectedByHolidays": true,
+        "holidayList": "australiaHolidays"
       },
       "tokyo": {
         "start": "19:00", 
         "end": "04:00",
         "timezone": "Asia/Tokyo",
-        "affectedByHolidays": false
+        "affectedByHolidays": true,
+        "holidayList": "japanHolidays"
       },
       "london": {
         "start": "03:00", 
         "end": "12:00",
         "timezone": "Europe/London",
-        "affectedByHolidays": true
+        "affectedByHolidays": true,
+        "holidayList": "ukHolidays"
       },
       "newYork": {
         "start": "08:00", 
         "end": "17:00",
         "timezone": "America/New_York", 
-        "affectedByHolidays": true
+        "affectedByHolidays": true,
+        "holidayList": "usHolidays"
+      },
+      "frankfurt": {
+        "start": "02:00", 
+        "end": "11:00",
+        "timezone": "Europe/Berlin",
+        "affectedByHolidays": true,
+        "holidayList": "euHolidays"
       }
     }
   },
