@@ -109,10 +109,23 @@ function Create-TradingShortcuts {
     )
     
     $desktop = [Environment]::GetFolderPath("Desktop")
+    $shortcutFolder = Join-Path $desktop "Trading Platforms"
     $shell = New-Object -ComObject WScript.Shell
     
+    # Create Trading Platforms folder on desktop
+    if (-not (Test-Path $shortcutFolder)) {
+        New-Item -ItemType Directory -Path $shortcutFolder -Force | Out-Null
+        if (-not $Quiet) {
+            Write-Host "`nCreated desktop folder: Trading Platforms" -ForegroundColor Green
+        }
+    } else {
+        if (-not $Quiet) {
+            Write-Host "`nUsing existing desktop folder: Trading Platforms" -ForegroundColor Cyan
+        }
+    }
+    
     if (-not $Quiet) {
-        Write-Host "`nCreating desktop shortcuts..." -ForegroundColor Cyan
+        Write-Host "Creating desktop shortcuts..." -ForegroundColor Cyan
     }
     
     $shortcutsCreated = 0
@@ -122,20 +135,53 @@ function Create-TradingShortcuts {
             $exePath = Join-Path $TradingRoot "PlatformInstances\$($instance.Name)\$($instance.Executable)"
             
             if (Test-Path $exePath) {
-                # Create shortcut
-                $shortcutPath = "$desktop\$($instance.Name).lnk"
+                # Create shortcut in Trading Platforms folder
+                $shortcutPath = "$shortcutFolder\$($instance.Name).lnk"
                 $shortcut = $shell.CreateShortcut($shortcutPath)
                 $shortcut.TargetPath = $exePath
                 $shortcut.WorkingDirectory = Split-Path $exePath -Parent
                 $shortcut.Description = "Start $($instance.Name)"
                 
-                # Add arguments if specified
+                # Ensure /portable argument is used for MT4/MT5 platforms
+                $arguments = ""
                 if ($instance.Arguments) {
-                    $shortcut.Arguments = $instance.Arguments
+                    $arguments = $instance.Arguments
+                } else {
+                    # Auto-add /portable for MT platforms if not specified
+                    if ($instance.Executable -match "terminal") {
+                        $arguments = "/portable"
+                    }
                 }
                 
-                # Look for custom icon
+                if ($arguments) {
+                    $shortcut.Arguments = $arguments
+                    if (-not $Quiet) {
+                        Write-Host "  Arguments: $arguments" -ForegroundColor Gray
+                    }
+                }
+                
+                # Look for custom icon (first in PlatformInstallations, then in instance folder)
                 $iconPath = Find-CustomIcon -InstanceName $instance.Name -TradingRoot $TradingRoot
+                
+                # If no custom icon found, look in the instance folder
+                if (-not $iconPath) {
+                    $instanceFolder = Split-Path $exePath -Parent
+                    $imageExtensions = @("*.ico", "*.png", "*.jpg", "*.jpeg", "*.bmp", "*.gif")
+                    
+                    foreach ($ext in $imageExtensions) {
+                        $iconFiles = Get-ChildItem $instanceFolder -Filter $ext -ErrorAction SilentlyContinue
+                        if ($iconFiles) {
+                            # Prefer .ico files
+                            $iconFile = $iconFiles | Where-Object { $_.Extension -eq ".ico" } | Select-Object -First 1
+                            if (-not $iconFile) {
+                                $iconFile = $iconFiles | Select-Object -First 1
+                            }
+                            $iconPath = $iconFile.FullName
+                            break
+                        }
+                    }
+                }
+                
                 if ($iconPath) {
                     $shortcut.IconLocation = $iconPath
                     if (-not $Quiet) {
@@ -159,7 +205,7 @@ function Create-TradingShortcuts {
     [System.Runtime.Interopservices.Marshal]::ReleaseComObject($shell) | Out-Null
     
     if (-not $Quiet -and $shortcutsCreated -gt 0) {
-        Write-Host "Created $shortcutsCreated desktop shortcuts" -ForegroundColor Green
+        Write-Host "Created $shortcutsCreated shortcuts in Trading Platforms folder" -ForegroundColor Green
     }
 }
 
@@ -168,13 +214,29 @@ function Remove-TradingShortcuts {
     param([array]$Instances)
     
     $desktop = [Environment]::GetFolderPath("Desktop")
+    $shortcutFolder = Join-Path $desktop "Trading Platforms"
     $shortcutsRemoved = 0
     
     foreach ($instance in $Instances) {
-        $shortcutPath = "$desktop\$($instance.Name).lnk"
-        if (Test-Path $shortcutPath) {
-            Remove-Item $shortcutPath -Force
-            $shortcutsRemoved++
+        # Check both locations: Trading Platforms folder and directly on desktop
+        $shortcutPaths = @(
+            "$shortcutFolder\$($instance.Name).lnk",
+            "$desktop\$($instance.Name).lnk"
+        )
+        
+        foreach ($shortcutPath in $shortcutPaths) {
+            if (Test-Path $shortcutPath) {
+                Remove-Item $shortcutPath -Force
+                $shortcutsRemoved++
+            }
+        }
+    }
+    
+    # Remove Trading Platforms folder if it's empty
+    if ((Test-Path $shortcutFolder) -and (Get-ChildItem $shortcutFolder).Count -eq 0) {
+        Remove-Item $shortcutFolder -Force
+        if (-not $Quiet) {
+            Write-Host "Removed empty Trading Platforms folder" -ForegroundColor Gray
         }
     }
     
@@ -214,7 +276,12 @@ foreach ($instance in $config.instances) {
         $arguments = if ($instance.startupSettings -and $instance.startupSettings.arguments) {
             $instance.startupSettings.arguments
         } else {
-            ""
+            # Auto-add /portable for MT platforms if not specified
+            if ($executable -match "terminal") {
+                "/portable"
+            } else {
+                ""
+            }
         }
         
         $Instances += @{
@@ -251,7 +318,17 @@ timeout /t 5 /nobreak >nul
                 $exePath = Join-Path $TradingRoot "PlatformInstances\$($instance.Name)\$($instance.Executable)"
                 
                 if (Test-Path $exePath) {
-                    $args = if ($instance.Arguments) { " $($instance.Arguments)" } else { "" }
+                    # Ensure /portable argument for MT platforms
+                    $args = ""
+                    if ($instance.Arguments) {
+                        $args = " $($instance.Arguments)"
+                    } else {
+                        # Auto-add /portable for MT platforms if not specified
+                        if ($instance.Executable -match "terminal") {
+                            $args = " /portable"
+                        }
+                    }
+                    
                     $batchContent += @"
 echo Starting $($instance.Name)...
 timeout /t $($instance.Delay) /nobreak >nul
@@ -282,6 +359,57 @@ timeout /t 3 /nobreak >nul
             Write-Host "Added $addedToStartup platforms to automatic startup" -ForegroundColor Cyan
         }
         
+        # Create ShortCutImage folders for custom icons
+        if (-not $Quiet) {
+            Write-Host "`nCreating ShortCutImage folders..." -ForegroundColor Cyan
+        }
+        
+        $foldersCreated = 0
+        foreach ($instance in $Instances) {
+            if ($instance.Enabled) {
+                # Extract platform info from instance name to determine source folder
+                $parts = $instance.Name -split "_"
+                if ($parts.Length -ge 3) {
+                    $broker = $parts[0]
+                    $platform = $parts[1]
+                    $accountType = $parts[2]
+                    
+                    # Try different naming patterns to find the platform installation
+                    $possibleSources = @(
+                        "${broker}_${platform}_${accountType}",
+                        "${broker}_${platform}-${accountType}",
+                        "${broker}_${platform}",
+                        $platform
+                    )
+                    
+                    foreach ($source in $possibleSources) {
+                        $platformPath = Join-Path $TradingRoot "PlatformInstallations\$source"
+                        if (Test-Path $platformPath) {
+                            $shortcutImagePath = Join-Path $platformPath "ShortCutImage"
+                            
+                            if (-not (Test-Path $shortcutImagePath)) {
+                                New-Item -ItemType Directory -Path $shortcutImagePath -Force | Out-Null
+                                if (-not $Quiet) {
+                                    Write-Host "  ✓ Created: $shortcutImagePath" -ForegroundColor Green
+                                }
+                                $foldersCreated++
+                            } else {
+                                if (-not $Quiet) {
+                                    Write-Host "  ✓ Already exists: $shortcutImagePath" -ForegroundColor Gray
+                                }
+                            }
+                            break  # Found the platform folder, no need to check other patterns
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (-not $Quiet) {
+            Write-Host "Created $foldersCreated new ShortCutImage folders" -ForegroundColor Green
+            Write-Host "Place custom .ico files in these folders for branded shortcuts" -ForegroundColor Cyan
+        }
+        
         # Create desktop shortcuts if requested
         if ($CreateShortcuts) {
             Create-TradingShortcuts -Instances $Instances -TradingRoot $TradingRoot
@@ -309,10 +437,16 @@ timeout /t 3 /nobreak >nul
                     }
                     Start-Sleep $instance.Delay
                     
+                    # Ensure /portable argument for MT platforms
                     if ($instance.Arguments) {
                         Start-Process $exePath -ArgumentList $instance.Arguments
                     } else {
-                        Start-Process $exePath
+                        # Auto-add /portable for MT platforms if not specified
+                        if ($instance.Executable -match "terminal") {
+                            Start-Process $exePath -ArgumentList "/portable"
+                        } else {
+                            Start-Process $exePath
+                        }
                     }
                     
                     if (-not $Quiet) {
@@ -402,14 +536,26 @@ timeout /t 3 /nobreak >nul
         
         # Check desktop shortcuts
         $desktop = [Environment]::GetFolderPath("Desktop")
+        $shortcutFolder = Join-Path $desktop "Trading Platforms"
         $shortcutCount = 0
+        
         foreach ($instance in $Instances) {
-            $shortcutPath = "$desktop\$($instance.Name).lnk"
-            if (Test-Path $shortcutPath) {
-                $shortcutCount++
+            # Check both locations
+            $shortcutPaths = @(
+                "$shortcutFolder\$($instance.Name).lnk",
+                "$desktop\$($instance.Name).lnk"
+            )
+            
+            foreach ($shortcutPath in $shortcutPaths) {
+                if (Test-Path $shortcutPath) {
+                    $shortcutCount++
+                    break  # Only count once per instance
+                }
             }
         }
-        Write-Host "  Desktop shortcuts: $shortcutCount created" -ForegroundColor $(if ($shortcutCount -gt 0) { "Green" } else { "Yellow" })
+        
+        $shortcutLocation = if (Test-Path $shortcutFolder) { "Trading Platforms folder" } else { "desktop" }
+        Write-Host "  Desktop shortcuts: $shortcutCount created in $shortcutLocation" -ForegroundColor $(if ($shortcutCount -gt 0) { "Green" } else { "Yellow" })
     }
     
     "Remove" {
@@ -445,7 +591,7 @@ timeout /t 3 /nobreak >nul
         Write-Host "  .\Setup\'3 trading_manager.ps1' [-Action] <Action> [Options]"
         Write-Host ""
         Write-Host "ACTIONS:" -ForegroundColor Cyan
-        Write-Host "  Install   Set up automatic startup and create desktop shortcuts" -ForegroundColor White
+        Write-Host "  Install   Set up automatic startup and create organized desktop shortcuts" -ForegroundColor White
         Write-Host "  Start     Start all enabled trading platforms now" -ForegroundColor White
         Write-Host "  Stop      Stop all running trading platforms" -ForegroundColor White
         Write-Host "  Status    Show status of all platforms and automation" -ForegroundColor White
@@ -455,6 +601,12 @@ timeout /t 3 /nobreak >nul
         Write-Host "OPTIONS:" -ForegroundColor Cyan
         Write-Host "  -CreateShortcuts    Create/skip desktop shortcuts (default: true)" -ForegroundColor White
         Write-Host "  -Quiet             Suppress non-essential output" -ForegroundColor White
+        Write-Host ""
+        Write-Host "FEATURES:" -ForegroundColor Cyan
+        Write-Host "  • Creates 'Trading Platforms' folder on desktop" -ForegroundColor White
+        Write-Host "  • Automatically adds /portable argument for MT4/MT5" -ForegroundColor White
+        Write-Host "  • Creates ShortCutImage folders for custom icons" -ForegroundColor White
+        Write-Host "  • Supports custom icons in multiple formats" -ForegroundColor White
         Write-Host ""
         Write-Host "EXAMPLES:" -ForegroundColor Cyan
         Write-Host "  .\Setup\'3 trading_manager.ps1' -Action Install" -ForegroundColor Gray
