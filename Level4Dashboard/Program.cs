@@ -564,6 +564,7 @@ namespace Level4Dashboard
 
         private Control CreateInstanceControl(TradingInstance instance)
         {
+            var tooltip = new ToolTip();
             var panel = new Panel
             {
                 Size = new Size(120, 80),
@@ -631,6 +632,12 @@ namespace Level4Dashboard
             panel.DoubleClick += (s, e) => StartSingleInstance(instance);
             iconBox.DoubleClick += (s, e) => StartSingleInstance(instance);
 
+                        // Add tooltips showing full names
+            var fullName = instance.Name ?? instance.Destination ?? "Unknown Instance";
+            tooltip.SetToolTip(panel, fullName);
+            tooltip.SetToolTip(iconBox, fullName);
+            tooltip.SetToolTip(nameLabel, fullName);
+            
             panel.Controls.AddRange(new Control[] { iconBox, nameLabel, statusLabel });
             return panel;
         }
@@ -1033,6 +1040,7 @@ namespace Level4Dashboard
             };
 
             cancelBtn.Click += (s, e) => configForm.Close();
+
 
             buttonPanel.Controls.AddRange(new Control[] { saveBtn, cancelBtn });
             configForm.Controls.AddRange(new Control[] { textBox, buttonPanel });
