@@ -1,0 +1,15 @@
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\Level4Dashboard.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\Level4Dashboard.AssemblyInfoInputs.cache
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\Level4Dashboard.AssemblyInfo.cs
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\Level4Dashboard.csproj.CoreCompileInputs.cache
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\Level4Dashboard.sourcelink.json
+C:\Projects\FinancialData\Level4Dashboard\bin\Debug\net9.0-windows\Level4Dashboard.exe
+C:\Projects\FinancialData\Level4Dashboard\bin\Debug\net9.0-windows\Level4Dashboard.deps.json
+C:\Projects\FinancialData\Level4Dashboard\bin\Debug\net9.0-windows\Level4Dashboard.runtimeconfig.json
+C:\Projects\FinancialData\Level4Dashboard\bin\Debug\net9.0-windows\Level4Dashboard.dll
+C:\Projects\FinancialData\Level4Dashboard\bin\Debug\net9.0-windows\Level4Dashboard.pdb
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\Level4Dashboard.dll
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\refint\Level4Dashboard.dll
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\Level4Dashboard.pdb
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\Level4Dashboard.genruntimeconfig.cache
+C:\Projects\FinancialData\Level4Dashboard\obj\Debug\net9.0-windows\ref\Level4Dashboard.dll
