@@ -1,176 +1,94 @@
 {
-  "tradingRoot": "C:\\Projects\\FinancialData",
-  "defaultDataRoot": "C:\\Projects\\FinancialData\\TradingData",
-  "startupSettings": {
-    "autoStart": true,
-    "globalStartupDelay": 30,
-    "taskFolder": "TradingPlatforms",
-    "runAsUser": "INTERACTIVE",
-    "createShortcuts": true,
-    "logDirectory": "C:\\Projects\\FinancialData\\Logs"
-  },
   "instances": [
     {
       "name": "AfterPrime_MT4_Demo_Instance",
-      "broker": "AfterPrime",
       "platform": "MT4",
       "source": "AfterPrime_MT4_Demo",
       "destination": "AfterPrime_MT4_Demo_Instance",
-      "dataFolder": "AfterPrime_MT4_Demo",
-      "junctionName": "AfterPrime_MT4_Demo_Data",
-      "portableMode": true,
-      "accountType": "demo",
       "enabled": true,
-      "serverSettings": {
-        "server": "AfterPrime-Demo",
-        "autoLogin": false
-      },
+      "accountType": "demo",
       "startupSettings": {
-        "autoStart": true,
+        "autoStart": false,
         "startupDelay": 0,
         "executable": "terminal.exe",
-        "arguments": "/portable",
-        "taskName": "AfterPrime_MT4_Demo",
-        "priority": "normal",
-        "maxRestarts": 5,
-        "restartDelay": 30,
-        "memoryLimit": "1GB"
-      }
+        "arguments": "/portable"
+      },
+      "iconSettings": null
     },
     {
       "name": "AfterPrime_MT4_Live_Instance",
-      "broker": "AfterPrime",
       "platform": "MT4",
       "source": "AfterPrime_MT4_Live",
       "destination": "AfterPrime_MT4_Live_Instance",
-      "dataFolder": "AfterPrime_MT4_Live",
-      "junctionName": "AfterPrime_MT4_Live_Data",
-      "portableMode": true,
-      "accountType": "live",
       "enabled": true,
-      "serverSettings": {
-        "server": "AfterPrime-Live",
-        "autoLogin": false
-      },
+      "accountType": "live",
       "startupSettings": {
-        "autoStart": true,
+        "autoStart": false,
         "startupDelay": 10,
         "executable": "terminal.exe",
-        "arguments": "/portable",
-        "taskName": "AfterPrime_MT4_Live",
-        "priority": "high",
-        "maxRestarts": 5,
-        "restartDelay": 30,
-        "memoryLimit": "1.5GB"
-      }
+        "arguments": "/portable"
+      },
+      "iconSettings": null
     },
     {
       "name": "AfterPrime_MT5_Demo_Instance",
-      "broker": "AfterPrime",
       "platform": "MT5",
       "source": "AfterPrime_MT5-Demo",
       "destination": "AfterPrime_MT5_Demo_Instance",
-      "dataFolder": "AfterPrime_MT5_Demo",
-      "junctionName": "AfterPrime_MT5_Demo_Data",
-      "portableMode": true,
-      "accountType": "demo",
       "enabled": true,
-      "serverSettings": {
-        "server": "AfterPrime-Demo",
-        "autoLogin": false
-      },
+      "accountType": "demo",
       "startupSettings": {
-        "autoStart": true,
+        "autoStart": false,
         "startupDelay": 20,
         "executable": "terminal64.exe",
-        "arguments": "/portable",
-        "taskName": "AfterPrime_MT5_Demo",
-        "priority": "high",
-        "maxRestarts": 5,
-        "restartDelay": 30,
-        "memoryLimit": "2GB"
-      }
+        "arguments": "/portable"
+      },
+      "iconSettings": null
     },
     {
       "name": "AfterPrime_MT5_Live_Instance",
-      "broker": "AfterPrime",
       "platform": "MT5",
       "source": "AfterPrime_MT5-Live",
       "destination": "AfterPrime_MT5_Live_Instance",
-      "dataFolder": "AfterPrime_MT5_Live",
-      "junctionName": "AfterPrime_MT5_Live_Data",
-      "portableMode": true,
-      "accountType": "live",
       "enabled": true,
-      "serverSettings": {
-        "server": "AfterPrime-Live",
-        "autoLogin": false
-      },
+      "accountType": "live",
       "startupSettings": {
-        "autoStart": true,
+        "autoStart": false,
         "startupDelay": 30,
         "executable": "terminal64.exe",
-        "arguments": "/portable",
-        "taskName": "AfterPrime_MT5_Live",
-        "priority": "high",
-        "maxRestarts": 5,
-        "restartDelay": 30,
-        "memoryLimit": "2GB"
-      }
+        "arguments": "/portable"
+      },
+      "iconSettings": null
     },
     {
       "name": "AfterPrime_TraderEvolution_Live_Instance",
-      "broker": "AfterPrime",
       "platform": "TraderEvolution",
       "source": "AfterPrime_TraderEvolution-Live",
       "destination": "AfterPrime_TraderEvolution_Live_Instance",
-      "dataFolder": "AfterPrime_TraderEvolution_Live",
-      "junctionName": "AfterPrime_TE_Live_Data",
-      "portableMode": true,
-      "accountType": "live",
       "enabled": true,
-      "serverSettings": {
-        "server": "AfterPrime-TE-Live",
-        "autoLogin": false
-      },
+      "accountType": "live",
       "startupSettings": {
-        "autoStart": true,
+        "autoStart": false,
         "startupDelay": 40,
         "executable": "TradeTerminal.exe",
-        "arguments": "",
-        "taskName": "AfterPrime_TE_Live",
-        "priority": "normal",
-        "maxRestarts": 3,
-        "restartDelay": 60,
-        "memoryLimit": "1.5GB"
-      }
+        "arguments": ""
+      },
+      "iconSettings": null
     },
     {
       "name": "AfterPrime_TraderEvolution_Demo_Instance",
-      "broker": "AfterPrime",
       "platform": "TraderEvolution",
       "source": "AfterPrime_TraderEvolution-Demo",
       "destination": "AfterPrime_TraderEvolution_Demo_Instance",
-      "dataFolder": "AfterPrime_TraderEvolution_Demo",
-      "junctionName": "AfterPrime_TE_Demo_Data",
-      "portableMode": true,
-      "accountType": "demo",
       "enabled": true,
-      "serverSettings": {
-        "server": "AfterPrime-TE-Demo",
-        "autoLogin": false
-      },
+      "accountType": "demo",
       "startupSettings": {
-        "autoStart": true,
+        "autoStart": false,
         "startupDelay": 50,
         "executable": "TradeTerminal.exe",
-        "arguments": "",
-        "taskName": "AfterPrime_TE_Demo",
-        "priority": "low",
-        "maxRestarts": 3,
-        "restartDelay": 60,
-        "memoryLimit": "1GB"
-      }
+        "arguments": ""
+      },
+      "iconSettings": null
     }
   ]
 }

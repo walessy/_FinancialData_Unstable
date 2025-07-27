@@ -605,7 +605,6 @@ namespace Level4Dashboard
                 TextAlign = ContentAlignment.MiddleCenter,
                 Font = new Font("Segoe UI", 7f),
                 ForeColor = Color.Black
-
             };
 
             var statusLabel = new Label
