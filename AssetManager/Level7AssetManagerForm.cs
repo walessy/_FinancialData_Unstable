@@ -128,13 +128,22 @@ namespace AssetManager
             cacheMenu.DropDownItems.Add("-");
             cacheMenu.DropDownItems.Add("Show Cache Directory", null, (s, e) => ShowCacheDirectory());
             
+            // NEW: Asset Management Menu
+            var assetMenu = new ToolStripMenuItem("Asset Management");
+            assetMenu.ForeColor = Color.FromArgb(240, 240, 240);
+            assetMenu.DropDownItems.Add("Open Asset Matrix Manager", null, OpenAssetMatrixManager);
+            assetMenu.DropDownItems.Add("Refresh Asset Inventory", null, (s, e) => RefreshAssets());
+            assetMenu.DropDownItems.Add("Export Asset Report", null, (s, e) => ExportAssets());
+            assetMenu.DropDownItems.Add("Validate All Paths", null, (s, e) => ValidateAssetPaths());
+            
             var viewMenu = new ToolStripMenuItem("View");
             viewMenu.ForeColor = Color.FromArgb(240, 240, 240); // Brighter menu item text
             viewMenu.DropDownItems.Add("Auto-Refresh", null, ToggleAutoRefresh);
             viewMenu.DropDownItems.Add("Show Details", null, (s, e) => ShowAssetDetails());
             viewMenu.DropDownItems.Add("Activity Log", null, (s, e) => ShowActivityLog());
             
-            _menuStrip.Items.AddRange(new[] { fileMenu, cacheMenu, viewMenu });
+            // MODIFIED: Added assetMenu to the menu strip
+            _menuStrip.Items.AddRange(new[] { fileMenu, cacheMenu, assetMenu, viewMenu });
             
             // Tool Strip
             _toolStrip = new ToolStrip();
@@ -150,6 +159,7 @@ namespace AssetManager
             // Asset Management dropdown button
             var assetMgmtButton = new ToolStripDropDownButton("Asset Management");
             assetMgmtButton.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText;
+            assetMgmtButton.DropDownItems.Add("Open Asset Matrix Manager", null, OpenAssetMatrixManager);
             assetMgmtButton.DropDownItems.Add("Refresh All Assets", null, (s, e) => RefreshAssets());
             assetMgmtButton.DropDownItems.Add("Export Asset List", null, (s, e) => ExportAssets());
             assetMgmtButton.DropDownItems.Add("-");
@@ -769,6 +779,68 @@ namespace AssetManager
             catch (Exception ex)
             {
                 LogActivity($"❌ Validation error: {ex.Message}");
+            }
+        }
+
+        // NEW: Asset Matrix Manager Integration
+        private void OpenAssetMatrixManager(object? sender, EventArgs e)
+        {
+            try
+            {
+                LogActivity("🚀 Opening Asset Matrix Manager...");
+                
+                // Load instances from your existing config
+                var instances = LoadTradingInstancesFromConfig();
+                
+                // Launch AssetMatrixManager as child dialog
+                using var matrixManager = new AssetMatrixManager(instances);
+                matrixManager.ShowDialog(this);
+                
+                LogActivity("📊 Asset Matrix Manager closed");
+            }
+            catch (Exception ex)
+            {
+                LogActivity($"❌ Error launching Asset Matrix Manager: {ex.Message}");
+                MessageBox.Show($"Error launching Asset Matrix Manager: {ex.Message}", 
+                    "Launch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private List<TradingInstance> LoadTradingInstancesFromConfig()
+        {
+            try
+            {
+                if (!File.Exists(_configPath))
+                {
+                    LogActivity("⚠️ Config file not found, returning empty instance list");
+                    return new List<TradingInstance>();
+                }
+                
+                var json = File.ReadAllText(_configPath);
+                var config = JsonSerializer.Deserialize<AssetManager.Models.Configuration>(json, new JsonSerializerOptions 
+                { 
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase 
+                });
+                
+                var instances = config?.Instances ?? new List<TradingInstance>();
+                
+                // Set TradingRoot on each instance for compatibility
+                if (config != null)
+                {
+                    foreach (var instance in instances)
+                    {
+                        instance.TradingRoot = config.TradingRoot;
+                    }
+                }
+                
+                LogActivity($"📡 Loaded {instances.Count} trading instances from config");
+                
+                return instances;
+            }
+            catch (Exception ex)
+            {
+                LogActivity($"❌ Error loading instances: {ex.Message}");
+                return new List<TradingInstance>();
             }
         }
 

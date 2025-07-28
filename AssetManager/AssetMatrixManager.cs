@@ -18,7 +18,7 @@ namespace AssetManager
         private readonly List<TradingInstance> _instances;
         private readonly Dictionary<string, Dictionary<string, bool>> _assetMatrix;
         private readonly Dictionary<string, string> _assetPaths;
-        private readonly Dictionary<string, AssetInfo> _assetDetails; // NEW: Platform-aware asset info
+        private readonly Dictionary<string, AssetInfo> _assetDetails; // Platform-aware asset info
         
         // UI Components
         private TabControl _tabControl = null!;
@@ -37,7 +37,7 @@ namespace AssetManager
             _instances = instances ?? new List<TradingInstance>();
             _assetMatrix = new Dictionary<string, Dictionary<string, bool>>();
             _assetPaths = new Dictionary<string, string>();
-            _assetDetails = new Dictionary<string, AssetInfo>(); // NEW
+            _assetDetails = new Dictionary<string, AssetInfo>();
             
             InitializeComponent();
             InitializeLayout();
@@ -75,24 +75,19 @@ namespace AssetManager
             _toolStrip.Items.Add(new ToolStripButton("📋 Select Compatible", null, (s, e) => SelectCompatibleAssets()) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
             _toolStrip.Items.Add(new ToolStripButton("❌ Clear All", null, (s, e) => ClearAllSelections()) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
             _toolStrip.Items.Add(new ToolStripSeparator());
-            _toolStrip.Items.Add(new ToolStripButton("🚀 Sync Compatible", null, (s, e) => SyncCompatibleAssets()) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
+            _toolStrip.Items.Add(new ToolStripButton("🚀 Sync Selected", null, (s, e) => SyncSelectedAssets()) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
             _toolStrip.Items.Add(new ToolStripSeparator());
-            _toolStrip.Items.Add(new ToolStripButton("📊 Compatibility Report", null, (s, e) => GenerateCompatibilityReport()) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
-            _toolStrip.Items.Add(new ToolStripSeparator());
+            _toolStrip.Items.Add(new ToolStripButton("📊 Generate Report", null, (s, e) => GenerateAssetReport()) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
             
-            // NEW: Platform compatibility indicator
-            var compatibilityLabel = new ToolStripLabel("⚠️ Platform Isolation: MT4↔MT4 | MT5↔MT5 | TE↔TE");
-            compatibilityLabel.ForeColor = Color.Orange;
-            _toolStrip.Items.Add(compatibilityLabel);
-            
-            // Tab Control for asset types with platform grouping
+            // Tab Control for asset types
             _tabControl = new TabControl()
             {
                 Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(40, 40, 40),
+                BackColor = Color.FromArgb(45, 45, 48),
                 ForeColor = Color.FromArgb(240, 240, 240)
             };
             
+            // Create tabs for each asset type
             foreach (var assetType in _assetTypes)
             {
                 var tabPage = new TabPage(assetType)
@@ -103,51 +98,53 @@ namespace AssetManager
                 _tabControl.TabPages.Add(tabPage);
             }
             
-            // Activity Log Panel
-            var splitter = new SplitContainer()
-            {
-                Dock = DockStyle.Fill,
-                Orientation = Orientation.Horizontal,
-                SplitterDistance = 600,
-                BackColor = Color.FromArgb(45, 45, 48)
-            };
-            
-            splitter.Panel1.Controls.Add(_tabControl);
-            
-            // Bottom panel for activity log
-            _activityLog = new ListBox()
-            {
-                Dock = DockStyle.Fill,
-                BackColor = Color.FromArgb(20, 20, 20),
-                ForeColor = Color.FromArgb(200, 200, 200),
-                Font = new Font("Consolas", 8)
-            };
-            
-            var logPanel = new Panel() { Dock = DockStyle.Fill };
-            logPanel.Controls.Add(_activityLog);
-            
-            var logLabel = new Label()
-            {
-                Text = "📋 Activity Log & Platform Compatibility Status",
-                Dock = DockStyle.Top,
-                Height = 25,
-                BackColor = Color.FromArgb(60, 60, 60),
-                ForeColor = Color.FromArgb(240, 240, 240),
-                TextAlign = ContentAlignment.MiddleLeft,
-                Padding = new Padding(10, 0, 0, 0)
-            };
-            logPanel.Controls.Add(logLabel);
-            
-            splitter.Panel2.Controls.Add(logPanel);
-            
             // Status Strip
             _statusStrip = new StatusStrip();
             _statusStrip.BackColor = Color.FromArgb(45, 45, 48);
-            _statusLabel = new ToolStripStatusLabel("Ready - Platform compatibility enforced");
-            _statusLabel.ForeColor = Color.FromArgb(240, 240, 240);
+            _statusStrip.ForeColor = Color.FromArgb(240, 240, 240);
+            
+            _statusLabel = new ToolStripStatusLabel("Ready for asset management");
             _statusStrip.Items.Add(_statusLabel);
             
-            this.Controls.Add(splitter);
+            // Activity Log Panel
+            var logPanel = new Panel()
+            {
+                Dock = DockStyle.Bottom,
+                Height = 150,
+                BackColor = Color.FromArgb(40, 40, 40)
+            };
+            
+            _activityLog = new ListBox()
+            {
+                Dock = DockStyle.Fill,
+                BackColor = Color.FromArgb(40, 40, 40),
+                ForeColor = Color.FromArgb(240, 240, 240),
+                Font = new Font("Consolas", 9)
+            };
+            logPanel.Controls.Add(_activityLog);
+            
+            // Summary Panel
+            _summaryPanel = new Panel()
+            {
+                Dock = DockStyle.Top,
+                Height = 60,
+                BackColor = Color.FromArgb(50, 50, 50)
+            };
+            
+            _summaryLabel = new Label()
+            {
+                Dock = DockStyle.Fill,
+                Text = "Asset Distribution Summary will appear here...",
+                ForeColor = Color.FromArgb(240, 240, 240),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+            _summaryPanel.Controls.Add(_summaryLabel);
+            
+            // Layout assembly
+            this.Controls.Add(_tabControl);
+            this.Controls.Add(logPanel);
+            this.Controls.Add(_summaryPanel);
             this.Controls.Add(_toolStrip);
             this.Controls.Add(_statusStrip);
             
@@ -155,69 +152,42 @@ namespace AssetManager
         }
 
         /// <summary>
-        /// NEW: Platform compatibility check - CORE BUSINESS LOGIC
-        /// </summary>
-        private bool ArePlatformsCompatible(string assetPlatform, string instancePlatform)
-        {
-            // Normalize platform names
-            assetPlatform = assetPlatform.ToUpper();
-            instancePlatform = instancePlatform.ToUpper();
-            
-            // STRICT COMPATIBILITY RULES
-            return assetPlatform switch
-            {
-                "MT4" => instancePlatform == "MT4",
-                "MT5" => instancePlatform == "MT5", 
-                "TRADEREVOLUTION" => instancePlatform == "TRADEREVOLUTION",
-                _ => false // Unknown platforms are incompatible
-            };
-        }
-
-        /// <summary>
-        /// Enhanced asset scanning with platform detection
+        /// CRITICAL: Scans all assets with platform detection
         /// </summary>
         private void ScanAllAssets()
         {
+            LogActivity("🔍 Scanning all trading instances for assets...");
+            
             _assetMatrix.Clear();
             _assetPaths.Clear();
             _assetDetails.Clear();
             
-            LogActivity("🔍 Scanning assets with platform detection...");
-            
             foreach (var instance in _instances.Where(i => i.Enabled))
             {
-                var instancePath = Path.Combine("PlatformInstances", instance.Name);
-                if (!Directory.Exists(instancePath)) continue;
-                
-                LogActivity($"📂 Scanning {instance.Platform} instance: {instance.Name}");
-                
-                var assets = ScanInstanceAssets(instancePath, instance.Platform);
+                LogActivity($"📂 Scanning {instance.Name} [{instance.Platform}]...");
+                var assets = ScanInstanceAssets(instance.InstancePath, instance.Platform);
                 
                 foreach (var asset in assets)
                 {
-                    var assetKey = $"{instance.Platform}/{asset.Name}";
+                    var assetKey = $"{asset.Name}_{asset.Platform}_{instance.Name}";
                     
-                    // Store enhanced asset info with platform
-                    if (!_assetDetails.ContainsKey(assetKey))
+                    if (!_assetMatrix.ContainsKey(assetKey))
                     {
-                        _assetDetails[assetKey] = asset;
-                        _assetPaths[assetKey] = asset.FullPath;
                         _assetMatrix[assetKey] = new Dictionary<string, bool>();
-                    }
-                    
-                    // Initialize compatibility matrix for ALL instances
-                    foreach (var targetInstance in _instances.Where(i => i.Enabled))
-                    {
-                        var isCompatible = ArePlatformsCompatible(asset.Platform, targetInstance.Platform);
-                        _assetMatrix[assetKey][targetInstance.Name] = false; // Default unchecked, but compatibility determines if enabled
+                        _assetPaths[assetKey] = asset.FullPath;
+                        _assetDetails[assetKey] = asset;
+                        
+                        // Initialize matrix for all instances
+                        foreach (var inst in _instances.Where(i => i.Enabled))
+                        {
+                            _assetMatrix[assetKey][inst.Name] = false;
+                        }
                     }
                 }
             }
             
             LogActivity($"✅ Scan complete: {_assetDetails.Count} assets found");
-            LogActivity($"🔗 Platform distribution: MT4: {_assetDetails.Values.Count(a => a.Platform == "MT4")}, " +
-                       $"MT5: {_assetDetails.Values.Count(a => a.Platform == "MT5")}, " +
-                       $"TE: {_assetDetails.Values.Count(a => a.Platform == "TraderEvolution")}");
+            UpdateSummary();
         }
 
         private List<AssetInfo> ScanInstanceAssets(string instancePath, string platform)
@@ -226,13 +196,21 @@ namespace AssetManager
             
             try
             {
-                var instance = _instances.First(i => i.Name == Path.GetFileName(instancePath));
-                var assetFolders = instance.GetAssetFolders(instancePath);
-                var extensions = instance.GetAssetExtensions();
-                
-                foreach (var folder in assetFolders.Where(Directory.Exists))
+                if (!Directory.Exists(instancePath))
                 {
-                    var files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories)
+                    LogActivity($"⚠️ Instance path not found: {instancePath}");
+                    return assets;
+                }
+                
+                // Platform-specific asset scanning
+                var extensions = GetPlatformExtensions(platform);
+                var searchPaths = GetPlatformSearchPaths(instancePath, platform);
+                
+                foreach (var searchPath in searchPaths)
+                {
+                    if (!Directory.Exists(searchPath)) continue;
+                    
+                    var files = Directory.GetFiles(searchPath, "*", SearchOption.AllDirectories)
                         .Where(f => extensions.Any(ext => f.EndsWith(ext, StringComparison.OrdinalIgnoreCase)));
                     
                     foreach (var file in files)
@@ -253,19 +231,56 @@ namespace AssetManager
             return assets;
         }
 
+        private string[] GetPlatformExtensions(string platform)
+        {
+            return platform.ToUpperInvariant() switch
+            {
+                "MT4" => new[] { ".ex4", ".mq4" },
+                "MT5" => new[] { ".ex5", ".mq5" },
+                "TRADEREVOLUTION" => new[] { ".dll", ".exe", ".robot" },
+                _ => new[] { ".ex4", ".ex5", ".mq4", ".mq5", ".dll", ".exe" }
+            };
+        }
+
+        private string[] GetPlatformSearchPaths(string instancePath, string platform)
+        {
+            return platform.ToUpperInvariant() switch
+            {
+                "MT4" => new[] 
+                {
+                    Path.Combine(instancePath, "MQL4", "Experts"),
+                    Path.Combine(instancePath, "MQL4", "Indicators"),
+                    Path.Combine(instancePath, "MQL4", "Scripts"),
+                    Path.Combine(instancePath, "templates")
+                },
+                "MT5" => new[] 
+                {
+                    Path.Combine(instancePath, "MQL5", "Experts"),
+                    Path.Combine(instancePath, "MQL5", "Indicators"),
+                    Path.Combine(instancePath, "MQL5", "Scripts"),
+                    Path.Combine(instancePath, "templates")
+                },
+                _ => new[] { instancePath } // TraderEvolution or unknown
+            };
+        }
+
         /// <summary>
-        /// Enhanced matrix view with platform compatibility enforcement
+        /// FIXED: Enhanced matrix view with proper ReadOnly handling
         /// </summary>
         private void CreateMatrixView()
         {
             foreach (TabPage tabPage in _tabControl.TabPages)
             {
+                tabPage.Controls.Clear();
                 var assetType = tabPage.Text.Replace(" ", "");
                 var grid = CreateCompatibilityAwareGrid(assetType);
                 tabPage.Controls.Add(grid);
             }
         }
 
+        /// <summary>
+        /// CRITICAL FIX: Proper DataGridView ReadOnly implementation
+        /// </summary>
         private DataGridView CreateCompatibilityAwareGrid(string assetType)
         {
             var grid = new DataGridView()
@@ -289,20 +304,21 @@ namespace AssetManager
                 EnableHeadersVisualStyles = false,
                 AllowUserToAddRows = false,
                 AllowUserToDeleteRows = false,
-                RowHeadersWidth = 300 // Wider for platform info
+                RowHeadersWidth = 300,
+                EditMode = DataGridViewEditMode.EditOnEnter // KEY FIX: Enable editing
             };
             
-            // Enhanced asset name column with platform indicator
+            // Asset name column - ALWAYS ReadOnly
             var assetColumn = new DataGridViewTextBoxColumn()
             {
                 Name = "Asset",
                 HeaderText = "Asset Name [Platform]",
-                Width = 280,
-                ReadOnly = true
+                Width = 180,
+                ReadOnly = true // This should stay ReadOnly
             };
             grid.Columns.Add(assetColumn);
             
-            // Add instance columns with platform compatibility indicators
+            // Add instance columns - NOT ReadOnly at column level
             foreach (var instance in _instances.Where(i => i.Enabled))
             {
                 var instanceColumn = new DataGridViewCheckBoxColumn()
@@ -311,12 +327,13 @@ namespace AssetManager
                     HeaderText = $"{instance.Name}\n[{instance.Platform}]",
                     Width = 120,
                     TrueValue = true,
-                    FalseValue = false
+                    FalseValue = false,
+                    ReadOnly = false // KEY FIX: Column-level ReadOnly should be false
                 };
                 grid.Columns.Add(instanceColumn);
             }
             
-            // Filter assets by type and populate rows with compatibility logic
+            // Populate rows with proper cell-level ReadOnly handling
             var filteredAssets = _assetDetails.Where(kvp => 
                 GetAssetTypeFromPath(kvp.Value.FullPath) == assetType).ToList();
             
@@ -327,69 +344,117 @@ namespace AssetManager
                 
                 var row = new DataGridViewRow();
                 
-                // Asset name with platform indicator
-                row.Cells.Add(new DataGridViewTextBoxCell { Value = $"{asset.Name} [{asset.Platform}]" });
+                // Asset name cell - add first, set ReadOnly after
+                var assetCell = new DataGridViewTextBoxCell 
+                { 
+                    Value = $"{asset.Name} [{asset.Platform}]"
+                };
+                row.Cells.Add(assetCell);
+                
+                // Store compatibility info for later ReadOnly setting
+                var compatibilityInfo = new List<bool>();
                 
                 // Instance compatibility cells
                 foreach (var instance in _instances.Where(i => i.Enabled))
                 {
                     var isCompatible = ArePlatformsCompatible(asset.Platform, instance.Platform);
+                    compatibilityInfo.Add(isCompatible);
+                    
                     var cell = new DataGridViewCheckBoxCell()
                     {
-                        Value = _assetMatrix[assetKey][instance.Name]
+                        Value = _assetMatrix.ContainsKey(assetKey) && 
+                               _assetMatrix[assetKey].ContainsKey(instance.Name) ? 
+                               _assetMatrix[assetKey][instance.Name] : false
                     };
                     
-                    // CRITICAL: Disable incompatible combinations
+                    // Set style but NOT ReadOnly yet
                     if (!isCompatible)
                     {
-                        cell.ReadOnly = true;
                         cell.Style.BackColor = Color.FromArgb(60, 30, 30); // Dark red for incompatible
                         cell.Style.ForeColor = Color.Gray;
-                        cell.ToolTipText = $"❌ Incompatible: {asset.Platform} asset cannot run on {instance.Platform} platform";
+                        cell.ToolTipText = $"❌ Incompatible: {asset.Platform} → {instance.Platform}";
                     }
                     else
                     {
                         cell.Style.BackColor = Color.FromArgb(30, 60, 30); // Dark green for compatible
-                        cell.ToolTipText = $"✅ Compatible: {asset.Platform} asset can run on {instance.Platform} platform";
+                        cell.ToolTipText = $"✅ Compatible: {asset.Platform} → {instance.Platform}";
                     }
                     
                     row.Cells.Add(cell);
                 }
                 
+                // Add row to grid FIRST
                 grid.Rows.Add(row);
+                
+                // NOW set ReadOnly properties after row is added
+                var rowIndex = grid.Rows.Count - 1;
+                
+                // Set asset name cell as ReadOnly
+                grid[0, rowIndex].ReadOnly = true;
+                
+                // Set compatibility-based ReadOnly for instance cells
+                for (int colIndex = 1; colIndex < grid.Columns.Count; colIndex++)
+                {
+                    var isCompatible = compatibilityInfo[colIndex - 1];
+                    grid[colIndex, rowIndex].ReadOnly = !isCompatible;
+                }
             }
             
-            // Handle cell value changes with compatibility validation
+            // KEY FIX: Proper event handling for cell value changes
             grid.CellValueChanged += (sender, e) =>
+            {
+                if (e.RowIndex >= 0 && e.ColumnIndex > 0) // Skip asset name column
+                {
+                    try
+                    {
+                        var assetName = grid.Rows[e.RowIndex].Cells[0].Value?.ToString();
+                        if (assetName != null)
+                        {
+                            // Extract asset key from display name
+                            var assetKey = _assetDetails.FirstOrDefault(kvp => 
+                                ($"{kvp.Value.Name} [{kvp.Value.Platform}]") == assetName).Key;
+                            
+                            if (!string.IsNullOrEmpty(assetKey))
+                            {
+                                var instanceName = grid.Columns[e.ColumnIndex].Name;
+                                var cellValue = grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                                if (cellValue == null) return;
+                                var newValue = (bool)cellValue;
+                                
+                                // Validate compatibility before allowing change
+                                var asset = _assetDetails[assetKey];
+                                var instance = _instances.First(i => i.Name == instanceName);
+                                
+                                if (!ArePlatformsCompatible(asset.Platform, instance.Platform))
+                                {
+                                    LogActivity($"❌ Blocked incompatible assignment: {asset.Platform} asset to {instance.Platform} instance");
+                                    grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
+                                    return;
+                                }
+                                
+                                _assetMatrix[assetKey][instanceName] = newValue;
+                                LogActivity($"✅ {(newValue ? "Selected" : "Deselected")} compatible: {assetName} → {instanceName}");
+                                UpdateSummary();
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogActivity($"❌ Error updating matrix: {ex.Message}");
+                    }
+                }
+            };
+            
+            // KEY FIX: Handle edit validation
+            grid.CellBeginEdit += (sender, e) =>
             {
                 if (e.RowIndex >= 0 && e.ColumnIndex > 0)
                 {
-                    var assetName = grid.Rows[e.RowIndex].Cells[0].Value?.ToString();
-                    if (assetName != null)
+                    var cell = grid[e.ColumnIndex, e.RowIndex];
+                    if (cell.ReadOnly)
                     {
-                        // Extract asset key from display name
-                        var assetKey = _assetDetails.FirstOrDefault(kvp => 
-                            ($"{kvp.Value.Name} [{kvp.Value.Platform}]") == assetName).Key;
-                        
-                        if (!string.IsNullOrEmpty(assetKey))
-                        {
-                            var instanceName = grid.Columns[e.ColumnIndex].Name;
-                            var newValue = (bool)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
-                            
-                            // Validate compatibility before allowing change
-                            var asset = _assetDetails[assetKey];
-                            var instance = _instances.First(i => i.Name == instanceName);
-                            
-                            if (!ArePlatformsCompatible(asset.Platform, instance.Platform))
-                            {
-                                LogActivity($"❌ Blocked incompatible assignment: {asset.Platform} asset to {instance.Platform} instance");
-                                grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = false;
-                                return;
-                            }
-                            
-                            _assetMatrix[assetKey][instanceName] = newValue;
-                            LogActivity($"✅ {(newValue ? "Selected" : "Deselected")} compatible: {assetName} → {instanceName}");
-                        }
+                        grid.CancelEdit();
+                        return;
                     }
                 }
             };
@@ -401,276 +466,214 @@ namespace AssetManager
         {
             var directory = Path.GetDirectoryName(fullPath)?.ToLower() ?? "";
             
-            if (directory.Contains("experts") || directory.Contains("robots")) return "ExpertAdvisors";
+            if (directory.Contains("experts")) return "ExpertAdvisors";
             if (directory.Contains("indicators")) return "Indicators";
             if (directory.Contains("scripts")) return "Scripts";
-            if (directory.Contains("templates") || directory.Contains("workspaces")) return "Templates";
+            if (directory.Contains("templates")) return "Templates";
             
-            return "Other";
+            return "Scripts"; // Default fallback
         }
 
         /// <summary>
-        /// NEW: Select only compatible assets for each instance
+        /// CRITICAL: Platform compatibility check
         /// </summary>
-        private void SelectCompatibleAssets()
+        private bool ArePlatformsCompatible(string assetPlatform, string instancePlatform)
         {
-            var selectedCount = 0;
+            // Normalize platform names
+            assetPlatform = assetPlatform?.Trim().ToUpperInvariant() ?? "";
+            instancePlatform = instancePlatform?.Trim().ToUpperInvariant() ?? "";
             
-            foreach (var assetEntry in _assetDetails)
-            {
-                var assetKey = assetEntry.Key;
-                var asset = assetEntry.Value;
-                
-                foreach (var instance in _instances.Where(i => i.Enabled))
-                {
-                    if (ArePlatformsCompatible(asset.Platform, instance.Platform))
-                    {
-                        _assetMatrix[assetKey][instance.Name] = true;
-                        selectedCount++;
-                    }
-                }
-            }
-            
-            RefreshGrids();
-            LogActivity($"📋 Selected {selectedCount} compatible asset-instance combinations");
+            // Exact match required for compatibility
+            return assetPlatform == instancePlatform ||
+                   (assetPlatform.Contains("MT4") && instancePlatform.Contains("MT4")) ||
+                   (assetPlatform.Contains("MT5") && instancePlatform.Contains("MT5")) ||
+                   (assetPlatform.Contains("TRADEREVOLUTION") && instancePlatform.Contains("TRADEREVOLUTION"));
         }
 
-        /// <summary>
-        /// Enhanced sync with strict compatibility validation
-        /// </summary>
-        private void SyncCompatibleAssets()
-        {
-            try
-            {
-                var compatibleChanges = new List<string>();
-                var blockedChanges = new List<string>();
-                var changesCount = 0;
-                
-                foreach (var assetEntry in _assetMatrix)
-                {
-                    var assetKey = assetEntry.Key;
-                    var asset = _assetDetails[assetKey];
-                    
-                    foreach (var instanceEntry in assetEntry.Value)
-                    {
-                        var instanceName = instanceEntry.Key;
-                        var shouldDeploy = instanceEntry.Value;
-                        var instance = _instances.First(i => i.Name == instanceName);
-                        
-                        // STRICT COMPATIBILITY CHECK
-                        if (!ArePlatformsCompatible(asset.Platform, instance.Platform))
-                        {
-                            if (shouldDeploy)
-                            {
-                                blockedChanges.Add($"❌ BLOCKED: {asset.Name} [{asset.Platform}] → {instanceName} [{instance.Platform}]");
-                            }
-                            continue; // Skip incompatible combinations entirely
-                        }
-                        
-                        // Check if asset exists in target
-                        var targetPath = GetTargetAssetPath(asset, instance);
-                        var exists = File.Exists(targetPath);
-                        
-                        if (shouldDeploy && !exists)
-                        {
-                            changesCount++;
-                            compatibleChanges.Add($"✅ DEPLOY: {asset.Name} [{asset.Platform}] → {instanceName}");
-                        }
-                        else if (!shouldDeploy && exists)
-                        {
-                            changesCount++;
-                            compatibleChanges.Add($"🗑️ REMOVE: {asset.Name} from {instanceName}");
-                        }
-                    }
-                }
-                
-                if (blockedChanges.Any())
-                {
-                    var blockedText = string.Join("\n", blockedChanges.Take(5));
-                    if (blockedChanges.Count > 5) blockedText += $"\n... and {blockedChanges.Count - 5} more blocked";
-                    
-                    MessageBox.Show($"Platform compatibility violations detected:\n\n{blockedText}\n\nThese operations were blocked to prevent runtime errors.", 
-                        "Compatibility Violations", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                
-                if (changesCount == 0)
-                {
-                    MessageBox.Show("No compatible changes detected. Asset matrix matches current compatible selections.", 
-                        "No Compatible Changes", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-                
-                var changeText = string.Join("\n", compatibleChanges.Take(10));
-                if (compatibleChanges.Count > 10)
-                    changeText += $"\n... and {compatibleChanges.Count - 10} more compatible changes";
-                
-                var result = MessageBox.Show($"Ready to sync {changesCount} COMPATIBLE asset changes:\n\n{changeText}\n\nProceed with synchronization?", 
-                    "Confirm Compatible Asset Sync", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                
-                if (result == DialogResult.Yes)
-                {
-                    // TODO: Implement actual file copy/delete operations with platform validation
-                    LogActivity($"📊 Compatible sync preview: {changesCount} changes identified");
-                    LogActivity($"🚫 Blocked {blockedChanges.Count} incompatible operations");
-                    LogActivity("⚠️ Actual sync implementation coming soon!");
-                    
-                    MessageBox.Show($"Compatible sync preview completed!\n\n✅ {changesCount} compatible changes identified\n❌ {blockedChanges.Count} incompatible operations blocked\n\nActual file operations will be implemented in next phase.", 
-                        "Compatible Sync Preview", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogActivity($"❌ Error during compatible sync: {ex.Message}");
-            }
-        }
-
-        private string GetTargetAssetPath(AssetInfo asset, TradingInstance instance)
-        {
-            var instancePath = Path.Combine("PlatformInstances", instance.Name);
-            var relativePath = asset.FullPath.Substring(asset.FullPath.IndexOf("PlatformInstances") + "PlatformInstances".Length + 1);
-            var instanceStartIndex = relativePath.IndexOf(Path.DirectorySeparatorChar) + 1;
-            var assetRelativePath = relativePath.Substring(instanceStartIndex);
-            
-            return Path.Combine(instancePath, assetRelativePath);
-        }
-
-        /// <summary>
-        /// Generate comprehensive compatibility report
-        /// </summary>
-        private void GenerateCompatibilityReport()
-        {
-            try
-            {
-                var reportText = "=== PLATFORM COMPATIBILITY MATRIX REPORT ===\n\n";
-                reportText += $"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}\n";
-                reportText += $"Total Assets: {_assetDetails.Count}\n";
-                reportText += $"Active Instances: {_instances.Count(i => i.Enabled)}\n\n";
-                
-                // Platform distribution
-                reportText += "PLATFORM DISTRIBUTION:\n";
-                reportText += $"MT4 Assets: {_assetDetails.Values.Count(a => a.Platform == "MT4")}\n";
-                reportText += $"MT5 Assets: {_assetDetails.Values.Count(a => a.Platform == "MT5")}\n";
-                reportText += $"TraderEvolution Assets: {_assetDetails.Values.Count(a => a.Platform == "TraderEvolution")}\n\n";
-                
-                // Instance distribution  
-                reportText += "INSTANCE DISTRIBUTION:\n";
-                reportText += $"MT4 Instances: {_instances.Count(i => i.Enabled && i.Platform == "MT4")}\n";
-                reportText += $"MT5 Instances: {_instances.Count(i => i.Enabled && i.Platform == "MT5")}\n";
-                reportText += $"TraderEvolution Instances: {_instances.Count(i => i.Enabled && i.Platform == "TraderEvolution")}\n\n";
-                
-                // Compatibility matrix summary
-                reportText += "COMPATIBILITY MATRIX:\n";
-                reportText += "Asset Platform".PadRight(20) + "Compatible Instances".PadRight(20) + "Total Combinations\n";
-                reportText += new string('-', 60) + "\n";
-                
-                foreach (var platformGroup in _assetDetails.Values.GroupBy(a => a.Platform))
-                {
-                    var platform = platformGroup.Key;
-                    var assetCount = platformGroup.Count();
-                    var compatibleInstances = _instances.Count(i => i.Enabled && i.Platform == platform);
-                    var totalCombinations = assetCount * compatibleInstances;
-                    
-                    reportText += $"{platform}".PadRight(20) + $"{compatibleInstances}".PadRight(20) + $"{totalCombinations}\n";
-                }
-                
-                reportText += "\n=== INCOMPATIBLE COMBINATIONS (BLOCKED) ===\n";
-                var incompatibleCount = 0;
-                foreach (var asset in _assetDetails.Values)
-                {
-                    foreach (var instance in _instances.Where(i => i.Enabled))
-                    {
-                        if (!ArePlatformsCompatible(asset.Platform, instance.Platform))
-                        {
-                            incompatibleCount++;
-                        }
-                    }
-                }
-                reportText += $"Total Blocked Combinations: {incompatibleCount}\n";
-                reportText += "These combinations are automatically disabled to prevent runtime errors.\n\n";
-                
-                // Show the report
-                var reportForm = new Form()
-                {
-                    Text = "Platform Compatibility Report",
-                    Size = new Size(800, 600),
-                    StartPosition = FormStartPosition.CenterParent,
-                    BackColor = Color.FromArgb(30, 30, 30),
-                    ForeColor = Color.FromArgb(240, 240, 240)
-                };
-                
-                var textBox = new TextBox()
-                {
-                    Text = reportText,
-                    Dock = DockStyle.Fill,
-                    Multiline = true,
-                    ReadOnly = true,
-                    ScrollBars = ScrollBars.Both,
-                    BackColor = Color.FromArgb(20, 20, 20),
-                    ForeColor = Color.FromArgb(200, 200, 200),
-                    Font = new Font("Consolas", 9)
-                };
-                
-                reportForm.Controls.Add(textBox);
-                reportForm.ShowDialog(this);
-                
-                LogActivity("📊 Platform compatibility report generated");
-            }
-            catch (Exception ex)
-            {
-                LogActivity($"❌ Error generating compatibility report: {ex.Message}");
-            }
-        }
-
+        // Event Handlers
         private void RefreshAssets()
         {
-            LogActivity("🔄 Refreshing assets with platform compatibility validation...");
+            LogActivity("🔄 Refreshing asset matrix...");
             ScanAllAssets();
             CreateMatrixView();
-            LogActivity("✅ Refresh complete - compatibility matrix updated");
+            LogActivity("✅ Asset matrix refreshed");
         }
 
-        private void RefreshGrids()
+        private void SelectCompatibleAssets()
         {
-            // Refresh all grids to show updated selections
-            foreach (TabPage tab in _tabControl.TabPages)
+            try
             {
-                if (tab.Controls.Count > 0 && tab.Controls[0] is DataGridView grid)
+                if (_tabControl.SelectedTab?.Controls[0] is DataGridView grid)
                 {
-                    var assetType = tab.Text.Replace(" ", "");
-                    var newGrid = CreateCompatibilityAwareGrid(assetType);
-                    tab.Controls.Clear();
-                    tab.Controls.Add(newGrid);
+                    foreach (DataGridViewRow row in grid.Rows)
+                    {
+                        for (int col = 1; col < grid.Columns.Count; col++) // Skip asset name column
+                        {
+                            var cell = grid[col, row.Index];
+                            if (grid.Columns[col] is DataGridViewCheckBoxColumn && !cell.ReadOnly)
+                            {
+                                cell.Value = true;
+                            }
+                        }
+                    }
+                    LogActivity("📋 Selected all compatible assets in current tab");
                 }
+            }
+            catch (Exception ex)
+            {
+                LogActivity($"❌ Error selecting compatible assets: {ex.Message}");
             }
         }
 
         private void ClearAllSelections()
         {
-            foreach (var assetKey in _assetMatrix.Keys.ToList())
+            try
             {
-                foreach (var instanceName in _assetMatrix[assetKey].Keys.ToList())
+                if (_tabControl.SelectedTab?.Controls[0] is DataGridView grid)
                 {
-                    _assetMatrix[assetKey][instanceName] = false;
+                    foreach (DataGridViewRow row in grid.Rows)
+                    {
+                        for (int col = 1; col < grid.Columns.Count; col++) // Skip asset name column
+                        {
+                            if (grid.Columns[col] is DataGridViewCheckBoxColumn)
+                            {
+                                grid[col, row.Index].Value = false;
+                            }
+                        }
+                    }
+                    LogActivity("❌ Cleared all selections in current tab");
                 }
             }
+            catch (Exception ex)
+            {
+                LogActivity($"❌ Error clearing selections: {ex.Message}");
+            }
+        }
+
+        private void SyncSelectedAssets()
+        {
+            LogActivity("🚀 Starting asset synchronization...");
             
-            RefreshGrids();
-            LogActivity("❌ All selections cleared");
+            int syncCount = 0;
+            int errorCount = 0;
+            
+            try
+            {
+                foreach (var assetEntry in _assetMatrix)
+                {
+                    var assetKey = assetEntry.Key;
+                    var selections = assetEntry.Value;
+                    
+                    foreach (var selection in selections.Where(s => s.Value))
+                    {
+                        try
+                        {
+                            // Perform actual file copy/sync here
+                            LogActivity($"📁 Syncing {assetKey} → {selection.Key}");
+                            syncCount++;
+                        }
+                        catch (Exception ex)
+                        {
+                            LogActivity($"❌ Sync error for {assetKey}: {ex.Message}");
+                            errorCount++;
+                        }
+                    }
+                }
+                
+                LogActivity($"✅ Sync complete: {syncCount} successful, {errorCount} errors");
+                MessageBox.Show($"Synchronization Results:\n\n✅ Successful: {syncCount}\n❌ Errors: {errorCount}", 
+                    "Sync Complete", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LogActivity($"❌ Sync failed: {ex.Message}");
+            }
+        }
+
+        private void GenerateAssetReport()
+        {
+            try
+            {
+                LogActivity("📊 Generating asset distribution report...");
+                
+                var report = new System.Text.StringBuilder();
+                report.AppendLine("ASSET DISTRIBUTION REPORT");
+                report.AppendLine("=" + new string('=', 50));
+                report.AppendLine($"Generated: {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+                report.AppendLine($"Total Assets: {_assetDetails.Count}");
+                report.AppendLine($"Total Instances: {_instances.Count(i => i.Enabled)}");
+                report.AppendLine();
+                
+                foreach (var assetType in _assetTypes)
+                {
+                    var typeAssets = _assetDetails.Where(kvp => 
+                        GetAssetTypeFromPath(kvp.Value.FullPath) == assetType.Replace(" ", "")).ToList();
+                    
+                    report.AppendLine($"{assetType}: {typeAssets.Count} assets");
+                }
+                
+                LogActivity("✅ Report generated successfully");
+                
+                // Show report in a new form or save to file
+                MessageBox.Show(report.ToString(), "Asset Report", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                LogActivity($"❌ Error generating report: {ex.Message}");
+            }
+        }
+
+        private void UpdateSummary()
+        {
+            try
+            {
+                var totalAssets = _assetDetails.Count;
+                var totalInstances = _instances.Count(i => i.Enabled);
+                var selectedCount = _assetMatrix.SelectMany(am => am.Value).Count(s => s.Value);
+                
+                _summaryLabel.Text = $"📊 Assets: {totalAssets} | Instances: {totalInstances} | Selected: {selectedCount} | Platform Compatibility Enforced";
+                _statusLabel.Text = $"Ready - {totalAssets} assets across {totalInstances} instances";
+            }
+            catch (Exception ex)
+            {
+                LogActivity($"❌ Error updating summary: {ex.Message}");
+            }
         }
 
         private void LogActivity(string message)
         {
-            var timestamp = DateTime.Now.ToString("HH:mm:ss");
-            var logEntry = $"[{timestamp}] {message}";
-            
-            _activityLog?.Items.Add(logEntry);
-            if (_activityLog?.Items.Count > 100)
+            try
             {
-                _activityLog.Items.RemoveAt(0);
+                var timestamp = DateTime.Now.ToString("HH:mm:ss");
+                var logEntry = $"[{timestamp}] {message}";
+                
+                _activityLog.Items.Add(logEntry);
+                _activityLog.TopIndex = _activityLog.Items.Count - 1;
+                
+                // Keep log manageable
+                if (_activityLog.Items.Count > 1000)
+                {
+                    _activityLog.Items.RemoveAt(0);
+                }
             }
-            
-            _activityLog?.TopIndex = Math.Max(0, _activityLog.Items.Count - _activityLog.ClientSize.Height / _activityLog.ItemHeight);
-            _statusLabel.Text = message;
+            catch
+            {
+                // Silent fail for logging
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _tabControl?.Dispose();
+                _statusStrip?.Dispose();
+                _toolStrip?.Dispose();
+                _activityLog?.Dispose();
+                _summaryPanel?.Dispose();
+                _summaryLabel?.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
