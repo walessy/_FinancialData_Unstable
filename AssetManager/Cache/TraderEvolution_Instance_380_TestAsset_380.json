@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_380",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_380.ex4",
+  "InstanceName": "Instance_380",
+  "Version": "1.0",
+  "LastModified": "2025-07-05T06:03:19.7551021+01:00",
+  "FileSize": 12833,
+  "QuickHash": 1840164753,
+  "FullHash": 951833266,
+  "CacheTime": "2025-07-28T06:03:19.7577771+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

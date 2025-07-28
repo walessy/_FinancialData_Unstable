@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_91",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_91.ex4",
+  "InstanceName": "Instance_91",
+  "Version": "1.0",
+  "LastModified": "2025-07-09T06:03:19.7549254+01:00",
+  "FileSize": 43724,
+  "QuickHash": 1213229093,
+  "FullHash": 647993619,
+  "CacheTime": "2025-07-28T06:03:19.756419+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

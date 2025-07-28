@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_730",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_730.ex4",
+  "InstanceName": "Instance_730",
+  "Version": "1.0",
+  "LastModified": "2025-06-29T06:03:19.7553034+01:00",
+  "FileSize": 33066,
+  "QuickHash": 1038077621,
+  "FullHash": 1994112396,
+  "CacheTime": "2025-07-28T06:03:19.7614433+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

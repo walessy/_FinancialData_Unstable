@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_933",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_933.ex4",
+  "InstanceName": "Instance_933",
+  "Version": "1.0",
+  "LastModified": "2025-07-02T06:03:19.7554418+01:00",
+  "FileSize": 12157,
+  "QuickHash": 1681324176,
+  "FullHash": 11210801,
+  "CacheTime": "2025-07-28T06:03:19.7644292+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

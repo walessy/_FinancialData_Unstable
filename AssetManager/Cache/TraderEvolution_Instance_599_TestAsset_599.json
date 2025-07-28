@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_599",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_599.ex4",
+  "InstanceName": "Instance_599",
+  "Version": "1.0",
+  "LastModified": "2025-07-03T06:03:19.7552323+01:00",
+  "FileSize": 46036,
+  "QuickHash": 96324375,
+  "FullHash": 2040994309,
+  "CacheTime": "2025-07-28T06:03:19.7598743+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_988",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_988.ex4",
+  "InstanceName": "Instance_988",
+  "Version": "1.0",
+  "LastModified": "2025-07-14T06:03:19.7554704+01:00",
+  "FileSize": 2496,
+  "QuickHash": 37971373,
+  "FullHash": 1641939991,
+  "CacheTime": "2025-07-28T06:03:19.7653684+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

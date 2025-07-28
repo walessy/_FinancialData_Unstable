@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_768",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_768.ex4",
+  "InstanceName": "Instance_768",
+  "Version": "1.0",
+  "LastModified": "2025-07-07T06:03:19.7553334+01:00",
+  "FileSize": 4599,
+  "QuickHash": 1247807107,
+  "FullHash": 1938531814,
+  "CacheTime": "2025-07-28T06:03:19.7618357+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

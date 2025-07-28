@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_870",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_870.ex4",
+  "InstanceName": "Instance_870",
+  "Version": "1.0",
+  "LastModified": "2025-07-24T06:03:19.7554015+01:00",
+  "FileSize": 22702,
+  "QuickHash": 209043528,
+  "FullHash": 1378707753,
+  "CacheTime": "2025-07-28T06:03:19.7634316+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

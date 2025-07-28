@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_289",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_289.ex4",
+  "InstanceName": "Instance_289",
+  "Version": "1.0",
+  "LastModified": "2025-07-26T06:03:19.7550408+01:00",
+  "FileSize": 46754,
+  "QuickHash": 1629307332,
+  "FullHash": 518367744,
+  "CacheTime": "2025-07-28T06:03:19.7574427+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_301",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_301.ex4",
+  "InstanceName": "Instance_301",
+  "Version": "1.0",
+  "LastModified": "2025-07-20T06:03:19.7550506+01:00",
+  "FileSize": 37411,
+  "QuickHash": 231990251,
+  "FullHash": 1365458709,
+  "CacheTime": "2025-07-28T06:03:19.757484+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

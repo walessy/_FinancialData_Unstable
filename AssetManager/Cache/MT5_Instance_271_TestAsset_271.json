@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_271",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_271.ex4",
+  "InstanceName": "Instance_271",
+  "Version": "1.0",
+  "LastModified": "2025-07-11T06:03:19.7550317+01:00",
+  "FileSize": 32840,
+  "QuickHash": 1518684182,
+  "FullHash": 1309284261,
+  "CacheTime": "2025-07-28T06:03:19.7573858+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_256",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_256.ex4",
+  "InstanceName": "Instance_256",
+  "Version": "1.0",
+  "LastModified": "2025-07-17T06:03:19.755026+01:00",
+  "FileSize": 16246,
+  "QuickHash": 1543396827,
+  "FullHash": 1881595550,
+  "CacheTime": "2025-07-28T06:03:19.7573357+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

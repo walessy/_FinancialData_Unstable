@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_399",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_399.ex4",
+  "InstanceName": "Instance_399",
+  "Version": "1.0",
+  "LastModified": "2025-07-17T06:03:19.7551096+01:00",
+  "FileSize": 45814,
+  "QuickHash": 1823752679,
+  "FullHash": 1070559894,
+  "CacheTime": "2025-07-28T06:03:19.7578387+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

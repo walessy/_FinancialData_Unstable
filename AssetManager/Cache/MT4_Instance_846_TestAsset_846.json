@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_846",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_846.ex4",
+  "InstanceName": "Instance_846",
+  "Version": "1.0",
+  "LastModified": "2025-07-15T06:03:19.7553889+01:00",
+  "FileSize": 39265,
+  "QuickHash": 1084855762,
+  "FullHash": 1801682006,
+  "CacheTime": "2025-07-28T06:03:19.763045+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

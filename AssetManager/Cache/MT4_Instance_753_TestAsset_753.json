@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_753",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_753.ex4",
+  "InstanceName": "Instance_753",
+  "Version": "1.0",
+  "LastModified": "2025-07-14T06:03:19.7553197+01:00",
+  "FileSize": 13920,
+  "QuickHash": 1770379538,
+  "FullHash": 408168958,
+  "CacheTime": "2025-07-28T06:03:19.7616806+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

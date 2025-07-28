@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_880",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_880.ex4",
+  "InstanceName": "Instance_880",
+  "Version": "1.0",
+  "LastModified": "2025-07-13T06:03:19.7554054+01:00",
+  "FileSize": 26997,
+  "QuickHash": 1511951837,
+  "FullHash": 1486653505,
+  "CacheTime": "2025-07-28T06:03:19.7636007+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

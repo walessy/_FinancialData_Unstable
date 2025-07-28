@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_529",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_529.ex4",
+  "InstanceName": "Instance_529",
+  "Version": "1.0",
+  "LastModified": "2025-06-29T06:03:19.755198+01:00",
+  "FileSize": 42219,
+  "QuickHash": 155141167,
+  "FullHash": 708380947,
+  "CacheTime": "2025-07-28T06:03:19.7589931+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

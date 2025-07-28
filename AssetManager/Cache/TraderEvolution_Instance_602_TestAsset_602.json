@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_602",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_602.ex4",
+  "InstanceName": "Instance_602",
+  "Version": "1.0",
+  "LastModified": "2025-07-26T06:03:19.7552334+01:00",
+  "FileSize": 16818,
+  "QuickHash": 763884043,
+  "FullHash": 339208684,
+  "CacheTime": "2025-07-28T06:03:19.759926+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_802",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_802.ex4",
+  "InstanceName": "Instance_802",
+  "Version": "1.0",
+  "LastModified": "2025-07-25T06:03:19.7553504+01:00",
+  "FileSize": 20987,
+  "QuickHash": 1501505919,
+  "FullHash": 1685808980,
+  "CacheTime": "2025-07-28T06:03:19.7622961+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

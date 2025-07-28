@@ -1,0 +1,15 @@
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\AssetManager.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\AssetManager.AssemblyInfoInputs.cache
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\AssetManager.AssemblyInfo.cs
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\AssetManager.csproj.CoreCompileInputs.cache
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\AssetManager.sourcelink.json
+C:\Projects\FinancialData\AssetManager\bin\Debug\net9.0\AssetManager.exe
+C:\Projects\FinancialData\AssetManager\bin\Debug\net9.0\AssetManager.deps.json
+C:\Projects\FinancialData\AssetManager\bin\Debug\net9.0\AssetManager.runtimeconfig.json
+C:\Projects\FinancialData\AssetManager\bin\Debug\net9.0\AssetManager.dll
+C:\Projects\FinancialData\AssetManager\bin\Debug\net9.0\AssetManager.pdb
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\AssetManager.dll
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\refint\AssetManager.dll
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\AssetManager.pdb
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\AssetManager.genruntimeconfig.cache
+C:\Projects\FinancialData\AssetManager\obj\Debug\net9.0\ref\AssetManager.dll

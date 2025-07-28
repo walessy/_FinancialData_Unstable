@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_943",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_943.ex4",
+  "InstanceName": "Instance_943",
+  "Version": "1.0",
+  "LastModified": "2025-07-10T06:03:19.7554498+01:00",
+  "FileSize": 45648,
+  "QuickHash": 190620117,
+  "FullHash": 557148588,
+  "CacheTime": "2025-07-28T06:03:19.7646165+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

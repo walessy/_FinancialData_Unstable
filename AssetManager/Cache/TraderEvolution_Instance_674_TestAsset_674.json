@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_674",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_674.ex4",
+  "InstanceName": "Instance_674",
+  "Version": "1.0",
+  "LastModified": "2025-07-07T06:03:19.7552736+01:00",
+  "FileSize": 20236,
+  "QuickHash": 445787400,
+  "FullHash": 1409668682,
+  "CacheTime": "2025-07-28T06:03:19.7608542+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

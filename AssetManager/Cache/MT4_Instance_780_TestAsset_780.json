@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_780",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_780.ex4",
+  "InstanceName": "Instance_780",
+  "Version": "1.0",
+  "LastModified": "2025-07-11T06:03:19.7553382+01:00",
+  "FileSize": 17893,
+  "QuickHash": 2121029287,
+  "FullHash": 1165859068,
+  "CacheTime": "2025-07-28T06:03:19.7619824+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

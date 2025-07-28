@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_500",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_500.ex4",
+  "InstanceName": "Instance_500",
+  "Version": "1.0",
+  "LastModified": "2025-06-30T06:03:19.755183+01:00",
+  "FileSize": 7135,
+  "QuickHash": 2002716082,
+  "FullHash": 1251077484,
+  "CacheTime": "2025-07-28T06:03:19.7585793+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

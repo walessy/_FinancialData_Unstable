@@ -1,889 +1,1581 @@
+// Level6InstanceManager - Program.cs
+// Complete implementation building on Dashboard Version 28
+// Advanced Instance Management System with full CRUD operations
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace Level4Dashboard
+namespace Level6InstanceManager
 {
-    public partial class MainForm : Form
+    // Enhanced configuration classes for Level 6
+    public class Level6Configuration
     {
-        private FlowLayoutPanel mainPanel;
+        public ConfigurationMetadata Metadata { get; set; } = new ConfigurationMetadata();
+        public Dictionary<string, GroupDefinition> Groups { get; set; } = new Dictionary<string, GroupDefinition>();
+        public string TradingRoot { get; set; } = "";
+        public string DefaultDataRoot { get; set; } = "";
+        public List<TradingInstance> Instances { get; set; } = new List<TradingInstance>();
+    }
+
+    public class ConfigurationMetadata
+    {
+        public string Version { get; set; } = "6.0";
+        public string BuiltOnDashboard { get; set; } = "v28";
+        public DateTime Created { get; set; } = DateTime.Now;
+        public DateTime LastModified { get; set; } = DateTime.Now;
+        public string CreatedBy { get; set; } = Environment.UserName;
+        public List<string> BackupFiles { get; set; } = new List<string>();
+    }
+
+    public class GroupDefinition
+    {
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Color { get; set; } = "#0078D4";
+        public string Priority { get; set; } = "normal";
+        public bool AutoStart { get; set; } = false;
+        public Dictionary<string, object> CustomProperties { get; set; } = new Dictionary<string, object>();
+    }
+
+    public class TradingInstance
+    {
+        public string Name { get; set; } = "";
+        public string Broker { get; set; } = "";
+        public string Platform { get; set; } = "";
+        public string Source { get; set; } = "";
+        public string Destination { get; set; } = "";
+        public string DataFolder { get; set; } = "";
+        public string JunctionName { get; set; } = "";
+        public bool PortableMode { get; set; } = true;
+        public string AccountType { get; set; } = "";
+        public bool Enabled { get; set; } = true;
+        public bool AutoStart { get; set; } = false;
+        public int StartupDelay { get; set; } = 0;
+        public string Priority { get; set; } = "normal";
+        public List<string> GroupMembership { get; set; } = new List<string>();
+        public Dictionary<string, object> ServerSettings { get; set; } = new Dictionary<string, object>();
+        public Dictionary<string, object> CustomSettings { get; set; } = new Dictionary<string, object>();
+        
+        // Level 6 specific properties
+        public DateTime Created { get; set; } = DateTime.Now;
+        public DateTime LastModified { get; set; } = DateTime.Now;
+        public string CreatedBy { get; set; } = Environment.UserName;
+        public string Notes { get; set; } = "";
+    }
+
+    // Available platform information
+    public class PlatformInfo
+    {
+        public string Name { get; set; } = "";
+        public string Path { get; set; } = "";
+        public string Platform { get; set; } = "";
+        public string Broker { get; set; } = "";
+        public bool IsValid { get; set; } = false;
+    }
+
+    // Main Level 6 Instance Manager Form
+    public partial class Level6InstanceManager : Form
+    {
+        private Level6Configuration config;
+        private string configFilePath;
+        private bool isConfigModified = false;
+        
+        // Inherit base functionality from existing Level 5 structure
+        private string tradingRoot;
+        private bool darkModeEnabled = true;
+        
+        // UI Components
         private MenuStrip menuStrip;
+        private ToolStrip toolStrip;
+        private SplitContainer mainSplitContainer;
+        private SplitContainer leftSplitContainer;
+        private TreeView groupTreeView;
+        private ListView instanceListView;
+        private PropertyGrid instancePropertyGrid;
         private StatusStrip statusStrip;
         private ToolStripStatusLabel statusLabel;
-        private ToolStripStatusLabel processCountLabel;
-        private ToolStripStatusLabel performanceLabel;
-        private System.Windows.Forms.Timer refreshTimer;
-        private System.Windows.Forms.Timer performanceTimer;
-        private string configPath;
-        private TradingConfiguration config;
-        private Dictionary<string, GroupBox> groups;
-        private Dictionary<string, Process[]> runningProcesses;
+        private ToolStripStatusLabel configStatusLabel;
+        
+        // Context menus
+        private ContextMenuStrip groupContextMenu;
         private ContextMenuStrip instanceContextMenu;
-        private ToolStripMenuItem darkModeMenuItem;
-
-        public MainForm()
+        
+        public Level6InstanceManager()
         {
             InitializeComponent();
-            InitializeLayout();
+            FindTradingRoot();
             LoadConfiguration();
-            StartRefreshTimer();
-            StartPerformanceMonitoring();
-            runningProcesses = new Dictionary<string, Process[]>();
+            SetupEventHandlers();
         }
-
-        private void SelectNewConfigFile()
+        
+        private void FindTradingRoot()
         {
-            using var dialog = new OpenFileDialog
+            // Use same logic as existing Level 5 dashboard
+            var currentPath = Directory.GetCurrentDirectory();
+            var configFile = Path.Combine(currentPath, "instances-config.json");
+            
+            if (File.Exists(configFile))
             {
-                Title = "Select Trading Configuration File",
-                Filter = "JSON Config Files (*.json)|*.json|All Files (*.*)|*.*",
-                FileName = "instances-config.json",
-                InitialDirectory = Path.GetDirectoryName(configPath) ?? @"C:\Projects\FinancialData"
+                tradingRoot = currentPath;
+                return;
+            }
+            
+            // Check parent directory
+            var parentPath = Directory.GetParent(currentPath)?.FullName;
+            if (parentPath != null)
+            {
+                var parentConfigFile = Path.Combine(parentPath, "instances-config.json");
+                if (File.Exists(parentConfigFile))
+                {
+                    tradingRoot = parentPath;
+                    return;
+                }
+            }
+            
+            // Default fallback
+            tradingRoot = @"C:\TradingRoot";
+        }
+        
+        private void InitializeComponent()
+        {
+            this.Text = "Level 6 - Advanced Instance Management (Built on Dashboard v28)";
+            this.Size = new Size(1400, 900);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.MinimumSize = new Size(1000, 700);
+            
+            CreateMenuAndToolbar();
+            CreateMainInterface();
+            CreateStatusBar();
+            CreateContextMenus();
+            
+            this.Controls.AddRange(new Control[] { mainSplitContainer, toolStrip, menuStrip, statusStrip });
+            this.MainMenuStrip = menuStrip;
+            
+            // Apply same dark theme as Level 5
+            ApplyDarkTheme();
+        }
+        
+        private void CreateMenuAndToolbar()
+        {
+            // Menu Strip
+            menuStrip = new MenuStrip();
+            
+            // File Menu
+            var fileMenu = new ToolStripMenuItem("&File");
+            fileMenu.DropDownItems.Add("&New Configuration", null, NewConfiguration);
+            fileMenu.DropDownItems.Add("&Open Configuration...", null, OpenConfiguration);
+            fileMenu.DropDownItems.Add("&Save Configuration", null, (s, e) => SaveConfiguration());
+            fileMenu.DropDownItems.Add("Save &As...", null, SaveConfigurationAs);
+            fileMenu.DropDownItems.Add(new ToolStripSeparator());
+            fileMenu.DropDownItems.Add("&Import Instances...", null, ImportInstances);
+            fileMenu.DropDownItems.Add("&Export Instances...", null, ExportInstances);
+            fileMenu.DropDownItems.Add(new ToolStripSeparator());
+            fileMenu.DropDownItems.Add("E&xit", null, (s, e) => this.Close());
+            
+            // Instance Menu
+            var instanceMenu = new ToolStripMenuItem("&Instance");
+            instanceMenu.DropDownItems.Add("&Add New Instance...", null, AddNewInstance);
+            instanceMenu.DropDownItems.Add("&Edit Instance...", null, EditSelectedInstance);
+            instanceMenu.DropDownItems.Add("&Clone Instance...", null, CloneSelectedInstance);
+            instanceMenu.DropDownItems.Add("&Delete Instance", null, DeleteSelectedInstance);
+            instanceMenu.DropDownItems.Add(new ToolStripSeparator());
+            instanceMenu.DropDownItems.Add("&Refresh Status", null, RefreshInstanceStatus);
+            
+            // Group Menu
+            var groupMenu = new ToolStripMenuItem("&Groups");
+            groupMenu.DropDownItems.Add("&Create New Group...", null, CreateNewGroup);
+            groupMenu.DropDownItems.Add("&Edit Group...", null, EditSelectedGroup);
+            groupMenu.DropDownItems.Add("&Delete Group", null, DeleteSelectedGroup);
+            groupMenu.DropDownItems.Add(new ToolStripSeparator());
+            groupMenu.DropDownItems.Add("&Reorganize Groups...", null, ReorganizeGroups);
+            
+            // Operations Menu
+            var operationsMenu = new ToolStripMenuItem("&Operations");
+            operationsMenu.DropDownItems.Add("&Apply Changes (Run Level 2)", null, ApplyChanges);
+            operationsMenu.DropDownItems.Add("&Build Selected Instances", null, BuildSelectedInstances);
+            operationsMenu.DropDownItems.Add("&Rebuild All Instances", null, RebuildAllInstances);
+            operationsMenu.DropDownItems.Add(new ToolStripSeparator());
+            operationsMenu.DropDownItems.Add("&Validate Configuration", null, ValidateConfiguration);
+            operationsMenu.DropDownItems.Add("&Backup Configuration", null, BackupConfiguration);
+            
+            // Integration Menu (Level 5 compatibility)
+            var integrationMenu = new ToolStripMenuItem("&Integration");
+            integrationMenu.DropDownItems.Add("Launch Level 5 Dashboard", null, LaunchLevel5Dashboard);
+            integrationMenu.DropDownItems.Add("Run Level 3 Manager", null, RunLevel3Manager);
+            integrationMenu.DropDownItems.Add(new ToolStripSeparator());
+            integrationMenu.DropDownItems.Add("Check All Levels Status", null, CheckAllLevelsStatus);
+            
+            menuStrip.Items.AddRange(new ToolStripItem[] { fileMenu, instanceMenu, groupMenu, operationsMenu, integrationMenu });
+            
+            // Tool Strip
+            toolStrip = new ToolStrip();
+            toolStrip.Items.Add(new ToolStripButton("Add Instance", null, AddNewInstance) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
+            toolStrip.Items.Add(new ToolStripButton("Edit Instance", null, EditSelectedInstance) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
+            toolStrip.Items.Add(new ToolStripButton("Delete Instance", null, DeleteSelectedInstance) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
+            toolStrip.Items.Add(new ToolStripSeparator());
+            toolStrip.Items.Add(new ToolStripButton("Create Group", null, CreateNewGroup) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
+            toolStrip.Items.Add(new ToolStripSeparator());
+            toolStrip.Items.Add(new ToolStripButton("Apply Changes", null, ApplyChanges) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
+            toolStrip.Items.Add(new ToolStripButton("Refresh", null, (s, e) => RefreshAll()) { DisplayStyle = ToolStripItemDisplayStyle.ImageAndText });
+        }
+        
+        private void CreateMainInterface()
+        {
+            mainSplitContainer = new SplitContainer();
+            mainSplitContainer.Dock = DockStyle.Fill;
+            mainSplitContainer.SplitterDistance = 350;
+            mainSplitContainer.Panel1MinSize = 250;
+            mainSplitContainer.Panel2MinSize = 400;
+            
+            // Left panel - Groups tree and properties
+            leftSplitContainer = new SplitContainer();
+            leftSplitContainer.Dock = DockStyle.Fill;
+            leftSplitContainer.Orientation = Orientation.Horizontal;
+            leftSplitContainer.SplitterDistance = 450;
+            
+            // Groups tree view
+            var groupPanel = new Panel();
+            groupPanel.Dock = DockStyle.Fill;
+            var groupLabel = new Label 
+            { 
+                Text = "Groups & Instances", 
+                Dock = DockStyle.Top, 
+                Height = 25, 
+                TextAlign = ContentAlignment.MiddleCenter,
+                BackColor = Color.FromArgb(60, 60, 63),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            
+            groupTreeView = new TreeView();
+            groupTreeView.Dock = DockStyle.Fill;
+            groupTreeView.CheckBoxes = true;
+            groupTreeView.HideSelection = false;
+            groupTreeView.FullRowSelect = true;
+            groupTreeView.ShowLines = true;
+            groupTreeView.ShowPlusMinus = true;
+            groupTreeView.ShowRootLines = true;
+            groupTreeView.AfterSelect += GroupTreeView_AfterSelect;
+            groupTreeView.AfterCheck += GroupTreeView_AfterCheck;
+            
+            groupPanel.Controls.AddRange(new Control[] { groupTreeView, groupLabel });
+            
+            // Instance property grid
+            var propertyPanel = new Panel();
+            propertyPanel.Dock = DockStyle.Fill;
+            var propertyLabel = new Label 
+            { 
+                Text = "Instance Properties", 
+                Dock = DockStyle.Top, 
+                Height = 25, 
+                TextAlign = ContentAlignment.MiddleCenter,
+                BackColor = Color.FromArgb(60, 60, 63),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            
+            instancePropertyGrid = new PropertyGrid();
+            instancePropertyGrid.Dock = DockStyle.Fill;
+            instancePropertyGrid.PropertyValueChanged += InstancePropertyGrid_PropertyValueChanged;
+            instancePropertyGrid.HelpVisible = true;
+            instancePropertyGrid.ToolbarVisible = true;
+            instancePropertyGrid.CategoryForeColor = Color.LightBlue;
+            
+            propertyPanel.Controls.AddRange(new Control[] { instancePropertyGrid, propertyLabel });
+            
+            leftSplitContainer.Panel1.Controls.Add(groupPanel);
+            leftSplitContainer.Panel2.Controls.Add(propertyPanel);
+            
+            // Right panel - Instance list view
+            var rightPanel = new Panel();
+            rightPanel.Dock = DockStyle.Fill;
+            var instanceLabel = new Label 
+            { 
+                Text = "Instance Details", 
+                Dock = DockStyle.Top, 
+                Height = 25, 
+                TextAlign = ContentAlignment.MiddleCenter,
+                BackColor = Color.FromArgb(60, 60, 63),
+                ForeColor = Color.White,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold)
+            };
+            
+            instanceListView = new ListView();
+            instanceListView.Dock = DockStyle.Fill;
+            instanceListView.View = View.Details;
+            instanceListView.FullRowSelect = true;
+            instanceListView.GridLines = true;
+            instanceListView.CheckBoxes = true;
+            instanceListView.MultiSelect = true;
+            instanceListView.SelectedIndexChanged += InstanceListView_SelectedIndexChanged;
+            instanceListView.ItemCheck += InstanceListView_ItemCheck;
+            
+            // Setup list view columns
+            instanceListView.Columns.Add("Name", 150);
+            instanceListView.Columns.Add("Broker", 100);
+            instanceListView.Columns.Add("Platform", 60);
+            instanceListView.Columns.Add("Account Type", 80);
+            instanceListView.Columns.Add("Status", 80);
+            instanceListView.Columns.Add("Enabled", 60);
+            instanceListView.Columns.Add("Auto Start", 70);
+            instanceListView.Columns.Add("Groups", 120);
+            instanceListView.Columns.Add("Created", 100);
+            
+            rightPanel.Controls.AddRange(new Control[] { instanceListView, instanceLabel });
+            
+            mainSplitContainer.Panel1.Controls.Add(leftSplitContainer);
+            mainSplitContainer.Panel2.Controls.Add(rightPanel);
+        }
+        
+        private void CreateStatusBar()
+        {
+            statusStrip = new StatusStrip();
+            statusLabel = new ToolStripStatusLabel("Ready - Level 6 Instance Manager");
+            statusStrip.Items.Add(statusLabel);
+            
+            configStatusLabel = new ToolStripStatusLabel();
+            configStatusLabel.Spring = true;
+            configStatusLabel.TextAlign = ContentAlignment.MiddleRight;
+            statusStrip.Items.Add(configStatusLabel);
+            
+            var modifiedLabel = new ToolStripStatusLabel();
+            statusStrip.Items.Add(modifiedLabel);
+        }
+        
+        private void CreateContextMenus()
+        {
+            // Group context menu
+            groupContextMenu = new ContextMenuStrip();
+            groupContextMenu.Items.Add("Add Instance to Group", null, AddInstanceToGroup);
+            groupContextMenu.Items.Add("Remove from Group", null, RemoveFromGroup);
+            groupContextMenu.Items.Add(new ToolStripSeparator());
+            groupContextMenu.Items.Add("Start All in Group", null, StartGroup);
+            groupContextMenu.Items.Add("Stop All in Group", null, StopGroup);
+            groupContextMenu.Items.Add(new ToolStripSeparator());
+            groupContextMenu.Items.Add("Edit Group...", null, EditSelectedGroup);
+            groupContextMenu.Items.Add("Delete Group", null, DeleteSelectedGroup);
+            
+            groupTreeView.ContextMenuStrip = groupContextMenu;
+            
+            // Instance context menu
+            instanceContextMenu = new ContextMenuStrip();
+            instanceContextMenu.Items.Add("Edit Instance...", null, EditSelectedInstance);
+            instanceContextMenu.Items.Add("Clone Instance...", null, CloneSelectedInstance);
+            instanceContextMenu.Items.Add("Delete Instance", null, DeleteSelectedInstance);
+            instanceContextMenu.Items.Add(new ToolStripSeparator());
+            instanceContextMenu.Items.Add("Start Instance", null, StartSelectedInstance);
+            instanceContextMenu.Items.Add("Stop Instance", null, StopSelectedInstance);
+            instanceContextMenu.Items.Add(new ToolStripSeparator());
+            instanceContextMenu.Items.Add("Open Instance Folder", null, OpenInstanceFolder);
+            instanceContextMenu.Items.Add("Open Data Folder", null, OpenDataFolder);
+            
+            instanceListView.ContextMenuStrip = instanceContextMenu;
+        }
+        
+        private void ApplyDarkTheme()
+        {
+            this.BackColor = Color.FromArgb(45, 45, 48);
+            this.ForeColor = Color.White;
+            
+            groupTreeView.BackColor = Color.FromArgb(37, 37, 38);
+            groupTreeView.ForeColor = Color.White;
+            
+            instanceListView.BackColor = Color.FromArgb(37, 37, 38);
+            instanceListView.ForeColor = Color.White;
+            
+            instancePropertyGrid.BackColor = Color.FromArgb(37, 37, 38);
+            instancePropertyGrid.ViewBackColor = Color.FromArgb(45, 45, 48);
+            instancePropertyGrid.ViewForeColor = Color.White;
+            instancePropertyGrid.CategoryForeColor = Color.LightBlue;
+            instancePropertyGrid.LineColor = Color.FromArgb(60, 60, 63);
+            
+            menuStrip.BackColor = Color.FromArgb(45, 45, 48);
+            menuStrip.ForeColor = Color.White;
+            
+            toolStrip.BackColor = Color.FromArgb(45, 45, 48);
+            toolStrip.ForeColor = Color.White;
+            
+            statusStrip.BackColor = Color.FromArgb(45, 45, 48);
+            statusStrip.ForeColor = Color.White;
+        }
+        
+        private void SetupEventHandlers()
+        {
+            this.FormClosing += Level6InstanceManager_FormClosing;
+        }
+        
+        private void Level6InstanceManager_FormClosing(object? sender, FormClosingEventArgs e)
+        {
+            if (isConfigModified)
+            {
+                var result = MessageBox.Show("Configuration has been modified. Save changes?", 
+                    "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                    
+                if (result == DialogResult.Yes)
+                {
+                    SaveConfiguration();
+                }
+                else if (result == DialogResult.Cancel)
+                {
+                    e.Cancel = true;
+                }
+            }
+        }
+        
+        #region Configuration Management
+        
+        private void LoadConfiguration()
+        {
+            configFilePath = Path.Combine(tradingRoot, "instances-config.json");
+            
+            if (File.Exists(configFilePath))
+            {
+                try
+                {
+                    var json = File.ReadAllText(configFilePath);
+                    
+                    // Try to load as Level 6 config first
+                    try
+                    {
+                        config = JsonSerializer.Deserialize<Level6Configuration>(json, new JsonSerializerOptions 
+                        { 
+                            PropertyNameCaseInsensitive = true,
+                            WriteIndented = true
+                        }) ?? new Level6Configuration();
+                        
+                        if (config?.Metadata == null)
+                        {
+                            // Upgrade from older version
+                            UpgradeConfiguration(json);
+                        }
+                    }
+                    catch
+                    {
+                        // Load as legacy config and upgrade
+                        UpgradeConfiguration(json);
+                    }
+                    
+                    RefreshAll();
+                    statusLabel.Text = $"Loaded configuration: {Path.GetFileName(configFilePath)}";
+                    configStatusLabel.Text = $"Trading Root: {tradingRoot}";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading configuration: {ex.Message}", "Configuration Error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    config = new Level6Configuration();
+                }
+            }
+            else
+            {
+                config = new Level6Configuration();
+                config.TradingRoot = tradingRoot;
+                config.DefaultDataRoot = Path.Combine(tradingRoot, "TradingData");
+                CreateDefaultGroups();
+            }
+            
+            isConfigModified = false;
+        }
+        
+        private void UpgradeConfiguration(string json)
+        {
+            // Parse legacy configuration and upgrade to Level 6 format
+            var legacyConfig = JsonSerializer.Deserialize<JsonElement>(json);
+            
+            config = new Level6Configuration();
+            
+            if (legacyConfig.TryGetProperty("tradingRoot", out var tradingRootElement))
+                config.TradingRoot = tradingRootElement.GetString() ?? tradingRoot;
+            if (legacyConfig.TryGetProperty("defaultDataRoot", out var dataRootElement))
+                config.DefaultDataRoot = dataRootElement.GetString() ?? Path.Combine(tradingRoot, "TradingData");
+            
+            if (legacyConfig.TryGetProperty("instances", out var instancesElement))
+            {
+                config.Instances = JsonSerializer.Deserialize<List<TradingInstance>>(instancesElement.GetRawText(), 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<TradingInstance>();
+                
+                // Auto-assign groups based on broker/platform
+                foreach (var instance in config.Instances)
+                {
+                    if (instance.GroupMembership == null || !instance.GroupMembership.Any())
+                    {
+                        instance.GroupMembership = new List<string> { instance.Broker ?? "Unknown" };
+                    }
+                }
+            }
+            
+            CreateDefaultGroups();
+            isConfigModified = true;
+        }
+        
+        private void CreateDefaultGroups()
+        {
+            if (!config.Groups.ContainsKey("Live Trading"))
+            {
+                config.Groups["Live Trading"] = new GroupDefinition
+                {
+                    Name = "Live Trading",
+                    Description = "Production trading instances",
+                    Color = "#DC3545",
+                    Priority = "high"
+                };
+            }
+            
+            if (!config.Groups.ContainsKey("Demo Trading"))
+            {
+                config.Groups["Demo Trading"] = new GroupDefinition
+                {
+                    Name = "Demo Trading",
+                    Description = "Demo and testing instances",
+                    Color = "#28A745",
+                    Priority = "normal"
+                };
+            }
+            
+            // Create broker-based groups
+            var brokers = config.Instances.Select(i => i.Broker).Distinct().Where(b => !string.IsNullOrEmpty(b));
+            foreach (var broker in brokers)
+            {
+                if (!config.Groups.ContainsKey(broker))
+                {
+                    config.Groups[broker] = new GroupDefinition
+                    {
+                        Name = broker,
+                        Description = $"{broker} instances",
+                        Color = "#0078D4"
+                    };
+                }
+            }
+        }
+        
+        private void SaveConfiguration()
+        {
+            try
+            {
+                config.Metadata.LastModified = DateTime.Now;
+                
+                var json = JsonSerializer.Serialize(config, new JsonSerializerOptions 
+                { 
+                    WriteIndented = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
+                File.WriteAllText(configFilePath, json);
+                
+                isConfigModified = false;
+                statusLabel.Text = "Configuration saved successfully";
+                this.Text = "Level 6 - Advanced Instance Management (Built on Dashboard v28)";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving configuration: {ex.Message}", "Save Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        
+        #endregion
+        
+        #region Event Handlers
+        
+        private void NewConfiguration(object? sender, EventArgs e) 
+        {
+            if (ConfirmUnsavedChanges())
+            {
+                config = new Level6Configuration();
+                config.TradingRoot = tradingRoot;
+                config.DefaultDataRoot = Path.Combine(tradingRoot, "TradingData");
+                CreateDefaultGroups();
+                RefreshAll();
+                isConfigModified = true;
+                MarkConfigurationModified();
+            }
+        }
+        
+        private void OpenConfiguration(object? sender, EventArgs e) 
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+                Title = "Open Configuration File"
             };
             
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                configPath = dialog.FileName;
-                
-                // Save this path for future use
-                var settingsPath = Path.Combine(Application.StartupPath, "dashboard-settings.json");
-                var settings = new { LastConfigPath = configPath };
-                File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
-                
+                configFilePath = dialog.FileName;
                 LoadConfiguration();
             }
         }
-
-        private void InitializeComponent()
+        
+        private void SaveConfigurationAs(object? sender, EventArgs e) 
         {
-            this.Text = "Level 5: Trading Platform Control Dashboard";
-            this.Size = new Size(1400, 900);
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.Icon = SystemIcons.Application;
-            
-            // Set minimum size
-            this.MinimumSize = new Size(1000, 700);
-            
-            // Enable dark mode support
-            this.BackColor = Color.FromArgb(45, 45, 48);
-            this.ForeColor = Color.White;
-        }
-
-        private void InitializeLayout()
-        {
-            // Menu Strip
-            menuStrip = new MenuStrip();
-            var fileMenu = new ToolStripMenuItem("File");
-            fileMenu.DropDownItems.Add("Refresh Configuration", null, (s, e) => LoadConfiguration());
-            fileMenu.DropDownItems.Add("Change Config File", null, (s, e) => SelectNewConfigFile());
-            fileMenu.DropDownItems.Add("Run Icon Generator", null, (s, e) => RunIconGenerator());
-            fileMenu.DropDownItems.Add("-");
-            fileMenu.DropDownItems.Add("Exit", null, (s, e) => Close());
-            
-            var actionsMenu = new ToolStripMenuItem("Level 3/4 Actions");
-            actionsMenu.DropDownItems.Add("Start All Enabled", null, (s, e) => RunTradingManagerAction("Start"));
-            actionsMenu.DropDownItems.Add("Stop All", null, (s, e) => RunTradingManagerAction("Stop"));
-            actionsMenu.DropDownItems.Add("Check Status", null, (s, e) => RunTradingManagerAction("Status"));
-            actionsMenu.DropDownItems.Add("-");
-            actionsMenu.DropDownItems.Add("Install Automation", null, (s, e) => RunTradingManagerAction("Install"));
-            actionsMenu.DropDownItems.Add("Remove Automation", null, (s, e) => RunTradingManagerAction("Remove"));
-            
-            var level5Menu = new ToolStripMenuItem("Level 5 Features");
-            level5Menu.DropDownItems.Add("Performance Monitor", null, (s, e) => ShowPerformanceMonitor());
-            level5Menu.DropDownItems.Add("Batch Operations", null, (s, e) => ShowBatchOperations());
-            level5Menu.DropDownItems.Add("Configuration Editor", null, (s, e) => ShowConfigurationEditor());
-            level5Menu.DropDownItems.Add("Process Explorer", null, (s, e) => ShowProcessExplorer());
-            level5Menu.DropDownItems.Add("-");
-            darkModeMenuItem = new ToolStripMenuItem("Dark Mode", null, ToggleDarkMode);
-            darkModeMenuItem.Checked = true;
-            level5Menu.DropDownItems.Add(darkModeMenuItem);
-            
-            menuStrip.Items.Add(fileMenu);
-            menuStrip.Items.Add(actionsMenu);
-            menuStrip.Items.Add(level5Menu);
-            
-            // Main Panel with scroll
-            mainPanel = new FlowLayoutPanel
+            var dialog = new SaveFileDialog
             {
-                Dock = DockStyle.Fill,
-                FlowDirection = FlowDirection.TopDown,
-                WrapContents = false,
-                AutoScroll = true,
-                Padding = new Padding(10),
-                BackColor = Color.FromArgb(45, 45, 48)
+                Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*",
+                Title = "Save Configuration As",
+                FileName = "instances-config.json"
             };
             
-            // Status Strip
-            statusStrip = new StatusStrip();
-            statusLabel = new ToolStripStatusLabel("Ready") { Spring = true, TextAlign = ContentAlignment.MiddleLeft };
-            processCountLabel = new ToolStripStatusLabel("Processes: 0") { AutoSize = true };
-            performanceLabel = new ToolStripStatusLabel("CPU: 0% | RAM: 0MB") { AutoSize = true };
-            statusStrip.Items.AddRange(new ToolStripItem[] { statusLabel, processCountLabel, performanceLabel });
-            
-            // Context Menu for instances
-            CreateInstanceContextMenu();
-            
-            this.Controls.Add(mainPanel);
-            this.Controls.Add(menuStrip);
-            this.Controls.Add(statusStrip);
-            
-            groups = new Dictionary<string, GroupBox>();
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                configFilePath = dialog.FileName;
+                SaveConfiguration();
+            }
         }
-
-        private void CreateInstanceContextMenu()
+        
+        private void ImportInstances(object? sender, EventArgs e) 
         {
-            instanceContextMenu = new ContextMenuStrip();
-            instanceContextMenu.Items.Add("Start Instance", null, StartInstance_Click);
-            instanceContextMenu.Items.Add("Stop Instance", null, StopInstance_Click);
-            instanceContextMenu.Items.Add("-");
-            instanceContextMenu.Items.Add("Enable Auto-Start", null, EnableAutoStart_Click);
-            instanceContextMenu.Items.Add("Disable Auto-Start", null, DisableAutoStart_Click);
-            instanceContextMenu.Items.Add("-");
-            instanceContextMenu.Items.Add("Enable Instance", null, EnableInstance_Click);
-            instanceContextMenu.Items.Add("Disable Instance", null, DisableInstance_Click);
-            instanceContextMenu.Items.Add("-");
-            instanceContextMenu.Items.Add("Open Instance Folder", null, OpenInstanceFolder_Click);
-            instanceContextMenu.Items.Add("View Configuration", null, ViewConfiguration_Click);
+            MessageBox.Show("Import functionality would be implemented here", "Import Instances", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
-        private void LoadConfiguration()
+        
+        private void ExportInstances(object? sender, EventArgs e) 
+        {
+            MessageBox.Show("Export functionality would be implemented here", "Export Instances", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+        private void AddNewInstance(object? sender, EventArgs e) 
+        { 
+            var dialog = new SimpleInstanceDialog(config, GetAvailablePlatforms(), null);
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                config.Instances.Add(dialog.Instance);
+                RefreshInstanceList();
+                RefreshGroupTree();
+                MarkConfigurationModified();
+            }
+        }
+        
+        private void EditSelectedInstance(object? sender, EventArgs e) 
+        {
+            var selectedInstance = GetSelectedInstance();
+            if (selectedInstance != null)
+            {
+                var dialog = new SimpleInstanceDialog(config, GetAvailablePlatforms(), selectedInstance);
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    RefreshInstanceList();
+                    RefreshGroupTree();
+                    MarkConfigurationModified();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select an instance to edit.", "No Selection", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        
+        private void CloneSelectedInstance(object? sender, EventArgs e) 
+        {
+            var selectedInstance = GetSelectedInstance();
+            if (selectedInstance != null)
+            {
+                var clonedInstance = CloneInstance(selectedInstance);
+                var dialog = new SimpleInstanceDialog(config, GetAvailablePlatforms(), clonedInstance);
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    config.Instances.Add(dialog.Instance);
+                    RefreshInstanceList();
+                    RefreshGroupTree();
+                    MarkConfigurationModified();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select an instance to clone.", "No Selection", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        
+        private void DeleteSelectedInstance(object? sender, EventArgs e) 
+        {
+            var selectedInstance = GetSelectedInstance();
+            if (selectedInstance != null)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete instance '{selectedInstance.Name}'?", 
+                    "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    
+                if (result == DialogResult.Yes)
+                {
+                    config.Instances.Remove(selectedInstance);
+                    RefreshInstanceList();
+                    RefreshGroupTree();
+                    MarkConfigurationModified();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select an instance to delete.", "No Selection", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        
+        private void RefreshInstanceStatus(object? sender, EventArgs e) 
+        {
+            RefreshInstanceList();
+            statusLabel.Text = "Instance status refreshed";
+        }
+        
+        private void CreateNewGroup(object? sender, EventArgs e) 
+        {
+            var dialog = new SimpleGroupDialog(null);
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                config.Groups[dialog.Group.Name] = dialog.Group;
+                RefreshGroupTree();
+                MarkConfigurationModified();
+            }
+        }
+        
+        private void EditSelectedGroup(object? sender, EventArgs e) 
+        {
+            var selectedGroup = GetSelectedGroup();
+            if (selectedGroup != null)
+            {
+                var dialog = new SimpleGroupDialog(selectedGroup);
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    // Update group in dictionary
+                    if (dialog.Group.Name != selectedGroup.Name)
+                    {
+                        config.Groups.Remove(selectedGroup.Name);
+                    }
+                    config.Groups[dialog.Group.Name] = dialog.Group;
+                    RefreshGroupTree();
+                    MarkConfigurationModified();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a group to edit.", "No Selection", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        
+        private void DeleteSelectedGroup(object? sender, EventArgs e) 
+        {
+            var selectedGroup = GetSelectedGroup();
+            if (selectedGroup != null)
+            {
+                var result = MessageBox.Show($"Are you sure you want to delete group '{selectedGroup.Name}'?", 
+                    "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    
+                if (result == DialogResult.Yes)
+                {
+                    config.Groups.Remove(selectedGroup.Name);
+                    
+                    // Remove group membership from instances
+                    foreach (var instance in config.Instances)
+                    {
+                        instance.GroupMembership.Remove(selectedGroup.Name);
+                    }
+                    
+                    RefreshAll();
+                    MarkConfigurationModified();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select a group to delete.", "No Selection", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        
+        private void ReorganizeGroups(object? sender, EventArgs e) 
+        {
+            MessageBox.Show("Group reorganization functionality would be implemented here", "Reorganize Groups", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+        private void ApplyChanges(object? sender, EventArgs e)
+        {
+            // Save configuration and run Level 2 script
+            SaveConfiguration();
+            RunLevel2Script();
+        }
+        
+        private void BuildSelectedInstances(object? sender, EventArgs e) 
+        {
+            MessageBox.Show("Build selected instances functionality would be implemented here", "Build Selected", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+        private void RebuildAllInstances(object? sender, EventArgs e) 
+        {
+            var result = MessageBox.Show("This will rebuild all instances. Continue?", "Rebuild All", 
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                
+            if (result == DialogResult.Yes)
+            {
+                SaveConfiguration();
+                RunLevel2Script("-Force");
+            }
+        }
+        
+        private void ValidateConfiguration(object? sender, EventArgs e) 
+        {
+            var errors = ValidateCurrentConfiguration();
+            if (errors.Any())
+            {
+                MessageBox.Show($"Configuration errors found:\n{string.Join("\n", errors)}", 
+                    "Validation Errors", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                MessageBox.Show("Configuration is valid!", "Validation Success", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        
+        private void BackupConfiguration(object? sender, EventArgs e) 
         {
             try
             {
-                // Multiple search paths for configuration file
-                var searchPaths = new[]
-                {
-                    // 1. Current directory (if running from trading environment)
-                    Path.Combine(Application.StartupPath, "instances-config.json"),
-                    
-                    // 2. Parent directory (if running from subfolder)
-                    Path.Combine(Directory.GetParent(Application.StartupPath)?.FullName ?? "", "instances-config.json"),
-                    
-                    // 3. Standard trading environment locations
-                    @"C:\Projects\FinancialData\instances-config.json",
-                    @"C:\TradingRoot\instances-config.json",
-                    
-                    // 4. Look for it in common development locations
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Projects", "FinancialData", "instances-config.json"),
-                    
-                    // 5. Check if there's an environment variable set
-                    Environment.GetEnvironmentVariable("TRADING_ROOT") != null ? 
-                        Path.Combine(Environment.GetEnvironmentVariable("TRADING_ROOT")!, "instances-config.json") : "",
-                    
-                    // 6. Search in typical project structures
-                    Path.Combine(Directory.GetCurrentDirectory(), "..", "instances-config.json"),
-                    Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "instances-config.json"),
-                    Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "instances-config.json")
-                };
-
-                // Find the first existing configuration file
-                configPath = searchPaths.FirstOrDefault(path => !string.IsNullOrEmpty(path) && File.Exists(path));
-                
-                if (string.IsNullOrEmpty(configPath))
-                {
-                    // If no config found, show file dialog to let user select it
-                    using var dialog = new OpenFileDialog
-                    {
-                        Title = "Select Trading Configuration File",
-                        Filter = "JSON Config Files (*.json)|*.json|All Files (*.*)|*.*",
-                        FileName = "instances-config.json",
-                        InitialDirectory = @"C:\Projects\FinancialData"
-                    };
-                    
-                    if (dialog.ShowDialog() == DialogResult.OK)
-                    {
-                        configPath = dialog.FileName;
-                        
-                        // Save this path for future use
-                        var settingsPath = Path.Combine(Application.StartupPath, "dashboard-settings.json");
-                        var settings = new { LastConfigPath = configPath };
-                        File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
-                    }
-                    else
-                    {
-                        MessageBox.Show("No configuration file selected. Please ensure instances-config.json exists in your trading environment.", 
-                                      "Configuration Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                }
-                
-                // Try to load saved path from previous session
-                if (string.IsNullOrEmpty(configPath))
-                {
-                    var settingsPath = Path.Combine(Application.StartupPath, "dashboard-settings.json");
-                    if (File.Exists(settingsPath))
-                    {
-                        try
-                        {
-                            var settingsJson = File.ReadAllText(settingsPath);
-                            var settings = JsonSerializer.Deserialize<Dictionary<string, object>>(settingsJson);
-                            if (settings?.ContainsKey("LastConfigPath") == true)
-                            {
-                                var lastPath = settings["LastConfigPath"].ToString();
-                                if (!string.IsNullOrEmpty(lastPath) && File.Exists(lastPath))
-                                {
-                                    configPath = lastPath;
-                                }
-                            }
-                        }
-                        catch { /* Ignore settings load errors */ }
-                    }
-                }
-
-                if (string.IsNullOrEmpty(configPath))
-                {
-                    MessageBox.Show("Unable to locate instances-config.json. Please ensure your trading environment is set up correctly.", 
-                                  "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                string json = File.ReadAllText(configPath);
-                config = JsonSerializer.Deserialize<TradingConfiguration>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                if (config == null)
-                {
-                    MessageBox.Show("Failed to parse configuration file. The file may be corrupted or invalid.", 
-                                  "Configuration Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    statusLabel.Text = "Configuration parse failed";
-                    return;
-                }
-
-                if (config.Instances == null)
-                {
-                    config.Instances = new List<TradingInstance>();
-                }
-
-                statusLabel.Text = $"Loaded {config.Instances.Count} instances from: {Path.GetFileName(configPath)}";
-                this.Text = $"Level 5: Trading Dashboard - {Path.GetDirectoryName(configPath)}";
-                
-                // Add debug info to see what we loaded
-                if (config.Instances.Count == 0)
-                {
-                    statusLabel.Text = "Configuration loaded but no instances found";
-                }
-                
-                RefreshDisplay();
+                var backupPath = $"{configFilePath}.backup.{DateTime.Now:yyyyMMdd-HHmmss}";
+                File.Copy(configFilePath, backupPath);
+                config.Metadata.BackupFiles.Add(backupPath);
+                MessageBox.Show($"Configuration backed up to:\n{backupPath}", "Backup Complete", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading configuration: {ex.Message}", "Configuration Error", 
-                              MessageBoxButtons.OK, MessageBoxIcon.Error);
-                statusLabel.Text = "Configuration load failed";
+                MessageBox.Show($"Backup failed: {ex.Message}", "Backup Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        private void RefreshDisplay()
+        
+        // Integration event handlers
+        private void LaunchLevel5Dashboard(object? sender, EventArgs e)
         {
             try
             {
-                mainPanel.Controls.Clear();
-                groups.Clear();
-
-                if (config?.Instances == null || !config.Instances.Any())
+                var level5Path = Path.Combine(tradingRoot, "Level4Dashboard");
+                var exePaths = new[]
                 {
-                    // Show a message when no instances are found
-                    var noInstancesLabel = new Label
-                    {
-                        Text = "No trading instances found in configuration.\n\nCheck your instances-config.json file.",
-                        Dock = DockStyle.Fill,
-                        TextAlign = ContentAlignment.MiddleCenter,
-                        Font = new Font("Segoe UI", 12f),
-                        ForeColor = Color.White,
-                        BackColor = Color.FromArgb(45, 45, 48)
-                    };
-                    mainPanel.Controls.Add(noInstancesLabel);
-                    return;
-                }
-
-                // DEBUG: Add a test label first to see if ANY controls work
-                var debugLabel = new Label
-                {
-                    Text = $"DEBUG: About to process {config.Instances.Count} instances...",
-                    Height = 30,
-                    Width = mainPanel.Width - 20,
-                    ForeColor = Color.Yellow,
-                    BackColor = Color.FromArgb(60, 60, 63),
-                    TextAlign = ContentAlignment.MiddleLeft
+                    Path.Combine(level5Path, "bin\\Release\\net9.0-windows\\Level4Dashboard.exe"),
+                    Path.Combine(level5Path, "bin\\Debug\\net9.0-windows\\Level4Dashboard.exe")
                 };
-                mainPanel.Controls.Add(debugLabel);
-
-                // Group instances by broker/platform or custom grouping
-                var groupedInstances = config.Instances
-                    .GroupBy(i => GetGroupName(i))
-                    .OrderBy(g => g.Key);
-
-                // Debug: Show what groups we found
-                var groupCount = groupedInstances.Count();
-                statusLabel.Text = $"Loaded {config.Instances.Count} instances, {groupCount} groups";
-
-                // DEBUG: Add another test label showing groups
-                var groupDebugLabel = new Label
-                {
-                    Text = $"DEBUG: Found {groupCount} groups: {string.Join(", ", groupedInstances.Select(g => g.Key))}",
-                    Height = 30,
-                    Width = mainPanel.Width - 20,
-                    ForeColor = Color.Cyan,
-                    BackColor = Color.FromArgb(60, 60, 63),
-                    TextAlign = ContentAlignment.MiddleLeft
-                };
-                mainPanel.Controls.Add(groupDebugLabel);
-
-                if (!groupedInstances.Any())
-                {
-                    var noGroupsLabel = new Label
-                    {
-                        Text = "No valid instance groups found.",
-                        Dock = DockStyle.Fill,
-                        TextAlign = ContentAlignment.MiddleCenter,
-                        Font = new Font("Segoe UI", 12f),
-                        ForeColor = Color.White
-                    };
-                    mainPanel.Controls.Add(noGroupsLabel);
-                    return;
-                }
-
-                foreach (var group in groupedInstances)
-                {
-                    try
-                    {
-                        // DEBUG: Add a label before each group creation
-                        var preGroupLabel = new Label
-                        {
-                            Text = $"DEBUG: Creating group '{group.Key}' with {group.Count()} instances...",
-                            Height = 25,
-                            Width = mainPanel.Width - 20,
-                            ForeColor = Color.LightGreen,
-                            BackColor = Color.FromArgb(60, 60, 63),
-                            TextAlign = ContentAlignment.MiddleLeft
-                        };
-                        mainPanel.Controls.Add(preGroupLabel);
-
-                        CreateGroup(group.Key, group.ToList());
-
-                        // DEBUG: Add a label after successful group creation
-                        var postGroupLabel = new Label
-                        {
-                            Text = $"DEBUG: Successfully created group '{group.Key}'",
-                            Height = 25,
-                            Width = mainPanel.Width - 20,
-                            ForeColor = Color.LightBlue,
-                            BackColor = Color.FromArgb(60, 60, 63),
-                            TextAlign = ContentAlignment.MiddleLeft
-                        };
-                        mainPanel.Controls.Add(postGroupLabel);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Add error display for each failed group
-                        var errorLabel = new Label
-                        {
-                            Text = $"ERROR creating group '{group.Key}': {ex.Message}",
-                            Height = 50,
-                            Width = mainPanel.Width - 20,
-                            ForeColor = Color.Red,
-                            BackColor = Color.FromArgb(60, 60, 63),
-                            TextAlign = ContentAlignment.MiddleLeft
-                        };
-                        mainPanel.Controls.Add(errorLabel);
-                    }
-                }
-
-                // Add summary panel
-                CreateSummaryPanel();
                 
-                // Force refresh
-                mainPanel.Invalidate();
-                this.Refresh();
-            }
-            catch (Exception ex)
-            {
-                var errorLabel = new Label
+                var exePath = exePaths.FirstOrDefault(File.Exists);
+                if (exePath != null)
                 {
-                    Text = $"MAIN ERROR displaying instances: {ex.Message}\n\nStack: {ex.StackTrace}",
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleLeft,
-                    Font = new Font("Consolas", 9f),
-                    ForeColor = Color.Red,
-                    BackColor = Color.FromArgb(45, 45, 48)
-                };
-                mainPanel.Controls.Add(errorLabel);
-            }
-        }
-
-        private string GetGroupName(TradingInstance instance)
-        {
-            // Debug: Show what we're getting
-            var groupName = "Unknown";
-            
-            // Try to extract broker name or use source directory
-            if (!string.IsNullOrEmpty(instance.Source))
-            {
-                // Extract broker from source (e.g., "ICMarkets_MT4" -> "ICMarkets")
-                var parts = instance.Source.Split('_');
-                if (parts.Length > 1)
-                {
-                    groupName = parts[0]; // Broker name
+                    Process.Start(new ProcessStartInfo(exePath) { WorkingDirectory = tradingRoot });
+                    statusLabel.Text = "Level 5 Dashboard launched";
                 }
                 else
                 {
-                    groupName = instance.Source;
+                    MessageBox.Show("Level 5 Dashboard not found. Please build it first.", "Dashboard Not Found", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
-            else if (!string.IsNullOrEmpty(instance.Platform))
+            catch (Exception ex)
             {
-                groupName = instance.Platform;
+                MessageBox.Show($"Failed to launch Level 5 Dashboard: {ex.Message}", "Launch Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else if (!string.IsNullOrEmpty(instance.Name))
-            {
-                // Use name as fallback
-                var parts = instance.Name.Split('_', ' ');
-                groupName = parts[0];
-            }
-            
-            // Ensure we always return something
-            if (string.IsNullOrEmpty(groupName))
-            {
-                groupName = "Ungrouped";
-            }
-            
-            return groupName;
         }
-
-        private void CreateGroup(string groupName, List<TradingInstance> instances)
+        
+        private void RunLevel3Manager(object? sender, EventArgs e)
         {
-            try
+            RunPowerShellScript("3 SimpleTradingManager.ps1", "-Action Status");
+        }
+        
+        private void CheckAllLevelsStatus(object? sender, EventArgs e)
+        {
+            var status = new StringBuilder();
+            status.AppendLine("Trading Environment Status:");
+            status.AppendLine($"Trading Root: {tradingRoot}");
+            status.AppendLine($"Configuration: {(File.Exists(configFilePath) ? "Found" : "Missing")}");
+            status.AppendLine($"Instances: {config.Instances.Count}");
+            status.AppendLine($"Groups: {config.Groups.Count}");
+            
+            MessageBox.Show(status.ToString(), "System Status", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+        // Tree and list view event handlers
+        private void GroupTreeView_AfterSelect(object? sender, TreeViewEventArgs e) 
+        {
+            if (e.Node?.Tag is TradingInstance instance)
             {
-                var groupBox = new GroupBox
+                instancePropertyGrid.SelectedObject = instance;
+                
+                // Highlight in list view
+                foreach (ListViewItem item in instanceListView.Items)
                 {
-                    Text = $"{groupName} ({instances.Count} instances)",
-                    Width = mainPanel.Width - 50,
-                    Height = Math.Max(150, 120 + (instances.Count / 4) * 60), // Dynamic height with minimum
-                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                    Margin = new Padding(10),
-                    ForeColor = Color.White,
-                    BackColor = Color.FromArgb(60, 60, 63)
-                };
-
-                var instancePanel = new FlowLayoutPanel
-                {
-                    Dock = DockStyle.Fill,
-                    FlowDirection = FlowDirection.LeftToRight,
-                    WrapContents = true,
-                    Padding = new Padding(5),
-                    BackColor = Color.FromArgb(60, 60, 63)
-                };
-
-                // Group action buttons
-                var groupActionPanel = new Panel
-                {
-                    Height = 35,
-                    Dock = DockStyle.Top,
-                    BackColor = Color.FromArgb(60, 60, 63)
-                };
-
-                var startGroupBtn = new Button
-                {
-                    Text = "Start Group",
-                    Size = new Size(85, 25),
-                    Location = new Point(5, 5),
-                    BackColor = Color.FromArgb(0, 120, 212),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat
-                };
-                startGroupBtn.Click += (s, e) => StartGroup(instances);
-
-                var stopGroupBtn = new Button
-                {
-                    Text = "Stop Group",
-                    Size = new Size(85, 25),
-                    Location = new Point(95, 5),
-                    BackColor = Color.FromArgb(196, 43, 28),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat
-                };
-                stopGroupBtn.Click += (s, e) => StopGroup(instances);
-
-                var enableGroupBtn = new Button
-                {
-                    Text = "Enable All",
-                    Size = new Size(85, 25),
-                    Location = new Point(185, 5),
-                    BackColor = Color.FromArgb(16, 124, 16),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat
-                };
-                enableGroupBtn.Click += (s, e) => ToggleGroupEnabled(instances, true);
-
-                var disableGroupBtn = new Button
-                {
-                    Text = "Disable All",
-                    Size = new Size(85, 25),
-                    Location = new Point(275, 5),
-                    BackColor = Color.FromArgb(117, 117, 117),
-                    ForeColor = Color.White,
-                    FlatStyle = FlatStyle.Flat
-                };
-                disableGroupBtn.Click += (s, e) => ToggleGroupEnabled(instances, false);
-
-                groupActionPanel.Controls.AddRange(new Control[] { startGroupBtn, stopGroupBtn, enableGroupBtn, disableGroupBtn });
-
-                // Add instance controls
+                    if (item.Tag == instance)
+                    {
+                        item.Selected = true;
+                        item.EnsureVisible();
+                        break;
+                    }
+                }
+            }
+            else if (e.Node?.Tag is GroupDefinition group)
+            {
+                instancePropertyGrid.SelectedObject = group;
+            }
+        }
+        
+        private void GroupTreeView_AfterCheck(object? sender, TreeViewEventArgs e) 
+        {
+            if (e.Node?.Tag is TradingInstance instance)
+            {
+                instance.Enabled = e.Node.Checked;
+                RefreshInstanceList();
+                MarkConfigurationModified();
+            }
+        }
+        
+        private void InstanceListView_SelectedIndexChanged(object? sender, EventArgs e) 
+        {
+            if (instanceListView.SelectedItems.Count > 0)
+            {
+                var instance = instanceListView.SelectedItems[0].Tag as TradingInstance;
+                instancePropertyGrid.SelectedObject = instance;
+            }
+        }
+        
+        private void InstanceListView_ItemCheck(object? sender, ItemCheckEventArgs e) 
+        {
+            if (instanceListView.Items[e.Index].Tag is TradingInstance instance)
+            {
+                instance.Enabled = e.NewValue == CheckState.Checked;
+                MarkConfigurationModified();
+            }
+        }
+        
+        private void InstancePropertyGrid_PropertyValueChanged(object? s, PropertyValueChangedEventArgs e) 
+        {
+            MarkConfigurationModified();
+            RefreshInstanceList();
+        }
+        
+        // Context menu handlers
+        private void AddInstanceToGroup(object? sender, EventArgs e) 
+        {
+            MessageBox.Show("Add to group functionality would be implemented here", "Add to Group", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+        private void RemoveFromGroup(object? sender, EventArgs e) 
+        {
+            MessageBox.Show("Remove from group functionality would be implemented here", "Remove from Group", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+        private void StartGroup(object? sender, EventArgs e) 
+        {
+            var selectedGroup = GetSelectedGroup();
+            if (selectedGroup != null)
+            {
+                var instances = config.Instances.Where(i => i.GroupMembership.Contains(selectedGroup.Name));
                 foreach (var instance in instances)
                 {
-                    var instanceControl = CreateInstanceControl(instance);
-                    instancePanel.Controls.Add(instanceControl);
+                    // Start instance logic would go here
                 }
-
-                groupBox.Controls.Add(instancePanel);
-                groupBox.Controls.Add(groupActionPanel);
-                groups[groupName] = groupBox;
-                mainPanel.Controls.Add(groupBox);
+                statusLabel.Text = $"Started all instances in group: {selectedGroup.Name}";
             }
-            catch (Exception ex)
+        }
+        
+        private void StopGroup(object? sender, EventArgs e) 
+        {
+            var selectedGroup = GetSelectedGroup();
+            if (selectedGroup != null)
             {
-                var errorLabel = new Label
+                var instances = config.Instances.Where(i => i.GroupMembership.Contains(selectedGroup.Name));
+                foreach (var instance in instances)
                 {
-                    Text = $"Error creating group {groupName}: {ex.Message}",
-                    Size = new Size(400, 50),
-                    ForeColor = Color.Red,
-                    BackColor = Color.FromArgb(60, 60, 63)
-                };
-                mainPanel.Controls.Add(errorLabel);
+                    // Stop instance logic would go here
+                }
+                statusLabel.Text = $"Stopped all instances in group: {selectedGroup.Name}";
             }
         }
-
-        private Control CreateInstanceControl(TradingInstance instance)
+        
+        private void StartSelectedInstance(object? sender, EventArgs e) 
         {
-            var tooltip = new ToolTip();
-            var panel = new Panel
+            var instance = GetSelectedInstance();
+            if (instance != null)
             {
-                Size = new Size(120, 80),
-                BorderStyle = BorderStyle.FixedSingle,
-                Margin = new Padding(2),
-                Tag = instance
-            };
-
-            // Load icon if available
-            var iconPath = GetInstanceIconPath(instance);
-            PictureBox iconBox;
-            
-            if (File.Exists(iconPath))
+                statusLabel.Text = $"Starting instance: {instance.Name}";
+                // Start logic would go here
+            }
+        }
+        
+        private void StopSelectedInstance(object? sender, EventArgs e) 
+        {
+            var instance = GetSelectedInstance();
+            if (instance != null)
             {
-                iconBox = new PictureBox
+                statusLabel.Text = $"Stopping instance: {instance.Name}";
+                // Stop logic would go here
+            }
+        }
+        
+        private void OpenInstanceFolder(object? sender, EventArgs e) 
+        {
+            var instance = GetSelectedInstance();
+            if (instance != null)
+            {
+                var path = Path.Combine(tradingRoot, "PlatformInstances", instance.Destination);
+                if (Directory.Exists(path))
                 {
-                    Size = new Size(32, 32),
-                    Location = new Point(44, 5),
-                    SizeMode = PictureBoxSizeMode.StretchImage,
-                    Image = Image.FromFile(iconPath)
-                };
-            }
-            else
-            {
-                iconBox = new PictureBox
+                    Process.Start("explorer.exe", path);
+                }
+                else
                 {
-                    Size = new Size(32, 32),
-                    Location = new Point(44, 5),
-                    SizeMode = PictureBoxSizeMode.CenterImage,
-                    Image = SystemIcons.Application.ToBitmap()
-                };
+                    MessageBox.Show($"Instance folder not found: {path}", "Folder Not Found", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
-
-            var nameLabel = new Label
+        }
+        
+        private void OpenDataFolder(object? sender, EventArgs e) 
+        {
+            var instance = GetSelectedInstance();
+            if (instance != null)
             {
-                Text = instance.Name ?? instance.Destination,
-                Size = new Size(116, 15),
-                Location = new Point(2, 40),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Segoe UI", 7f),
-                ForeColor = Color.Black
-            };
-
-            var statusLabel = new Label
-            {
-                Size = new Size(116, 12),
-                Location = new Point(2, 55),
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Segoe UI", 6.5f),
-                ForeColor = GetStatusColor(instance)
-            };
-
-            UpdateInstanceStatus(statusLabel, instance);
-
-            // Set background color based on account type
-            panel.BackColor = GetInstanceBackgroundColor(instance);
-
-            // Context menu
-            panel.ContextMenuStrip = instanceContextMenu;
-            iconBox.ContextMenuStrip = instanceContextMenu;
-            nameLabel.ContextMenuStrip = instanceContextMenu;
-            statusLabel.ContextMenuStrip = instanceContextMenu;
-
-            // Double-click to start
-            panel.DoubleClick += (s, e) => StartSingleInstance(instance);
-            iconBox.DoubleClick += (s, e) => StartSingleInstance(instance);
-
-                        // Add tooltips showing full names
-            var fullName = instance.Name ?? instance.Destination ?? "Unknown Instance";
-            tooltip.SetToolTip(panel, fullName);
-            tooltip.SetToolTip(iconBox, fullName);
-            tooltip.SetToolTip(nameLabel, fullName);
+                var path = Path.Combine(tradingRoot, "InstanceData", instance.JunctionName);
+                if (Directory.Exists(path))
+                {
+                    Process.Start("explorer.exe", path);
+                }
+                else
+                {
+                    MessageBox.Show($"Data folder not found: {path}", "Folder Not Found", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+        
+        #endregion
+        
+        #region Helper Methods
+        
+        private void RefreshAll()
+        {
+            RefreshGroupTree();
+            RefreshInstanceList();
+        }
+        
+        private void RefreshGroupTree()
+        {
+            groupTreeView.Nodes.Clear();
             
-            panel.Controls.AddRange(new Control[] { iconBox, nameLabel, statusLabel });
-            return panel;
-        }
-
-        private string GetInstanceIconPath(TradingInstance instance)
-        {
-            var basePath = Path.GetDirectoryName(configPath) ?? "";
+            foreach (var group in config.Groups.Values)
+            {
+                var groupNode = new TreeNode(group.Name);
+                groupNode.Tag = group;
+                groupNode.ForeColor = ColorTranslator.FromHtml(group.Color);
+                
+                var instancesInGroup = config.Instances.Where(i => 
+                    i.GroupMembership != null && i.GroupMembership.Contains(group.Name));
+                
+                foreach (var instance in instancesInGroup)
+                {
+                    var instanceNode = new TreeNode(instance.Name);
+                    instanceNode.Tag = instance;
+                    instanceNode.Checked = instance.Enabled;
+                    
+                    // Color code by account type
+                    if (instance.AccountType?.ToLower().Contains("live") == true)
+                    {
+                        instanceNode.ForeColor = Color.Red;
+                    }
+                    else if (instance.AccountType?.ToLower().Contains("demo") == true)
+                    {
+                        instanceNode.ForeColor = Color.Green;
+                    }
+                    
+                    groupNode.Nodes.Add(instanceNode);
+                }
+                
+                groupTreeView.Nodes.Add(groupNode);
+            }
             
-            // Try multiple icon locations
-            var paths = new[]
-            {
-                Path.Combine(basePath, "PlatformInstallations", instance.Source, "ShortCutImage", "icon.ico"),
-                Path.Combine(basePath, "PlatformInstallations", instance.Source, "ShortCutImage", $"{instance.Source}.ico"),
-                Path.Combine(basePath, "Generated Icons", $"{instance.Destination}.ico"),
-                Path.Combine(basePath, "InstanceData", instance.Destination, "icon.ico")
-            };
-
-            return paths.FirstOrDefault(File.Exists) ?? "";
+            groupTreeView.ExpandAll();
         }
-
-        private Color GetInstanceBackgroundColor(TradingInstance instance)
+        
+        private void RefreshInstanceList()
         {
-            var accountType = instance.AccountType?.ToLower() ?? "";
+            instanceListView.Items.Clear();
             
-            // Check for custom icon settings first
-            if (instance.IconSettings?.BackgroundColor != null)
+            foreach (var instance in config.Instances)
             {
-                return ColorTranslator.FromHtml(instance.IconSettings.BackgroundColor);
-            }
-
-            // Default colors based on account type
-            return accountType switch
-            {
-                var type when type.Contains("live") || type.Contains("real") || type.Contains("production") => Color.FromArgb(255, 240, 240),
-                var type when type.Contains("demo") || type.Contains("practice") || type.Contains("training") => Color.FromArgb(240, 240, 255),
-                var type when type.Contains("paper") || type.Contains("sim") || type.Contains("simulation") => Color.FromArgb(240, 255, 240),
-                var type when type.Contains("premium") || type.Contains("pro") || type.Contains("vip") || type.Contains("gold") => Color.FromArgb(255, 255, 220),
-                var type when type.Contains("test") || type.Contains("staging") || type.Contains("dev") => Color.FromArgb(245, 245, 245),
-                _ => Color.FromArgb(250, 240, 255)
-            };
-        }
-
-        private Color GetStatusColor(TradingInstance instance)
-        {
-            if (!instance.Enabled) return Color.Gray;
-            if (instance.StartupSettings?.AutoStart == false) return Color.Orange;
-            return Color.Green;
-        }
-
-        private void UpdateInstanceStatus(Label statusLabel, TradingInstance instance)
-        {
-            if (!instance.Enabled)
-            {
-                statusLabel.Text = "Disabled";
-                statusLabel.ForeColor = Color.Gray;
-            }
-            else if (instance.StartupSettings?.AutoStart == false)
-            {
-                statusLabel.Text = "Manual Only";
-                statusLabel.ForeColor = Color.Orange;
-            }
-            else
-            {
-                statusLabel.Text = "Auto-Start";
-                statusLabel.ForeColor = Color.Green;
+                var item = new ListViewItem(instance.Name);
+                item.SubItems.Add(instance.Broker ?? "");
+                item.SubItems.Add(instance.Platform ?? "");
+                item.SubItems.Add(instance.AccountType ?? "");
+                item.SubItems.Add("Unknown"); // Status - would be determined by checking process
+                item.SubItems.Add(instance.Enabled ? "Yes" : "No");
+                item.SubItems.Add(instance.AutoStart ? "Yes" : "No");
+                item.SubItems.Add(string.Join(", ", instance.GroupMembership ?? new List<string>()));
+                item.SubItems.Add(instance.Created.ToShortDateString());
+                
+                item.Tag = instance;
+                item.Checked = instance.Enabled;
+                
+                // Color code by account type
+                if (instance.AccountType?.ToLower().Contains("live") == true)
+                {
+                    item.ForeColor = Color.Red;
+                }
+                else if (instance.AccountType?.ToLower().Contains("demo") == true)
+                {
+                    item.ForeColor = Color.Green;
+                }
+                
+                instanceListView.Items.Add(item);
             }
         }
-
-        private void CreateSummaryPanel()
+        
+        private TradingInstance? GetSelectedInstance()
         {
-            var summaryBox = new GroupBox
+            if (instanceListView.SelectedItems.Count > 0)
             {
-                Text = "Summary",
-                Width = mainPanel.Width - 40,
-                Height = 100,
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                Margin = new Padding(5)
-            };
-
-            var enabled = config.Instances.Count(i => i.Enabled);
-            var autoStart = config.Instances.Count(i => i.Enabled && (i.StartupSettings?.AutoStart ?? true));
-            var disabled = config.Instances.Count(i => !i.Enabled);
-
-            var summaryLabel = new Label
+                return instanceListView.SelectedItems[0].Tag as TradingInstance;
+            }
+            
+            if (groupTreeView.SelectedNode?.Tag is TradingInstance instance)
             {
-                Text = $"Total Instances: {config.Instances.Count}\n" +
-                       $"Enabled: {enabled} | Auto-Start: {autoStart} | Disabled: {disabled}",
-                Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Font = new Font("Segoe UI", 9f, FontStyle.Bold)
-            };
-
-            summaryBox.Controls.Add(summaryLabel);
-            mainPanel.Controls.Add(summaryBox);
+                return instance;
+            }
+            
+            return null;
         }
-
-        private void StartRefreshTimer()
+        
+        private GroupDefinition? GetSelectedGroup()
         {
-            refreshTimer = new System.Windows.Forms.Timer
+            if (groupTreeView.SelectedNode?.Tag is GroupDefinition group)
             {
-                Interval = 30000 // Refresh every 30 seconds
-            };
-            refreshTimer.Tick += (s, e) => RefreshDisplay();
-            refreshTimer.Start();
+                return group;
+            }
+            
+            return null;
         }
-
-        private void StartPerformanceMonitoring()
+        
+        private TradingInstance CloneInstance(TradingInstance original)
         {
-            performanceTimer = new System.Windows.Forms.Timer
+            return new TradingInstance
             {
-                Interval = 5000 // Update every 5 seconds
+                Name = $"{original.Name}_Copy",
+                Broker = original.Broker,
+                Platform = original.Platform,
+                Source = original.Source,
+                Destination = $"{original.Destination}_Copy",
+                DataFolder = $"{original.DataFolder}_Copy",
+                JunctionName = $"{original.JunctionName}_Copy",
+                PortableMode = original.PortableMode,
+                AccountType = original.AccountType,
+                Enabled = false, // Disabled by default for safety
+                AutoStart = false,
+                StartupDelay = original.StartupDelay,
+                Priority = original.Priority,
+                GroupMembership = new List<string>(original.GroupMembership),
+                ServerSettings = new Dictionary<string, object>(original.ServerSettings),
+                CustomSettings = new Dictionary<string, object>(original.CustomSettings),
+                Notes = $"Cloned from {original.Name}"
             };
-            performanceTimer.Tick += UpdatePerformanceMetrics;
-            performanceTimer.Start();
         }
-
-        private void UpdatePerformanceMetrics(object sender, EventArgs e)
+        
+        private List<PlatformInfo> GetAvailablePlatforms()
+        {
+            var platforms = new List<PlatformInfo>();
+            var installationsPath = Path.Combine(tradingRoot, "PlatformInstallations");
+            
+            if (Directory.Exists(installationsPath))
+            {
+                foreach (var dir in Directory.GetDirectories(installationsPath))
+                {
+                    var dirInfo = new DirectoryInfo(dir);
+                    var platform = new PlatformInfo
+                    {
+                        Name = dirInfo.Name,
+                        Path = dir,
+                        Platform = "Unknown",
+                        Broker = "Unknown",
+                        IsValid = false
+                    };
+                    
+                    // Try to detect platform type
+                    if (File.Exists(Path.Combine(dir, "terminal.exe")))
+                    {
+                        platform.Platform = "MT4";
+                        platform.IsValid = true;
+                    }
+                    else if (File.Exists(Path.Combine(dir, "terminal64.exe")))
+                    {
+                        platform.Platform = "MT5";
+                        platform.IsValid = true;
+                    }
+                    else if (File.Exists(Path.Combine(dir, "ctrader.exe")))
+                    {
+                        platform.Platform = "cTrader";
+                        platform.IsValid = true;
+                    }
+                    
+                    // Extract broker name from folder name
+                    var nameMatch = System.Text.RegularExpressions.Regex.Match(dirInfo.Name, @"^([^_]+)");
+                    if (nameMatch.Success)
+                    {
+                        platform.Broker = nameMatch.Groups[1].Value;
+                    }
+                    
+                    platforms.Add(platform);
+                }
+            }
+            
+            return platforms;
+        }
+        
+        private void RunLevel2Script(string additionalArgs = "")
         {
             try
             {
-                // Count running trading processes
-                var allProcesses = Process.GetProcesses();
-                var tradingProcesses = allProcesses.Where(p => 
-                    p.ProcessName.ToLower().Contains("terminal") || 
-                    p.ProcessName.ToLower().Contains("tradeterm") ||
-                    p.ProcessName.ToLower().Contains("metatrader")).ToArray();
-
-                processCountLabel.Text = $"Trading Processes: {tradingProcesses.Length}";
-
-                // Calculate total CPU and memory usage for trading processes
-                long totalMemory = 0;
-                double totalCpu = 0;
-
-                foreach (var process in tradingProcesses)
+                var scriptPath = Path.Combine(tradingRoot, "Setup", "2 Level2-Clean.ps1");
+                if (!File.Exists(scriptPath))
                 {
-                    try
-                    {
-                        totalMemory += process.WorkingSet64;
-                        // Note: Getting accurate CPU usage requires more complex implementation
-                    }
-                    catch { } // Ignore access denied
+                    MessageBox.Show("Level 2 script not found. Please ensure the script exists in Setup folder.",
+                        "Script Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
-
-                var memoryMB = totalMemory / (1024 * 1024);
-                performanceLabel.Text = $"Trading RAM: {memoryMB}MB | Total Processes: {allProcesses.Length}";
-
-                // Update process cache
-                UpdateRunningProcessCache();
+                
+                var args = $"-ExecutionPolicy Bypass -File \"{scriptPath}\"";
+                if (!string.IsNullOrEmpty(additionalArgs))
+                {
+                    args += $" {additionalArgs}";
+                }
+                
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = args,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    WorkingDirectory = tradingRoot
+                };
+                
+                using var process = Process.Start(startInfo);
+                if (process != null)
+                {
+                    var output = process.StandardOutput.ReadToEnd();
+                    var error = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+                    
+                    if (process.ExitCode == 0)
+                    {
+                        statusLabel.Text = "Level 2 script completed successfully";
+                        MessageBox.Show("Instance changes applied successfully!", "Success", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Level 2 script failed:\n{error}", "Script Error", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
             catch (Exception ex)
             {
-                performanceLabel.Text = $"Monitor Error: {ex.Message}";
+                MessageBox.Show($"Error running Level 2 script: {ex.Message}", "Execution Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        private void UpdateRunningProcessCache()
+        
+        private void RunPowerShellScript(string scriptName, string args = "")
         {
-            runningProcesses.Clear();
-            if (config?.Instances == null) return;
-
+            try
+            {
+                var scriptPath = Path.Combine(tradingRoot, "Setup", scriptName);
+                var startInfo = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = $"-ExecutionPolicy Bypass -File \"{scriptPath}\" {args}",
+                    UseShellExecute = true,
+                    WorkingDirectory = tradingRoot
+                };
+                
+                Process.Start(startInfo);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error running script: {ex.Message}", "Script Error", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        
+        private List<string> ValidateCurrentConfiguration()
+        {
+            var errors = new List<string>();
+            
+            // Validate instances
             foreach (var instance in config.Instances)
             {
-                var executable = instance.StartupSettings?.Executable ?? GetDefaultExecutable(instance.Platform);
-                var processName = Path.GetFileNameWithoutExtension(executable);
-                var processes = Process.GetProcessesByName(processName);
-                
-                // Filter by instance directory if possible
-                var instancePath = Path.Combine(Path.GetDirectoryName(configPath) ?? "", "PlatformInstances", instance.Destination);
-                var filteredProcesses = processes.Where(p =>
-                {
-                    try
-                    {
-                        return p.MainModule?.FileName?.StartsWith(instancePath, StringComparison.OrdinalIgnoreCase) == true;
-                    }
-                    catch { return false; }
-                }).ToArray();
-
-                if (filteredProcesses.Any())
-                {
-                    runningProcesses[instance.Destination] = filteredProcesses;
-                }
+                if (string.IsNullOrEmpty(instance.Name))
+                    errors.Add("Instance with empty name found");
+                    
+                if (string.IsNullOrEmpty(instance.Source))
+                    errors.Add($"Instance '{instance.Name}' has no source specified");
+                    
+                if (string.IsNullOrEmpty(instance.Destination))
+                    errors.Add($"Instance '{instance.Name}' has no destination specified");
             }
-        }
-
-        // Level 5 Feature Methods
-        private void ShowPerformanceMonitor()
-        {
-            var perfForm = new Form
+            
+            // Check for duplicate names
+            var duplicateNames = config.Instances.GroupBy(i => i.Name)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key);
+                
+            foreach (var name in duplicateNames)
             {
-                Text = "Level 5: Performance Monitor",
-                Size = new Size(800, 600),
-                StartPosition = FormStartPosition.CenterParent,
-                Owner = this
-            };
+                errors.Add($"Duplicate instance name: {name}");
+            }
+            
+            return errors;
+        }
+        
+        private bool ConfirmUnsavedChanges()
+        {
+            if (isConfigModified)
+            {
+                var result = MessageBox.Show("Configuration has unsaved changes. Continue anyway?", 
+                    "Unsaved Changes", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                return result == DialogResult.Yes;
+            }
+            return true;
+        }
+        
+        private void MarkConfigurationModified()
+        {
+            isConfigModified = true;
+            this.Text = "Level 6 - Advanced Instance Management (Built on Dashboard v28) *";
+        }
+        
+        #endregion
+    }
 
-            var perfText = new TextBox
+    // Simple Instance Editor Dialog
+    public class SimpleInstanceDialog : Form
+    {
+        public TradingInstance Instance { get; private set; }
+        
+        private TextBox nameTextBox;
+        private ComboBox brokerComboBox;
+        private ComboBox platformComboBox;
+        private ComboBox sourceComboBox;
+        private TextBox destinationTextBox;
+        private ComboBox accountTypeComboBox;
+        private CheckBox enabledCheckBox;
+        private CheckBox autoStartCheckBox;
+        private CheckedListBox groupListBox;
+        
+        public SimpleInstanceDialog(Level6Configuration config, List<PlatformInfo> platforms, TradingInstance? existingInstance)
+        {
+            Instance = existingInstance ?? new TradingInstance();
+            InitializeDialog(config, platforms);
+            PopulateControls(config, platforms);
+        }
+        
+        private void InitializeDialog(Level6Configuration config, List<PlatformInfo> platforms)
+        {
+            this.Text = Instance.Name == "" ? "Add New Instance" : "Edit Instance";
+            this.Size = new Size(500, 600);
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            
+            var panel = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
-                Multiline = true,
-                ScrollBars = ScrollBars.Vertical,
-                ReadOnly = true,
-                BackColor = Color.Black,
-                ForeColor = Color.Lime,
-                Font = new Font("Consolas", 9)
+                ColumnCount = 2,
+                RowCount = 10,
+                Padding = new Padding(10)
             };
-
-            var sb = new System.Text.StringBuilder();
-            sb.AppendLine("=== LEVEL 5 PERFORMANCE MONITOR ===\n");
-
-            foreach (var kvp in runningProcesses)
+            
+            // Name
+            panel.Controls.Add(new Label { Text = "Name:", Anchor = AnchorStyles.Right }, 0, 0);
+            nameTextBox = new TextBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 300 };
+            panel.Controls.Add(nameTextBox, 1, 0);
+            
+            // Broker
+            panel.Controls.Add(new Label { Text = "Broker:", Anchor = AnchorStyles.Right }, 0, 1);
+            brokerComboBox = new ComboBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 300 };
+            panel.Controls.Add(brokerComboBox, 1, 1);
+            
+            // Platform
+            panel.Controls.Add(new Label { Text = "Platform:", Anchor = AnchorStyles.Right }, 0, 2);
+            platformComboBox = new ComboBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 300 };
+            panel.Controls.Add(platformComboBox, 1, 2);
+            
+            // Source
+            panel.Controls.Add(new Label { Text = "Source:", Anchor = AnchorStyles.Right }, 0, 3);
+            sourceComboBox = new ComboBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 300 };
+            panel.Controls.Add(sourceComboBox, 1, 3);
+            
+            // Destination
+            panel.Controls.Add(new Label { Text = "Destination:", Anchor = AnchorStyles.Right }, 0, 4);
+            destinationTextBox = new TextBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 300 };
+            panel.Controls.Add(destinationTextBox, 1, 4);
+            
+            // Account Type
+            panel.Controls.Add(new Label { Text = "Account Type:", Anchor = AnchorStyles.Right }, 0, 5);
+            accountTypeComboBox = new ComboBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 300 };
+            accountTypeComboBox.Items.AddRange(new[] { "demo", "live", "contest", "test" });
+            panel.Controls.Add(accountTypeComboBox, 1, 5);
+            
+            // Enabled
+            panel.Controls.Add(new Label { Text = "Enabled:", Anchor = AnchorStyles.Right }, 0, 6);
+            enabledCheckBox = new CheckBox { Anchor = AnchorStyles.Left };
+            panel.Controls.Add(enabledCheckBox, 1, 6);
+            
+            // Auto Start
+            panel.Controls.Add(new Label { Text = "Auto Start:", Anchor = AnchorStyles.Right }, 0, 7);
+            autoStartCheckBox = new CheckBox { Anchor = AnchorStyles.Left };
+            panel.Controls.Add(autoStartCheckBox, 1, 7);
+            
+            // Groups
+            panel.Controls.Add(new Label { Text = "Groups:", Anchor = AnchorStyles.Right | AnchorStyles.Top }, 0, 8);
+            groupListBox = new CheckedListBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Height = 100, Width = 300 };
+            panel.Controls.Add(groupListBox, 1, 8);
+            
+            // Buttons
+            var buttonPanel = new FlowLayoutPanel { FlowDirection = FlowDirection.RightToLeft, Dock = DockStyle.Bottom, Height = 40 };
+            
+            var okButton = new Button { Text = "OK", DialogResult = DialogResult.OK, Size = new Size(75, 25) };
+            okButton.Click += OkButton_Click;
+            
+            var cancelButton = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Size = new Size(75, 25) };
+            
+            buttonPanel.Controls.AddRange(new Control[] { okButton, cancelButton });
+            
+            this.Controls.AddRange(new Control[] { panel, buttonPanel });
+            this.AcceptButton = okButton;
+            this.CancelButton = cancelButton;
+        }
+        
+        private void PopulateControls(Level6Configuration config, List<PlatformInfo> platforms)
+        {
+            // Populate broker combo
+            var brokers = platforms.Select(p => p.Broker).Distinct().Where(b => !string.IsNullOrEmpty(b));
+            brokerComboBox.Items.AddRange(brokers.ToArray());
+            
+            // Populate platform combo
+            var platformTypes = platforms.Select(p => p.Platform).Distinct().Where(p => !string.IsNullOrEmpty(p));
+            platformComboBox.Items.AddRange(platformTypes.ToArray());
+            
+            // Populate source combo
+            var sources = platforms.Where(p => p.IsValid).Select(p => p.Name);
+            sourceComboBox.Items.AddRange(sources.ToArray());
+            
+            // Populate groups
+            foreach (var group in config.Groups.Keys)
             {
-                sb.AppendLine($"Instance: {kvp.Key}");
-                foreach (var process in kvp.Value)
+                groupListBox.Items.Add(group);
+            }
+            
+            // Set current values
+            nameTextBox.Text = Instance.Name;
+            brokerComboBox.Text = Instance.Broker;
+            platformComboBox.Text = Instance.Platform;
+            sourceComboBox.Text = Instance.Source;
+            destinationTextBox.Text = Instance.Destination;
+            accountTypeComboBox.Text = Instance.AccountType;
+            enabledCheckBox.Checked = Instance.Enabled;
+            autoStartCheckBox.Checked = Instance.AutoStart;
+            
+            // Set group memberships
+            for (int i = 0; i < groupListBox.Items.Count; i++)
+            {
+                if (Instance.GroupMembership.Contains(groupListBox.Items[i].ToString()))
                 {
-                    try
-                    {
-                        sb.AppendLine($"  PID: {process.Id}");
-                        sb.AppendLine($"  Memory: {process.WorkingSet64 / (1024 * 1024)} MB");
-                        sb.AppendLine($"  Start Time: {process.StartTime}");
-                        sb.AppendLine($"  CPU Time: {process.TotalProcessorTime}");
-                        sb.AppendLine($"  Threads: {process.Threads.Count}");
-                        sb.AppendLine($"  Handles: {process.HandleCount}");
-                        sb.AppendLine();
-                    }
-                    catch (Exception ex)
-                    {
-                        sb.AppendLine($"  Error reading process info: {ex.Message}\n");
-                    }
+                    groupListBox.SetItemChecked(i, true);
                 }
             }
-
-            perfText.Text = sb.ToString();
-            perfForm.Controls.Add(perfText);
-            perfForm.ShowDialog();
         }
-
-        private void ShowBatchOperations()
+        
+        private void OkButton_Click(object? sender, EventArgs e)
         {
-            var batchForm = new Form
+            // Validate
+            if (string.IsNullOrWhiteSpace(nameTextBox.Text))
             {
-                Text = "Level 5: Batch Operations",
-                Size = new Size(600, 400),
-                StartPosition = FormStartPosition.CenterParent,
-                Owner = this
-            };
+                MessageBox.Show("Name is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.DialogResult = DialogResult.None;
+                return;
+            }
+            
+            if (string.IsNullOrWhiteSpace(sourceComboBox.Text))
+            {
+                MessageBox.Show("Source is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.DialogResult = DialogResult.None;
+                return;
+            }
+            
+            // Save values
+            Instance.Name = nameTextBox.Text.Trim();
+            Instance.Broker = brokerComboBox.Text.Trim();
+            Instance.Platform = platformComboBox.Text.Trim();
+            Instance.Source = sourceComboBox.Text.Trim();
+            Instance.Destination = string.IsNullOrWhiteSpace(destinationTextBox.Text) ? Instance.Name : destinationTextBox.Text.Trim();
+            Instance.DataFolder = Instance.Destination;
+            Instance.JunctionName = Instance.Destination;
+            Instance.AccountType = accountTypeComboBox.Text.Trim();
+            Instance.Enabled = enabledCheckBox.Checked;
+            Instance.AutoStart = autoStartCheckBox.Checked;
+            Instance.LastModified = DateTime.Now;
+            
+            // Save group memberships
+            Instance.GroupMembership.Clear();
+            for (int i = 0; i < groupListBox.Items.Count; i++)
+            {
+                if (groupListBox.GetItemChecked(i))
+                {
+                    Instance.GroupMembership.Add(groupListBox.Items[i].ToString() ?? "");
+                }
+            }
+        }
+    }
 
+    // Simple Group Editor Dialog
+    public class SimpleGroupDialog : Form
+    {
+        public GroupDefinition Group { get; private set; }
+        
+        private TextBox nameTextBox;
+        private TextBox descriptionTextBox;
+        private ComboBox colorComboBox;
+        private ComboBox priorityComboBox;
+        private CheckBox autoStartCheckBox;
+        
+        public SimpleGroupDialog(GroupDefinition? existingGroup)
+        {
+            Group = existingGroup ?? new GroupDefinition();
+            InitializeDialog();
+            PopulateControls();
+        }
+        
+        private void InitializeDialog()
+        {
+            this.Text = Group.Name == "" ? "Create New Group" : "Edit Group";
+            this.Size = new Size(400, 300);
+            this.StartPosition = FormStartPosition.CenterParent;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            
             var panel = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
@@ -891,630 +1583,86 @@ namespace Level4Dashboard
                 RowCount = 6,
                 Padding = new Padding(10)
             };
-
-            // Batch operation buttons
-            var operations = new (string, Action)[]
-            {
-                ("Start All Live Accounts", () => BatchOperation(i => i.AccountType?.ToLower().Contains("live") == true, "start")),
-                ("Start All Demo Accounts", () => BatchOperation(i => i.AccountType?.ToLower().Contains("demo") == true, "start")),
-                ("Stop All MT4 Platforms", () => BatchOperation(i => i.Platform?.ToUpper() == "MT4", "stop")),
-                ("Stop All MT5 Platforms", () => BatchOperation(i => i.Platform?.ToUpper() == "MT5", "stop")),
-                ("Enable All Auto-Start", () => BatchOperation(i => true, "enable_autostart")),
-                ("Disable All Auto-Start", () => BatchOperation(i => true, "disable_autostart"))
-            };
-
-            for (int i = 0; i < operations.Length; i++)
-            {
-                var btn = new Button
-                {
-                    Text = operations[i].Item1,
-                    Dock = DockStyle.Fill,
-                    Margin = new Padding(5)
-                };
-                btn.Click += (s, e) => operations[i].Item2();
-                panel.Controls.Add(btn, 0, i);
-
-                var countLabel = new Label
-                {
-                    Text = GetBatchOperationCount(operations[i].Item1),
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleLeft,
-                    Margin = new Padding(5)
-                };
-                panel.Controls.Add(countLabel, 1, i);
-            }
-
-            batchForm.Controls.Add(panel);
-            batchForm.ShowDialog();
-        }
-
-        private string GetBatchOperationCount(string operation)
-        {
-            if (config?.Instances == null) return "0 instances";
-
-            var count = operation switch
-            {
-                var op when op.Contains("Live") => config.Instances.Count(i => i.AccountType?.ToLower().Contains("live") == true),
-                var op when op.Contains("Demo") => config.Instances.Count(i => i.AccountType?.ToLower().Contains("demo") == true),
-                var op when op.Contains("MT4") => config.Instances.Count(i => i.Platform?.ToUpper() == "MT4"),
-                var op when op.Contains("MT5") => config.Instances.Count(i => i.Platform?.ToUpper() == "MT5"),
-                _ => config.Instances.Count
-            };
-
-            return $"{count} instances";
-        }
-
-        private void BatchOperation(Func<TradingInstance, bool> filter, string operation)
-        {
-            var instances = config?.Instances?.Where(filter).ToList() ?? new List<TradingInstance>();
             
-            if (!instances.Any())
+            // Name
+            panel.Controls.Add(new Label { Text = "Name:", Anchor = AnchorStyles.Right }, 0, 0);
+            nameTextBox = new TextBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 250 };
+            panel.Controls.Add(nameTextBox, 1, 0);
+            
+            // Description
+            panel.Controls.Add(new Label { Text = "Description:", Anchor = AnchorStyles.Right }, 0, 1);
+            descriptionTextBox = new TextBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 250 };
+            panel.Controls.Add(descriptionTextBox, 1, 1);
+            
+            // Color
+            panel.Controls.Add(new Label { Text = "Color:", Anchor = AnchorStyles.Right }, 0, 2);
+            colorComboBox = new ComboBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 250 };
+            colorComboBox.Items.AddRange(new[] { "#0078D4", "#DC3545", "#28A745", "#FFC107", "#6F42C1", "#FD7E14" });
+            panel.Controls.Add(colorComboBox, 1, 2);
+            
+            // Priority
+            panel.Controls.Add(new Label { Text = "Priority:", Anchor = AnchorStyles.Right }, 0, 3);
+            priorityComboBox = new ComboBox { Anchor = AnchorStyles.Left | AnchorStyles.Right, Width = 250 };
+            priorityComboBox.Items.AddRange(new[] { "low", "normal", "high", "critical" });
+            panel.Controls.Add(priorityComboBox, 1, 3);
+            
+            // Auto Start
+            panel.Controls.Add(new Label { Text = "Auto Start:", Anchor = AnchorStyles.Right }, 0, 4);
+            autoStartCheckBox = new CheckBox { Anchor = AnchorStyles.Left };
+            panel.Controls.Add(autoStartCheckBox, 1, 4);
+            
+            // Buttons
+            var buttonPanel = new FlowLayoutPanel { FlowDirection = FlowDirection.RightToLeft, Dock = DockStyle.Bottom, Height = 40 };
+            
+            var okButton = new Button { Text = "OK", DialogResult = DialogResult.OK, Size = new Size(75, 25) };
+            okButton.Click += OkButton_Click;
+            
+            var cancelButton = new Button { Text = "Cancel", DialogResult = DialogResult.Cancel, Size = new Size(75, 25) };
+            
+            buttonPanel.Controls.AddRange(new Control[] { okButton, cancelButton });
+            
+            this.Controls.AddRange(new Control[] { panel, buttonPanel });
+            this.AcceptButton = okButton;
+            this.CancelButton = cancelButton;
+        }
+        
+        private void PopulateControls()
+        {
+            nameTextBox.Text = Group.Name;
+            descriptionTextBox.Text = Group.Description;
+            colorComboBox.Text = Group.Color;
+            priorityComboBox.Text = Group.Priority;
+            autoStartCheckBox.Checked = Group.AutoStart;
+        }
+        
+        private void OkButton_Click(object? sender, EventArgs e)
+        {
+            // Validate
+            if (string.IsNullOrWhiteSpace(nameTextBox.Text))
             {
-                MessageBox.Show("No instances match the selected criteria.", "Batch Operation", 
-                              MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Name is required.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.DialogResult = DialogResult.None;
                 return;
             }
-
-            var result = MessageBox.Show($"Apply {operation} to {instances.Count} instances?", 
-                                       "Confirm Batch Operation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             
-            if (result != DialogResult.Yes) return;
-
-            foreach (var instance in instances)
-            {
-                switch (operation)
-                {
-                    case "start":
-                        StartSingleInstance(instance);
-                        break;
-                    case "stop":
-                        StopSingleInstance(instance);
-                        break;
-                    case "enable_autostart":
-                        if (instance.StartupSettings == null) instance.StartupSettings = new StartupSettings();
-                        instance.StartupSettings.AutoStart = true;
-                        break;
-                    case "disable_autostart":
-                        if (instance.StartupSettings == null) instance.StartupSettings = new StartupSettings();
-                        instance.StartupSettings.AutoStart = false;
-                        break;
-                }
-            }
-
-            if (operation.Contains("autostart"))
-            {
-                SaveConfiguration();
-                RefreshDisplay();
-            }
-
-            statusLabel.Text = $"Batch operation '{operation}' applied to {instances.Count} instances";
-        }
-
-        private void ShowConfigurationEditor()
-        {
-            var configForm = new Form
-            {
-                Text = "Level 5: Configuration Editor",
-                Size = new Size(900, 700),
-                StartPosition = FormStartPosition.CenterParent,
-                Owner = this
-            };
-
-            var textBox = new TextBox
-            {
-                Dock = DockStyle.Fill,
-                Multiline = true,
-                ScrollBars = ScrollBars.Both,
-                Font = new Font("Consolas", 10),
-                WordWrap = false
-            };
-
-            try
-            {
-                textBox.Text = File.ReadAllText(configPath);
-            }
-            catch (Exception ex)
-            {
-                textBox.Text = $"Error loading configuration: {ex.Message}";
-            }
-
-            var buttonPanel = new Panel { Height = 40, Dock = DockStyle.Bottom };
-            var saveBtn = new Button { Text = "Save & Reload", Size = new Size(120, 30), Location = new Point(10, 5) };
-            var cancelBtn = new Button { Text = "Cancel", Size = new Size(80, 30), Location = new Point(140, 5) };
-
-            saveBtn.Click += (s, e) =>
-            {
-                try
-                {
-                    File.WriteAllText(configPath, textBox.Text);
-                    LoadConfiguration();
-                    configForm.Close();
-                    MessageBox.Show("Configuration saved and reloaded!", "Success", 
-                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error saving configuration: {ex.Message}", "Error", 
-                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            };
-
-            cancelBtn.Click += (s, e) => configForm.Close();
-
-
-            buttonPanel.Controls.AddRange(new Control[] { saveBtn, cancelBtn });
-            configForm.Controls.AddRange(new Control[] { textBox, buttonPanel });
-            configForm.ShowDialog();
-        }
-
-        private void ShowProcessExplorer()
-        {
-            var processForm = new Form
-            {
-                Text = "Level 5: Trading Process Explorer",
-                Size = new Size(1000, 600),
-                StartPosition = FormStartPosition.CenterParent,
-                Owner = this
-            };
-
-            var listView = new ListView
-            {
-                Dock = DockStyle.Fill,
-                View = View.Details,
-                FullRowSelect = true,
-                GridLines = true
-            };
-
-            listView.Columns.AddRange(new[]
-            {
-                new ColumnHeader { Text = "Instance", Width = 150 },
-                new ColumnHeader { Text = "PID", Width = 80 },
-                new ColumnHeader { Text = "Memory (MB)", Width = 100 },
-                new ColumnHeader { Text = "CPU Time", Width = 120 },
-                new ColumnHeader { Text = "Start Time", Width = 150 },
-                new ColumnHeader { Text = "Status", Width = 100 },
-                new ColumnHeader { Text = "Path", Width = 250 }
-            });
-
-            foreach (var kvp in runningProcesses)
-            {
-                foreach (var process in kvp.Value)
-                {
-                    try
-                    {
-                        var item = new ListViewItem(kvp.Key);
-                        item.SubItems.AddRange(new[]
-                        {
-                            process.Id.ToString(),
-                            (process.WorkingSet64 / (1024 * 1024)).ToString(),
-                            process.TotalProcessorTime.ToString(@"hh\:mm\:ss"),
-                            process.StartTime.ToString("yyyy-MM-dd HH:mm:ss"),
-                            process.Responding ? "Responding" : "Not Responding",
-                            process.MainModule?.FileName ?? "N/A"
-                        });
-
-                        if (!process.Responding)
-                        {
-                            item.BackColor = Color.LightPink;
-                        }
-
-                        listView.Items.Add(item);
-                    }
-                    catch { } // Skip processes we can't access
-                }
-            }
-
-            processForm.Controls.Add(listView);
-            processForm.ShowDialog();
-        }
-
-        private void ToggleDarkMode(object sender, EventArgs e)
-        {
-            var isDark = darkModeMenuItem.Checked;
-            darkModeMenuItem.Checked = !isDark;
-
-            if (!isDark)
-            {
-                // Switch to dark mode
-                this.BackColor = Color.FromArgb(45, 45, 48);
-                this.ForeColor = Color.White;
-                mainPanel.BackColor = Color.FromArgb(45, 45, 48);
-            }
-            else
-            {
-                // Switch to light mode
-                this.BackColor = SystemColors.Control;
-                this.ForeColor = SystemColors.ControlText;
-                mainPanel.BackColor = SystemColors.Control;
-            }
-
-            RefreshDisplay();
-        }
-
-        // Action methods
-        private async void RunTradingManagerAction(string action)
-        {
-            try
-            {
-                statusLabel.Text = $"Running {action}...";
-                var tradingRoot = Path.GetDirectoryName(configPath);
-                var setupPath = Path.Combine(tradingRoot, "Setup");
-                
-                // Try multiple possible script locations
-                var scriptPaths = new[]
-                {
-                    Path.Combine(setupPath, "3 SimpleTradingManager.ps1"),
-                    Path.Combine(tradingRoot, "3 SimpleTradingManager.ps1"),
-                    Path.Combine(tradingRoot, "Setup", "3 trading_manager.ps1"),
-                    Path.Combine(tradingRoot, "3 trading_manager.ps1")
-                };
-                
-                var scriptPath = scriptPaths.FirstOrDefault(File.Exists);
-                
-                if (string.IsNullOrEmpty(scriptPath))
-                {
-                    MessageBox.Show($"PowerShell script not found. Looked in:\n{string.Join("\n", scriptPaths)}", 
-                                  "Script Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    statusLabel.Text = "Script not found";
-                    return;
-                }
-
-                var startInfo = new ProcessStartInfo
-                {
-                    FileName = "powershell.exe",
-                    Arguments = $"-ExecutionPolicy Bypass -File \"{scriptPath}\" -Action {action}",
-                    WorkingDirectory = tradingRoot,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true
-                };
-
-                using var process = Process.Start(startInfo);
-                if (process != null)
-                {
-                    await process.WaitForExitAsync();
-                    var output = await process.StandardOutput.ReadToEndAsync();
-                    var error = await process.StandardError.ReadToEndAsync();
-                    
-                    if (process.ExitCode == 0)
-                    {
-                        statusLabel.Text = $"{action} completed successfully";
-                        if (!string.IsNullOrEmpty(output) && action == "Status")
-                        {
-                            MessageBox.Show(output, "Platform Status", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                    }
-                    else
-                    {
-                        statusLabel.Text = $"{action} failed";
-                        MessageBox.Show($"Error: {error}", "Action Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                statusLabel.Text = "Action failed";
-                MessageBox.Show($"Error running action: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private async void RunIconGenerator()
-        {
-            try
-            {
-                statusLabel.Text = "Generating icons...";
-                var tradingRoot = Path.GetDirectoryName(configPath);
-                var setupPath = Path.Combine(tradingRoot, "Setup");
-                
-                // Try multiple possible script locations
-                var scriptPaths = new[]
-                {
-                    Path.Combine(setupPath, "4 Level4-IconGenerator.ps1"),
-                    Path.Combine(tradingRoot, "4 Level4-IconGenerator.ps1"),
-                    Path.Combine(setupPath, "Level4-IconGenerator.ps1"),
-                    Path.Combine(tradingRoot, "Level4-IconGenerator.ps1")
-                };
-                
-                var scriptPath = scriptPaths.FirstOrDefault(File.Exists);
-                
-                if (string.IsNullOrEmpty(scriptPath))
-                {
-                    MessageBox.Show($"Icon generator script not found. Looked in:\n{string.Join("\n", scriptPaths)}", 
-                                  "Script Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    statusLabel.Text = "Icon generator not found";
-                    return;
-                }
-
-                var startInfo = new ProcessStartInfo
-                {
-                    FileName = "powershell.exe",
-                    Arguments = $"-ExecutionPolicy Bypass -File \"{scriptPath}\" -Action Generate -Verbose",
-                    WorkingDirectory = tradingRoot,
-                    UseShellExecute = false,
-                    CreateNoWindow = false // Show window for icon generation
-                };
-
-                using var process = Process.Start(startInfo);
-                if (process != null)
-                {
-                    await process.WaitForExitAsync();
-                    statusLabel.Text = "Icon generation completed";
-                    RefreshDisplay(); // Refresh to show new icons
-                }
-            }
-            catch (Exception ex)
-            {
-                statusLabel.Text = "Icon generation failed";
-                MessageBox.Show($"Error generating icons: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void StartGroup(List<TradingInstance> instances)
-        {
-            foreach (var instance in instances.Where(i => i.Enabled))
-            {
-                StartSingleInstance(instance);
-            }
-        }
-
-        private void StopGroup(List<TradingInstance> instances)
-        {
-            foreach (var instance in instances)
-            {
-                StopSingleInstance(instance);
-            }
-        }
-
-        private void ToggleGroupEnabled(List<TradingInstance> instances, bool enabled)
-        {
-            foreach (var instance in instances)
-            {
-                instance.Enabled = enabled;
-            }
-            SaveConfiguration();
-            RefreshDisplay();
-        }
-
-        private void StartSingleInstance(TradingInstance instance)
-        {
-            try
-            {
-                var instancePath = Path.Combine(Path.GetDirectoryName(configPath) ?? "", "PlatformInstances", instance.Destination);
-                var executable = instance.StartupSettings?.Executable ?? GetDefaultExecutable(instance.Platform);
-                var exePath = Path.Combine(instancePath, executable);
-
-                if (File.Exists(exePath))
-                {
-                    var args = instance.StartupSettings?.Arguments ?? "";
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = exePath,
-                        Arguments = args,
-                        WorkingDirectory = instancePath,
-                        UseShellExecute = true
-                    });
-                    
-                    statusLabel.Text = $"Started {instance.Name ?? instance.Destination}";
-                }
-                else
-                {
-                    MessageBox.Show($"Executable not found: {exePath}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error starting instance: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void StopSingleInstance(TradingInstance instance)
-        {
-            try
-            {
-                var executable = instance.StartupSettings?.Executable ?? GetDefaultExecutable(instance.Platform);
-                var processName = Path.GetFileNameWithoutExtension(executable);
-                
-                var processes = Process.GetProcessesByName(processName);
-                var instancePath = Path.Combine(Path.GetDirectoryName(configPath) ?? "", "PlatformInstances", instance.Destination);
-                
-                foreach (var process in processes)
-                {
-                    try
-                    {
-                        if (process.MainModule?.FileName?.StartsWith(instancePath, StringComparison.OrdinalIgnoreCase) == true)
-                        {
-                            process.CloseMainWindow();
-                            if (!process.WaitForExit(5000))
-                            {
-                                process.Kill();
-                            }
-                        }
-                    }
-                    catch { } // Ignore access denied errors
-                }
-                
-                statusLabel.Text = $"Stopped {instance.Name ?? instance.Destination}";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error stopping instance: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private string GetDefaultExecutable(string platform)
-        {
-            return platform?.ToUpper() switch
-            {
-                "MT4" => "terminal.exe",
-                "MT5" => "terminal64.exe",
-                "TRADEREVOLUTION" => "TradeTerminal.exe",
-                _ => "terminal.exe"
-            };
-        }
-
-        // Context menu event handlers
-        private void StartInstance_Click(object sender, EventArgs e)
-        {
-            if (instanceContextMenu.SourceControl?.Tag is TradingInstance instance)
-            {
-                StartSingleInstance(instance);
-            }
-        }
-
-        private void StopInstance_Click(object sender, EventArgs e)
-        {
-            if (instanceContextMenu.SourceControl?.Tag is TradingInstance instance)
-            {
-                StopSingleInstance(instance);
-            }
-        }
-
-        private void EnableAutoStart_Click(object sender, EventArgs e)
-        {
-            if (instanceContextMenu.SourceControl?.Tag is TradingInstance instance)
-            {
-                if (instance.StartupSettings == null)
-                    instance.StartupSettings = new StartupSettings();
-                instance.StartupSettings.AutoStart = true;
-                SaveConfiguration();
-                RefreshDisplay();
-            }
-        }
-
-        private void DisableAutoStart_Click(object sender, EventArgs e)
-        {
-            if (instanceContextMenu.SourceControl?.Tag is TradingInstance instance)
-            {
-                if (instance.StartupSettings == null)
-                    instance.StartupSettings = new StartupSettings();
-                instance.StartupSettings.AutoStart = false;
-                SaveConfiguration();
-                RefreshDisplay();
-            }
-        }
-
-        private void EnableInstance_Click(object sender, EventArgs e)
-        {
-            if (instanceContextMenu.SourceControl?.Tag is TradingInstance instance)
-            {
-                instance.Enabled = true;
-                SaveConfiguration();
-                RefreshDisplay();
-            }
-        }
-
-        private void DisableInstance_Click(object sender, EventArgs e)
-        {
-            if (instanceContextMenu.SourceControl?.Tag is TradingInstance instance)
-            {
-                instance.Enabled = false;
-                SaveConfiguration();
-                RefreshDisplay();
-            }
-        }
-
-        private void OpenInstanceFolder_Click(object sender, EventArgs e)
-        {
-            if (instanceContextMenu.SourceControl?.Tag is TradingInstance instance)
-            {
-                var instancePath = Path.Combine(Path.GetDirectoryName(configPath) ?? "", "PlatformInstances", instance.Destination);
-                if (Directory.Exists(instancePath))
-                {
-                    Process.Start("explorer.exe", instancePath);
-                }
-            }
-        }
-
-        private void ViewConfiguration_Click(object sender, EventArgs e)
-        {
-            if (instanceContextMenu.SourceControl?.Tag is TradingInstance instance)
-            {
-                var details = $"Instance: {instance.Name}\n" +
-                             $"Platform: {instance.Platform}\n" +
-                             $"Source: {instance.Source}\n" +
-                             $"Destination: {instance.Destination}\n" +
-                             $"Enabled: {instance.Enabled}\n" +
-                             $"Account Type: {instance.AccountType}\n" +
-                             $"Auto-Start: {instance.StartupSettings?.AutoStart ?? true}\n" +
-                             $"Startup Delay: {instance.StartupSettings?.StartupDelay ?? 0}s\n" +
-                             $"Executable: {instance.StartupSettings?.Executable ?? GetDefaultExecutable(instance.Platform)}";
-                
-                MessageBox.Show(details, "Instance Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void SaveConfiguration()
-        {
-            try
-            {
-                var json = JsonSerializer.Serialize(config, new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                });
-                File.WriteAllText(configPath, json);
-                statusLabel.Text = "Configuration saved";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error saving configuration: {ex.Message}", "Save Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                refreshTimer?.Dispose();
-                performanceTimer?.Dispose();
-            }
-            base.Dispose(disposing);
+            // Save values
+            Group.Name = nameTextBox.Text.Trim();
+            Group.Description = descriptionTextBox.Text.Trim();
+            Group.Color = colorComboBox.Text.Trim();
+            Group.Priority = priorityComboBox.Text.Trim();
+            Group.AutoStart = autoStartCheckBox.Checked;
         }
     }
 
-    // Data classes for JSON configuration
-    public class TradingConfiguration
-    {
-        public List<TradingInstance> Instances { get; set; } = new();
-    }
-
-    public class TradingInstance
-    {
-        public string Name { get; set; }
-        public string Platform { get; set; }
-        public string Source { get; set; }
-        public string Destination { get; set; }
-        public bool Enabled { get; set; }
-        public string AccountType { get; set; }
-        public StartupSettings StartupSettings { get; set; }
-        public IconSettings IconSettings { get; set; }
-    }
-
-    public class StartupSettings
-    {
-        public bool AutoStart { get; set; } = true;
-        public int StartupDelay { get; set; }
-        public string Executable { get; set; }
-        public string Arguments { get; set; }
-    }
-
-    public class IconSettings
-    {
-        public string BackgroundColor { get; set; }
-        public string TextColor { get; set; }
-        public string OverlayText { get; set; }
-    }
-
-    // Application entry point
-    public static class Program
+    // Program entry point
+    public class Program
     {
         [STAThread]
         public static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            Application.Run(new Level6InstanceManager());
         }
     }
 }

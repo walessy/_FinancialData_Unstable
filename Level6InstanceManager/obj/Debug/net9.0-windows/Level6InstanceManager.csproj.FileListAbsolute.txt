@@ -1,0 +1,15 @@
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\Level6InstanceManager.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\Level6InstanceManager.AssemblyInfoInputs.cache
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\Level6InstanceManager.AssemblyInfo.cs
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\Level6InstanceManager.csproj.CoreCompileInputs.cache
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\Level6InstanceManager.sourcelink.json
+C:\Projects\FinancialData\Level6InstanceManager\bin\Debug\net9.0-windows\Level6InstanceManager.exe
+C:\Projects\FinancialData\Level6InstanceManager\bin\Debug\net9.0-windows\Level6InstanceManager.deps.json
+C:\Projects\FinancialData\Level6InstanceManager\bin\Debug\net9.0-windows\Level6InstanceManager.runtimeconfig.json
+C:\Projects\FinancialData\Level6InstanceManager\bin\Debug\net9.0-windows\Level6InstanceManager.dll
+C:\Projects\FinancialData\Level6InstanceManager\bin\Debug\net9.0-windows\Level6InstanceManager.pdb
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\Level6InstanceManager.dll
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\refint\Level6InstanceManager.dll
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\Level6InstanceManager.pdb
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\Level6InstanceManager.genruntimeconfig.cache
+C:\Projects\FinancialData\Level6InstanceManager\obj\Debug\net9.0-windows\ref\Level6InstanceManager.dll

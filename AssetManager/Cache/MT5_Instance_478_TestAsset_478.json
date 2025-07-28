@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_478",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_478.ex4",
+  "InstanceName": "Instance_478",
+  "Version": "1.0",
+  "LastModified": "2025-07-13T06:03:19.7551706+01:00",
+  "FileSize": 34143,
+  "QuickHash": 869529929,
+  "FullHash": 1936983235,
+  "CacheTime": "2025-07-28T06:03:19.7584065+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

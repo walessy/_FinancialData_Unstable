@@ -1,0 +1,66 @@
+{
+  "tradingRoot": "C:\\Projects\\FinancialData",
+  "defaultDataRoot": "C:\\Projects\\FinancialData\\TradingData",
+  "instances": [
+    {
+      "name": "AfterPrime_MT4_Demo_Instance",
+      "broker": "AfterPrime",
+      "platform": "MT4",
+      "source": "AfterPrime_MT4",
+      "destination": "AfterPrime_MT4_Demo_Instance",
+      "accountType": "Demo",
+      "enabled": true,
+      "autoStart": false
+    },
+    {
+      "name": "AfterPrime_MT4_Live_Instance",
+      "broker": "AfterPrime",
+      "platform": "MT4",
+      "source": "AfterPrime_MT4",
+      "destination": "AfterPrime_MT4_Live_Instance",
+      "accountType": "Live",
+      "enabled": true,
+      "autoStart": false
+    },
+    {
+      "name": "AfterPrime_MT5_Demo_Instance",
+      "broker": "AfterPrime",
+      "platform": "MT5",
+      "source": "AfterPrime_MT5",
+      "destination": "AfterPrime_MT5_Demo_Instance",
+      "accountType": "Demo",
+      "enabled": true,
+      "autoStart": false
+    },
+    {
+      "name": "AfterPrime_MT5_Live_Instance",
+      "broker": "AfterPrime",
+      "platform": "MT5",
+      "source": "AfterPrime_MT5",
+      "destination": "AfterPrime_MT5_Live_Instance",
+      "accountType": "Live",
+      "enabled": true,
+      "autoStart": false
+    },
+    {
+      "name": "AfterPrime_TraderEvolution_Demo_Instance",
+      "broker": "AfterPrime",
+      "platform": "TraderEvolution",
+      "source": "AfterPrime_TraderEvolution",
+      "destination": "AfterPrime_TraderEvolution_Demo_Instance",
+      "accountType": "Demo",
+      "enabled": true,
+      "autoStart": false
+    },
+    {
+      "name": "AfterPrime_TraderEvolution_Live_Instance",
+      "broker": "AfterPrime",
+      "platform": "TraderEvolution",
+      "source": "AfterPrime_TraderEvolution",
+      "destination": "AfterPrime_TraderEvolution_Live_Instance",
+      "accountType": "Live",
+      "enabled": true,
+      "autoStart": false
+    }
+  ]
+}

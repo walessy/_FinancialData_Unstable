@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_319",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_319.ex4",
+  "InstanceName": "Instance_319",
+  "Version": "1.0",
+  "LastModified": "2025-07-22T06:03:19.7550575+01:00",
+  "FileSize": 5974,
+  "QuickHash": 1214690417,
+  "FullHash": 278277670,
+  "CacheTime": "2025-07-28T06:03:19.7575432+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

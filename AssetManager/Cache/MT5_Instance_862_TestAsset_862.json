@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_862",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_862.ex4",
+  "InstanceName": "Instance_862",
+  "Version": "1.0",
+  "LastModified": "2025-07-09T06:03:19.7553985+01:00",
+  "FileSize": 34053,
+  "QuickHash": 1417623918,
+  "FullHash": 1535636366,
+  "CacheTime": "2025-07-28T06:03:19.763312+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_586",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_586.ex4",
+  "InstanceName": "Instance_586",
+  "Version": "1.0",
+  "LastModified": "2025-07-18T06:03:19.7552273+01:00",
+  "FileSize": 49404,
+  "QuickHash": 315992490,
+  "FullHash": 1716860811,
+  "CacheTime": "2025-07-28T06:03:19.7597187+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

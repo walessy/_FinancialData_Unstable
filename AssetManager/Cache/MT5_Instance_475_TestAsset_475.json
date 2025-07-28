@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_475",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_475.ex4",
+  "InstanceName": "Instance_475",
+  "Version": "1.0",
+  "LastModified": "2025-07-25T06:03:19.7551695+01:00",
+  "FileSize": 11451,
+  "QuickHash": 266847730,
+  "FullHash": 928534036,
+  "CacheTime": "2025-07-28T06:03:19.7583827+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_552",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_552.ex4",
+  "InstanceName": "Instance_552",
+  "Version": "1.0",
+  "LastModified": "2025-07-04T06:03:19.7552069+01:00",
+  "FileSize": 8786,
+  "QuickHash": 2068598214,
+  "FullHash": 738211673,
+  "CacheTime": "2025-07-28T06:03:19.759283+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_6",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_6.ex4",
+  "InstanceName": "Instance_6",
+  "Version": "1.0",
+  "LastModified": "2025-07-28T06:03:19.7547984+01:00",
+  "FileSize": 25144,
+  "QuickHash": 1384097757,
+  "FullHash": 1220732968,
+  "CacheTime": "2025-07-28T06:03:19.7555052+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_504",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_504.ex4",
+  "InstanceName": "Instance_504",
+  "Version": "1.0",
+  "LastModified": "2025-07-08T06:03:19.7551846+01:00",
+  "FileSize": 16574,
+  "QuickHash": 1074120638,
+  "FullHash": 1290765470,
+  "CacheTime": "2025-07-28T06:03:19.7586043+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

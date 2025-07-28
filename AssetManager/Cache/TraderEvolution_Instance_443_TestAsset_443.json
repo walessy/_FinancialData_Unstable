@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_443",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_443.ex4",
+  "InstanceName": "Instance_443",
+  "Version": "1.0",
+  "LastModified": "2025-07-05T06:03:19.7551406+01:00",
+  "FileSize": 47138,
+  "QuickHash": 706449142,
+  "FullHash": 771423049,
+  "CacheTime": "2025-07-28T06:03:19.7581964+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

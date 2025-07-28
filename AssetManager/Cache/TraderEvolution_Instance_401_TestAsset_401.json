@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_401",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_401.ex4",
+  "InstanceName": "Instance_401",
+  "Version": "1.0",
+  "LastModified": "2025-07-13T06:03:19.7551104+01:00",
+  "FileSize": 47027,
+  "QuickHash": 2082071622,
+  "FullHash": 1699497892,
+  "CacheTime": "2025-07-28T06:03:19.7578447+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

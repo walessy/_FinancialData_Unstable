@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_613",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_613.ex4",
+  "InstanceName": "Instance_613",
+  "Version": "1.0",
+  "LastModified": "2025-07-13T06:03:19.7552403+01:00",
+  "FileSize": 14196,
+  "QuickHash": 2047850011,
+  "FullHash": 1775963409,
+  "CacheTime": "2025-07-28T06:03:19.7600915+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

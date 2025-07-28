@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_889",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_889.ex4",
+  "InstanceName": "Instance_889",
+  "Version": "1.0",
+  "LastModified": "2025-07-07T06:03:19.7554163+01:00",
+  "FileSize": 8143,
+  "QuickHash": 427105525,
+  "FullHash": 910087353,
+  "CacheTime": "2025-07-28T06:03:19.7637468+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

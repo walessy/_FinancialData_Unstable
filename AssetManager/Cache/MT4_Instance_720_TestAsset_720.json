@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_720",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_720.ex4",
+  "InstanceName": "Instance_720",
+  "Version": "1.0",
+  "LastModified": "2025-07-25T06:03:19.7552993+01:00",
+  "FileSize": 11280,
+  "QuickHash": 1394813129,
+  "FullHash": 1344677259,
+  "CacheTime": "2025-07-28T06:03:19.7613345+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

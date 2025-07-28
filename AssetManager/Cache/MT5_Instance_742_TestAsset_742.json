@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_742",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_742.ex4",
+  "InstanceName": "Instance_742",
+  "Version": "1.0",
+  "LastModified": "2025-07-21T06:03:19.7553117+01:00",
+  "FileSize": 27429,
+  "QuickHash": 508522187,
+  "FullHash": 1823123406,
+  "CacheTime": "2025-07-28T06:03:19.7615626+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

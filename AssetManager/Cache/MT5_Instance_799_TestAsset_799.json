@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_799",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_799.ex4",
+  "InstanceName": "Instance_799",
+  "Version": "1.0",
+  "LastModified": "2025-07-08T06:03:19.7553486+01:00",
+  "FileSize": 37294,
+  "QuickHash": 1693986749,
+  "FullHash": 655957910,
+  "CacheTime": "2025-07-28T06:03:19.7622525+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

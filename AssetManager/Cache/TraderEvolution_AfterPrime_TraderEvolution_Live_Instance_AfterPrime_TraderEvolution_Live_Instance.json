@@ -1,0 +1,18 @@
+{
+  "Name": "AfterPrime_TraderEvolution_Live_Instance",
+  "Platform": "TraderEvolution",
+  "Type": "TradingInstance",
+  "FilePath": "C:\\Projects\\FinancialData\\PlatformInstances\\AfterPrime_TraderEvolution_Live_Instance\\TradeTerminal.exe",
+  "InstanceName": "AfterPrime_TraderEvolution_Live_Instance",
+  "Version": "1.0",
+  "LastModified": "2025-04-30T12:59:50+01:00",
+  "FileSize": 25112,
+  "QuickHash": 887534556747164934,
+  "FullHash": 0,
+  "CacheTime": "2025-07-28T06:54:20.1590702+01:00",
+  "IsDeployed": true,
+  "DeploymentStatus": "Ready",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_787",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_787.ex4",
+  "InstanceName": "Instance_787",
+  "Version": "1.0",
+  "LastModified": "2025-07-06T06:03:19.7553409+01:00",
+  "FileSize": 25455,
+  "QuickHash": 518871059,
+  "FullHash": 309191258,
+  "CacheTime": "2025-07-28T06:03:19.7620783+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

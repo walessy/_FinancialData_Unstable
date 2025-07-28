@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_755",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_755.ex4",
+  "InstanceName": "Instance_755",
+  "Version": "1.0",
+  "LastModified": "2025-07-19T06:03:19.755321+01:00",
+  "FileSize": 47218,
+  "QuickHash": 1669592121,
+  "FullHash": 280916168,
+  "CacheTime": "2025-07-28T06:03:19.7617006+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

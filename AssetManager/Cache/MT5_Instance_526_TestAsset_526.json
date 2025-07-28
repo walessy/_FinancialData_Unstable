@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_526",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_526.ex4",
+  "InstanceName": "Instance_526",
+  "Version": "1.0",
+  "LastModified": "2025-07-23T06:03:19.7551931+01:00",
+  "FileSize": 31600,
+  "QuickHash": 1934033106,
+  "FullHash": 273005219,
+  "CacheTime": "2025-07-28T06:03:19.7589593+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

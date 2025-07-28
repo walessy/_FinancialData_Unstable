@@ -1,94 +1,66 @@
 {
+  "tradingRoot": "C:\\Projects\\FinancialData",
+  "defaultDataRoot": "",
   "instances": [
     {
       "name": "AfterPrime_MT4_Demo_Instance",
+      "broker": "",
       "platform": "MT4",
       "source": "AfterPrime_MT4_Demo",
       "destination": "AfterPrime_MT4_Demo_Instance",
-      "enabled": true,
       "accountType": "demo",
-      "startupSettings": {
-        "autoStart": false,
-        "startupDelay": 0,
-        "executable": "terminal.exe",
-        "arguments": "/portable"
-      },
-      "iconSettings": null
+      "enabled": true,
+      "autoStart": false
     },
     {
       "name": "AfterPrime_MT4_Live_Instance",
+      "broker": "",
       "platform": "MT4",
       "source": "AfterPrime_MT4_Live",
       "destination": "AfterPrime_MT4_Live_Instance",
-      "enabled": true,
       "accountType": "live",
-      "startupSettings": {
-        "autoStart": false,
-        "startupDelay": 10,
-        "executable": "terminal.exe",
-        "arguments": "/portable"
-      },
-      "iconSettings": null
+      "enabled": true,
+      "autoStart": false
     },
     {
       "name": "AfterPrime_MT5_Demo_Instance",
+      "broker": "",
       "platform": "MT5",
       "source": "AfterPrime_MT5-Demo",
       "destination": "AfterPrime_MT5_Demo_Instance",
-      "enabled": true,
       "accountType": "demo",
-      "startupSettings": {
-        "autoStart": false,
-        "startupDelay": 20,
-        "executable": "terminal64.exe",
-        "arguments": "/portable"
-      },
-      "iconSettings": null
+      "enabled": true,
+      "autoStart": false
     },
     {
       "name": "AfterPrime_MT5_Live_Instance",
+      "broker": "",
       "platform": "MT5",
       "source": "AfterPrime_MT5-Live",
       "destination": "AfterPrime_MT5_Live_Instance",
-      "enabled": true,
       "accountType": "live",
-      "startupSettings": {
-        "autoStart": false,
-        "startupDelay": 30,
-        "executable": "terminal64.exe",
-        "arguments": "/portable"
-      },
-      "iconSettings": null
+      "enabled": true,
+      "autoStart": false
     },
     {
       "name": "AfterPrime_TraderEvolution_Live_Instance",
+      "broker": "",
       "platform": "TraderEvolution",
       "source": "AfterPrime_TraderEvolution-Live",
       "destination": "AfterPrime_TraderEvolution_Live_Instance",
-      "enabled": true,
       "accountType": "live",
-      "startupSettings": {
-        "autoStart": false,
-        "startupDelay": 40,
-        "executable": "TradeTerminal.exe",
-        "arguments": ""
-      },
-      "iconSettings": null
+      "enabled": true,
+      "autoStart": false
     },
     {
       "name": "AfterPrime_TraderEvolution_Demo_Instance",
+      "broker": "",
       "platform": "TraderEvolution",
       "source": "AfterPrime_TraderEvolution-Demo",
       "destination": "AfterPrime_TraderEvolution_Demo_Instance",
-      "enabled": true,
       "accountType": "demo",
-      "startupSettings": {
-        "autoStart": false,
-        "startupDelay": 50,
-        "executable": "TradeTerminal.exe",
-        "arguments": ""
-      },
-      "iconSettings": null
+      "enabled": true,
+      "autoStart": false
     }
   ]
 }

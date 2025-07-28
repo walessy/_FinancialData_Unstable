@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_408",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_408.ex4",
+  "InstanceName": "Instance_408",
+  "Version": "1.0",
+  "LastModified": "2025-07-25T06:03:19.7551136+01:00",
+  "FileSize": 17566,
+  "QuickHash": 301707356,
+  "FullHash": 1192367605,
+  "CacheTime": "2025-07-28T06:03:19.7578798+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

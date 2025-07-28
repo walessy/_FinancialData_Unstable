@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_836",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_836.ex4",
+  "InstanceName": "Instance_836",
+  "Version": "1.0",
+  "LastModified": "2025-07-25T06:03:19.755385+01:00",
+  "FileSize": 16109,
+  "QuickHash": 2142070404,
+  "FullHash": 148237349,
+  "CacheTime": "2025-07-28T06:03:19.7628829+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

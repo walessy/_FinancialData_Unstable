@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_796",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_796.ex4",
+  "InstanceName": "Instance_796",
+  "Version": "1.0",
+  "LastModified": "2025-07-15T06:03:19.7553462+01:00",
+  "FileSize": 45259,
+  "QuickHash": 2016075600,
+  "FullHash": 1129241062,
+  "CacheTime": "2025-07-28T06:03:19.762209+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

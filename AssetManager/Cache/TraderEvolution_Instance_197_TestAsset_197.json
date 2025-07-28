@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_197",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_197.ex4",
+  "InstanceName": "Instance_197",
+  "Version": "1.0",
+  "LastModified": "2025-07-22T06:03:19.7549955+01:00",
+  "FileSize": 15972,
+  "QuickHash": 296809735,
+  "FullHash": 1308757093,
+  "CacheTime": "2025-07-28T06:03:19.7570173+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

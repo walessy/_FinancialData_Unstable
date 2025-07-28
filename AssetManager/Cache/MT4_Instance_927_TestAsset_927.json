@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_927",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_927.ex4",
+  "InstanceName": "Instance_927",
+  "Version": "1.0",
+  "LastModified": "2025-07-23T06:03:19.7554394+01:00",
+  "FileSize": 40439,
+  "QuickHash": 1440897527,
+  "FullHash": 1093799932,
+  "CacheTime": "2025-07-28T06:03:19.7643258+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

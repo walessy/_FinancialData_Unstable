@@ -1,0 +1,18 @@
+{
+  "Name": "TestIndicator",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Indicators\\TestIndicator.ex4",
+  "InstanceName": "MT4_Demo",
+  "Version": "1.0",
+  "LastModified": "2025-07-28T06:03:19.6955736+01:00",
+  "FileSize": 15420,
+  "QuickHash": 123456789,
+  "FullHash": 987654321,
+  "CacheTime": "2025-07-28T06:03:19.752565+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

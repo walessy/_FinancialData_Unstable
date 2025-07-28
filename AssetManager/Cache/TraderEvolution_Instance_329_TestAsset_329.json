@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_329",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_329.ex4",
+  "InstanceName": "Instance_329",
+  "Version": "1.0",
+  "LastModified": "2025-07-21T06:03:19.755066+01:00",
+  "FileSize": 37076,
+  "QuickHash": 515675985,
+  "FullHash": 14677205,
+  "CacheTime": "2025-07-28T06:03:19.7575736+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

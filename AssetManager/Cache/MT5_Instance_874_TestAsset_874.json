@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_874",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_874.ex4",
+  "InstanceName": "Instance_874",
+  "Version": "1.0",
+  "LastModified": "2025-07-26T06:03:19.7554031+01:00",
+  "FileSize": 30739,
+  "QuickHash": 1780659713,
+  "FullHash": 1001173454,
+  "CacheTime": "2025-07-28T06:03:19.7634931+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

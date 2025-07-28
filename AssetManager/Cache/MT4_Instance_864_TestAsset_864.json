@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_864",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_864.ex4",
+  "InstanceName": "Instance_864",
+  "Version": "1.0",
+  "LastModified": "2025-07-14T06:03:19.7553992+01:00",
+  "FileSize": 19087,
+  "QuickHash": 1436040823,
+  "FullHash": 1830151140,
+  "CacheTime": "2025-07-28T06:03:19.7633421+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

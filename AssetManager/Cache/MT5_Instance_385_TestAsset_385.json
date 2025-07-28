@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_385",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_385.ex4",
+  "InstanceName": "Instance_385",
+  "Version": "1.0",
+  "LastModified": "2025-07-27T06:03:19.7551041+01:00",
+  "FileSize": 12196,
+  "QuickHash": 857940813,
+  "FullHash": 404391313,
+  "CacheTime": "2025-07-28T06:03:19.7577921+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

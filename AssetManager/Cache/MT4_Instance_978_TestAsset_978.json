@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_978",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_978.ex4",
+  "InstanceName": "Instance_978",
+  "Version": "1.0",
+  "LastModified": "2025-07-07T06:03:19.7554665+01:00",
+  "FileSize": 27237,
+  "QuickHash": 849530142,
+  "FullHash": 589683885,
+  "CacheTime": "2025-07-28T06:03:19.7652142+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

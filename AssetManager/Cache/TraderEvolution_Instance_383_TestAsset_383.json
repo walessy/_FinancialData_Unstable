@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_383",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_383.ex4",
+  "InstanceName": "Instance_383",
+  "Version": "1.0",
+  "LastModified": "2025-07-22T06:03:19.7551033+01:00",
+  "FileSize": 28991,
+  "QuickHash": 953374274,
+  "FullHash": 1658131964,
+  "CacheTime": "2025-07-28T06:03:19.7577861+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

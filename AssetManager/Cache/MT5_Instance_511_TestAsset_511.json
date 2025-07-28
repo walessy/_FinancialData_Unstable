@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_511",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_511.ex4",
+  "InstanceName": "Instance_511",
+  "Version": "1.0",
+  "LastModified": "2025-07-25T06:03:19.7551874+01:00",
+  "FileSize": 17844,
+  "QuickHash": 1045538904,
+  "FullHash": 1521675552,
+  "CacheTime": "2025-07-28T06:03:19.7588065+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

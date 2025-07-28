@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_824",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_824.ex4",
+  "InstanceName": "Instance_824",
+  "Version": "1.0",
+  "LastModified": "2025-07-20T06:03:19.7553718+01:00",
+  "FileSize": 1530,
+  "QuickHash": 651594492,
+  "FullHash": 1831935509,
+  "CacheTime": "2025-07-28T06:03:19.7626763+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

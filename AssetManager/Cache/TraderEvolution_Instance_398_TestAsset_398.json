@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_398",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_398.ex4",
+  "InstanceName": "Instance_398",
+  "Version": "1.0",
+  "LastModified": "2025-06-30T06:03:19.7551092+01:00",
+  "FileSize": 5370,
+  "QuickHash": 1444183577,
+  "FullHash": 1665385972,
+  "CacheTime": "2025-07-28T06:03:19.7578357+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

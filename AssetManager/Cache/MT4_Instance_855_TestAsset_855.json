@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_855",
+  "Platform": "MT4",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_855.ex4",
+  "InstanceName": "Instance_855",
+  "Version": "1.0",
+  "LastModified": "2025-07-23T06:03:19.7553924+01:00",
+  "FileSize": 20112,
+  "QuickHash": 1166792227,
+  "FullHash": 181968466,
+  "CacheTime": "2025-07-28T06:03:19.7631935+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

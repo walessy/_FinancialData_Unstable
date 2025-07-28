@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_340",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_340.ex4",
+  "InstanceName": "Instance_340",
+  "Version": "1.0",
+  "LastModified": "2025-07-15T06:03:19.7550702+01:00",
+  "FileSize": 39231,
+  "QuickHash": 1938311380,
+  "FullHash": 400808933,
+  "CacheTime": "2025-07-28T06:03:19.757611+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

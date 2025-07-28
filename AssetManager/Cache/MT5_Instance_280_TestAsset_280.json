@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_280",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_280.ex4",
+  "InstanceName": "Instance_280",
+  "Version": "1.0",
+  "LastModified": "2025-07-13T06:03:19.7550374+01:00",
+  "FileSize": 30318,
+  "QuickHash": 1000745755,
+  "FullHash": 1182823635,
+  "CacheTime": "2025-07-28T06:03:19.7574157+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

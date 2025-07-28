@@ -1,0 +1,18 @@
+{
+  "Name": "AfterPrime_MT4_Live_Instance",
+  "Platform": "MT4",
+  "Type": "TradingInstance",
+  "FilePath": "C:\\Projects\\FinancialData\\PlatformInstances\\AfterPrime_MT4_Live_Instance\\terminal.exe",
+  "InstanceName": "AfterPrime_MT4_Live_Instance",
+  "Version": "1.0",
+  "LastModified": "2025-07-15T02:58:02.2332223+01:00",
+  "FileSize": 34596672,
+  "QuickHash": 7821247702826982608,
+  "FullHash": 0,
+  "CacheTime": "2025-07-28T06:54:20.1576625+01:00",
+  "IsDeployed": true,
+  "DeploymentStatus": "Ready",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

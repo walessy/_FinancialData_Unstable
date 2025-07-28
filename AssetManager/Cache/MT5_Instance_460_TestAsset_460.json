@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_460",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_460.ex4",
+  "InstanceName": "Instance_460",
+  "Version": "1.0",
+  "LastModified": "2025-07-04T06:03:19.7551602+01:00",
+  "FileSize": 16144,
+  "QuickHash": 1183265248,
+  "FullHash": 918955613,
+  "CacheTime": "2025-07-28T06:03:19.7582967+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

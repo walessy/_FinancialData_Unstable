@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_490",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_490.ex4",
+  "InstanceName": "Instance_490",
+  "Version": "1.0",
+  "LastModified": "2025-07-18T06:03:19.7551753+01:00",
+  "FileSize": 32579,
+  "QuickHash": 1355511794,
+  "FullHash": 446599109,
+  "CacheTime": "2025-07-28T06:03:19.758514+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_877",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_877.ex4",
+  "InstanceName": "Instance_877",
+  "Version": "1.0",
+  "LastModified": "2025-06-29T06:03:19.7554043+01:00",
+  "FileSize": 43384,
+  "QuickHash": 830569665,
+  "FullHash": 1539539069,
+  "CacheTime": "2025-07-28T06:03:19.7635549+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

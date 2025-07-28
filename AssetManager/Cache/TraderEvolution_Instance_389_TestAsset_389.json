@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_389",
+  "Platform": "TraderEvolution",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_389.ex4",
+  "InstanceName": "Instance_389",
+  "Version": "1.0",
+  "LastModified": "2025-06-30T06:03:19.7551057+01:00",
+  "FileSize": 18601,
+  "QuickHash": 1258290606,
+  "FullHash": 1578580482,
+  "CacheTime": "2025-07-28T06:03:19.7578084+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}

@@ -1,0 +1,18 @@
+{
+  "Name": "TestAsset_403",
+  "Platform": "MT5",
+  "Type": "Indicator",
+  "FilePath": "C:\\Test\\Asset_403.ex4",
+  "InstanceName": "Instance_403",
+  "Version": "1.0",
+  "LastModified": "2025-07-23T06:03:19.7551111+01:00",
+  "FileSize": 35855,
+  "QuickHash": 82416497,
+  "FullHash": 1687188220,
+  "CacheTime": "2025-07-28T06:03:19.7578507+01:00",
+  "IsDeployed": false,
+  "DeploymentStatus": "Unknown",
+  "ConversionComplexity": "Unknown",
+  "Dependencies": [],
+  "Notes": ""
+}
