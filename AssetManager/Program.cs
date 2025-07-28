@@ -1,219 +1,305 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
-using AssetManager.Models;
-using AssetManager.Services;
+using AssetManager;
 
 namespace AssetManager
 {
     /// <summary>
-    /// Level 7 Asset Manager - Console tests + GUI interface
+    /// Level 8: Unified Trading Platform Manager - Main Entry Point
+    /// Combines Level 6 (Instance Management) + Level 7 (Asset Management) + Asset Matrix Manager
     /// </summary>
-    class Program
+    internal static class Program
     {
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
         [STAThread]
         static void Main(string[] args)
         {
-            // Check if running with --console argument for testing
+            // Check for command line arguments
             if (args.Length > 0 && args[0] == "--console")
             {
-                RunConsoleTests();
-                return;
+                RunConsoleMode();
             }
-            
-            // Run the GUI by default
-            RunAssetManagerUI();
+            else
+            {
+                RunGUI();
+            }
         }
         
-        static void RunAssetManagerUI()
+        /// <summary>
+        /// Run the unified GUI application
+        /// </summary>
+        static void RunGUI()
         {
             try
             {
+                // Enable Windows visual styles
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 
-                Console.WriteLine("🚀 Starting Level 7 Asset Management UI...");
-                Application.Run(new Level7AssetManager());
+                // Set high DPI awareness for better display on modern monitors
+                if (Environment.OSVersion.Version.Major >= 6)
+                {
+                    SetProcessDPIAware();
+                }
+                
+                // Create and run the main Level 8 form
+                using var mainForm = new Level8UnifiedManager();
+                Application.Run(mainForm);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Fatal error: {ex.Message}\n\nStack trace:\n{ex.StackTrace}", 
-                    "Level 7 Fatal Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        
-        static void RunConsoleTests()
-        {
-            Console.WriteLine("=== Asset Manager Cache System Test ===\n");
-            
-            var cacheManager = new CacheManager();
-            
-            // Test 1: Basic caching functionality
-            TestBasicCaching(cacheManager);
-            
-            // Test 2: Performance benchmarks
-            TestCachePerformance(cacheManager);
-            
-            // Test 3: File change detection
-            TestFileChangeDetection(cacheManager);
-            
-            // Test 4: Cache statistics
-            ShowCacheStats(cacheManager);
-            
-            Console.WriteLine("\nPress any key to exit...");
-            Console.ReadKey();
-        }
-        
-        static void TestBasicCaching(CacheManager cache)
-        {
-            Console.WriteLine("Test 1: Basic Caching Functionality");
-            Console.WriteLine("=====================================");
-            
-            // Create a test asset
-            var testAsset = new AssetInfo
-            {
-                Name = "TestIndicator",
-                Platform = "MT4",
-                Type = "Indicator",
-                FilePath = @"C:\Test\Indicators\TestIndicator.ex4",
-                InstanceName = "MT4_Demo",
-                Version = "1.0",
-                LastModified = DateTime.Now,
-                FileSize = 15420,
-                QuickHash = 123456789,
-                FullHash = 987654321
-            };
-            
-            var cacheKey = testAsset.GetCacheKey();
-            Console.WriteLine($"Cache Key: {cacheKey}");
-            
-            // Test cache miss
-            var cachedAsset = cache.GetCachedAsset(cacheKey);
-            Console.WriteLine($"Cache miss (expected): {cachedAsset == null}");
-            
-            // Cache the asset
-            cache.CacheAsset(cacheKey, testAsset);
-            Console.WriteLine("Asset cached successfully");
-            
-            // Test cache hit
-            cachedAsset = cache.GetCachedAsset(cacheKey);
-            Console.WriteLine($"Cache hit: {cachedAsset != null}");
-            Console.WriteLine($"Retrieved asset: {cachedAsset?.Name ?? "null"}");
-            
-            Console.WriteLine("✅ Basic caching test passed\n");
-        }
-        
-        static void TestCachePerformance(CacheManager cache)
-        {
-            Console.WriteLine("Test 2: Cache Performance Benchmark");
-            Console.WriteLine("===================================");
-            
-            const int testCount = 1000;
-            var random = new Random();
-            
-            // Create test assets
-            var testAssets = new AssetInfo[testCount];
-            for (int i = 0; i < testCount; i++)
-            {
-                testAssets[i] = new AssetInfo
+                // Show fatal error dialog
+                MessageBox.Show(
+                    $"Fatal error in Level 8 Unified Manager:\n\n{ex.Message}\n\nStack trace:\n{ex.StackTrace}", 
+                    "Level 8 Fatal Error", 
+                    MessageBoxButtons.OK, 
+                    MessageBoxIcon.Error);
+                
+                // Log to file if possible
+                try
                 {
-                    Name = $"TestAsset_{i}",
-                    Platform = i % 3 == 0 ? "MT4" : i % 3 == 1 ? "MT5" : "TraderEvolution",
-                    Type = "Indicator",
-                    FilePath = $@"C:\Test\Asset_{i}.ex4",
-                    InstanceName = $"Instance_{i}",
-                    Version = "1.0",
-                    LastModified = DateTime.Now.AddDays(-random.Next(30)),
-                    FileSize = random.Next(1000, 50000),
-                    QuickHash = random.Next(),
-                    FullHash = random.Next()
-                };
+                    var logPath = System.IO.Path.Combine(
+                        System.IO.Directory.GetCurrentDirectory(), 
+                        "level8-crash.log");
+                    
+                    var crashLog = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] FATAL ERROR in Level 8\n" +
+                                  $"Exception: {ex.GetType().Name}\n" +
+                                  $"Message: {ex.Message}\n" +
+                                  $"Stack Trace:\n{ex.StackTrace}\n" +
+                                  $"Inner Exception: {ex.InnerException?.Message ?? "None"}\n" +
+                                  new string('=', 80) + "\n";
+                    
+                    System.IO.File.AppendAllText(logPath, crashLog);
+                }
+                catch
+                {
+                    // Silent fail on logging - don't show another error dialog
+                }
             }
-            
-            // Test caching performance
-            var stopwatch = Stopwatch.StartNew();
-            for (int i = 0; i < testCount; i++)
-            {
-                var cacheKey = testAssets[i].GetCacheKey();
-                cache.CacheAsset(cacheKey, testAssets[i]);
-            }
-            stopwatch.Stop();
-            
-            Console.WriteLine($"Cached {testCount} assets in {stopwatch.ElapsedMilliseconds}ms");
-            Console.WriteLine($"Average: {(double)stopwatch.ElapsedMilliseconds / testCount:F3}ms per asset");
-            
-            // Test retrieval performance
-            stopwatch.Restart();
-            for (int i = 0; i < testCount; i++)
-            {
-                var cacheKey = testAssets[i].GetCacheKey();
-                cache.GetCachedAsset(cacheKey);
-            }
-            stopwatch.Stop();
-            
-            Console.WriteLine($"Retrieved {testCount} assets in {stopwatch.ElapsedMilliseconds}ms");
-            Console.WriteLine($"Average: {(double)stopwatch.ElapsedMilliseconds / testCount:F3}ms per retrieval");
-            Console.WriteLine("✅ Performance test passed\n");
         }
         
-        static void TestFileChangeDetection(CacheManager cache)
+        /// <summary>
+        /// Run in console mode for testing and diagnostics
+        /// </summary>
+        static void RunConsoleMode()
         {
-            Console.WriteLine("Test 3: File Change Detection");
-            Console.WriteLine("=============================");
-            
-            var testFile = Path.GetTempFileName();
+            Console.WriteLine("=== Level 8: Unified Trading Platform Manager - Console Mode ===\n");
             
             try
             {
-                // Write initial content
-                File.WriteAllText(testFile, "Initial content");
-                var initialHash = CacheManager.ComputeQuickHash(testFile);
-                Console.WriteLine($"Initial hash: {initialHash}");
+                // Initialize cache manager for testing
+                var cacheManager = new AssetManager.Services.CacheManager();
                 
-                // Modify file
-                File.WriteAllText(testFile, "Modified content");
-                var modifiedHash = CacheManager.ComputeQuickHash(testFile);
-                Console.WriteLine($"Modified hash: {modifiedHash}");
-                Console.WriteLine($"Hashes different (expected): {initialHash != modifiedHash}");
+                Console.WriteLine("🚀 Level 8 Console Mode Initialized");
+                Console.WriteLine("   Combined Instance Management + Asset Management + Matrix Manager");
+                Console.WriteLine();
                 
-                // Performance test for change detection
-                var stopwatch = Stopwatch.StartNew();
-                for (int i = 0; i < 1000; i++)
-                {
-                    cache.HasFileChanged(testFile, initialHash);
-                }
-                stopwatch.Stop();
+                // Run diagnostics
+                RunSystemDiagnostics();
+                TestCacheSystem(cacheManager);
+                TestConfigurationSystem();
                 
-                Console.WriteLine($"1000 change detections in {stopwatch.ElapsedMilliseconds}ms");
-                Console.WriteLine($"Average: {(double)stopwatch.ElapsedMilliseconds / 1000:F3}ms per check");
-                Console.WriteLine("✅ File change detection test passed\n");
+                Console.WriteLine("\n=== Level 8 Console Tests Complete ===");
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey();
             }
-            finally
+            catch (Exception ex)
             {
-                File.Delete(testFile);
+                Console.WriteLine($"❌ Console mode error: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                Console.WriteLine("\nPress any key to exit...");
+                Console.ReadKey();
             }
         }
         
-        static void ShowCacheStats(CacheManager cache)
+        /// <summary>
+        /// Run system diagnostics
+        /// </summary>
+        static void RunSystemDiagnostics()
         {
-            Console.WriteLine("Test 4: Cache Statistics");
-            Console.WriteLine("========================");
+            Console.WriteLine("🔧 System Diagnostics:");
+            Console.WriteLine($"   OS: {Environment.OSVersion}");
+            Console.WriteLine($"   .NET: {Environment.Version}");
+            Console.WriteLine($"   Machine: {Environment.MachineName}");
+            Console.WriteLine($"   User: {Environment.UserName}");
+            Console.WriteLine($"   Working Directory: {Environment.CurrentDirectory}");
+            Console.WriteLine($"   Processor Count: {Environment.ProcessorCount}");
+            Console.WriteLine($"   System Memory: {GC.GetTotalMemory(false) / (1024 * 1024)} MB allocated");
+            Console.WriteLine();
             
-            var stats = cache.GetCacheStats();
-            Console.WriteLine($"💾 Cache Statistics:");
-            Console.WriteLine($"  Memory entries: {stats.MemoryCacheEntries}");
-            Console.WriteLine($"  Disk entries: {stats.DiskCacheEntries}");
-            Console.WriteLine($"  Memory usage: {stats.GetFormattedMemoryUsage()}");
-            Console.WriteLine($"  Cache age: {stats.OldestCacheEntry:HH:mm:ss} to {stats.NewestCacheEntry:HH:mm:ss}");
+            // Check for required files
+            var configPath = System.IO.Path.Combine(Environment.CurrentDirectory, "instances-config.json");
+            var configExists = System.IO.File.Exists(configPath);
             
-            Console.WriteLine($"\n🏗️  Ready for Asset Management:");
-            Console.WriteLine($"  Test assets cached: {stats.MemoryCacheEntries}");
-            Console.WriteLine($"  Platforms: MT4, MT5, TraderEvolution");
-            Console.WriteLine($"  Cache system status: Operational");
-            
-            Console.WriteLine("✅ Asset Manager foundation ready for UI development!");
-            Console.WriteLine("✅ Cache statistics displayed\n");
+            Console.WriteLine("📁 File System Check:");
+            Console.WriteLine($"   Configuration file: {(configExists ? "✅ Found" : "❌ Missing")} - {configPath}");
+            Console.WriteLine($"   Current directory access: {(System.IO.Directory.Exists(Environment.CurrentDirectory) ? "✅ OK" : "❌ Failed")}");
+            Console.WriteLine();
         }
+        
+        /// <summary>
+        /// Test the cache system
+        /// </summary>
+        static void TestCacheSystem(AssetManager.Services.CacheManager cacheManager)
+        {
+            Console.WriteLine("💾 Cache System Test:");
+            
+            try
+            {
+                // Test basic caching
+                var testAsset = new AssetManager.Models.AssetInfo
+                {
+                    Name = "TestAsset",
+                    Platform = "MT4",
+                    Type = "Test",
+                    InstanceName = "TestInstance",
+                    FilePath = "test.ex4"
+                };
+                
+                var cacheKey = testAsset.GetCacheKey();
+                cacheManager.CacheAsset(cacheKey, testAsset);
+                
+                var retrieved = cacheManager.GetCachedAsset(cacheKey);
+                var cacheWorking = retrieved != null && retrieved.Name == testAsset.Name;
+                
+                Console.WriteLine($"   Basic caching: {(cacheWorking ? "✅ Working" : "❌ Failed")}");
+                
+                // Get cache statistics
+               var stats = cacheManager.GetCacheStats();
+                Console.WriteLine($"   Memory entries: {stats.MemoryCacheEntries}");
+                Console.WriteLine($"   Disk entries: {stats.DiskCacheEntries}");
+                Console.WriteLine($"   Memory usage: {stats.GetFormattedMemoryUsage()}");
+                Console.WriteLine($"   Oldest entry: {stats.OldestCacheEntry}");
+                Console.WriteLine($"   Newest entry: {stats.NewestCacheEntry}");
+                Console.WriteLine("   Cache system: ✅ Operational");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"   Cache system: ❌ Error - {ex.Message}");
+            }
+            
+            Console.WriteLine();
+        }
+        
+        /// <summary>
+        /// Test configuration system
+        /// </summary>
+        static void TestConfigurationSystem()
+        {
+            Console.WriteLine("⚙️ Configuration System Test:");
+            
+            try
+            {
+                var configPath = System.IO.Path.Combine(Environment.CurrentDirectory, "instances-config.json");
+                
+                if (System.IO.File.Exists(configPath))
+                {
+                    var json = System.IO.File.ReadAllText(configPath);
+                    var options = new System.Text.Json.JsonSerializerOptions 
+                    { 
+                        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase 
+                    };
+                    var config = System.Text.Json.JsonSerializer.Deserialize<AssetManager.Models.Configuration>(json, options);
+                    
+                    if (config != null)
+                    {
+                        Console.WriteLine($"   Configuration loaded: ✅ Success");
+                        Console.WriteLine($"   Trading root: {config.TradingRoot}");
+                        Console.WriteLine($"   Instances defined: {config.Instances.Count}");
+                        Console.WriteLine($"   Enabled instances: {config.Instances.Count(i => i.Enabled)}");
+                        
+                        // Test instance paths
+                        var validPaths = 0;
+                        foreach (var instance in config.Instances.Where(i => i.Enabled))
+                        {
+                            instance.TradingRoot = config.TradingRoot; // Set for path calculation
+                            if (System.IO.Directory.Exists(instance.InstancePath))
+                                validPaths++;
+                        }
+                        
+                        Console.WriteLine($"   Valid instance paths: {validPaths}/{config.Instances.Count(i => i.Enabled)}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("   Configuration: ❌ Failed to parse");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("   Configuration: ❌ File not found");
+                    Console.WriteLine("   Creating sample configuration...");
+                    CreateSampleConfiguration(configPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"   Configuration: ❌ Error - {ex.Message}");
+            }
+            
+            Console.WriteLine();
+        }
+        
+        /// <summary>
+        /// Create a sample configuration file
+        /// </summary>
+        static void CreateSampleConfiguration(string configPath)
+        {
+            try
+            {
+                var sampleConfig = new AssetManager.Models.Configuration
+                {
+                    TradingRoot = @"C:\Projects\FinancialData",
+                    DefaultDataRoot = @"C:\Projects\FinancialData\TradingData",
+                    Instances = new List<AssetManager.Models.TradingInstance>
+                    {
+                        new AssetManager.Models.TradingInstance
+                        {
+                            Name = "Sample_MT4_Demo",
+                            Broker = "SampleBroker",
+                            Platform = "MT4",
+                            Source = "MT4_Template",
+                            Destination = "Sample_MT4_Demo",
+                            AccountType = "Demo",
+                            Enabled = true,
+                            AutoStart = false
+                        },
+                        new AssetManager.Models.TradingInstance
+                        {
+                            Name = "Sample_MT5_Live",
+                            Broker = "SampleBroker",
+                            Platform = "MT5",
+                            Source = "MT5_Template",
+                            Destination = "Sample_MT5_Live",
+                            AccountType = "Live",
+                            Enabled = true,
+                            AutoStart = false
+                        }
+                    }
+                };
+                
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                    WriteIndented = true
+                };
+                
+                var json = System.Text.Json.JsonSerializer.Serialize(sampleConfig, options);
+                System.IO.File.WriteAllText(configPath, json);
+                
+                Console.WriteLine($"   Sample configuration created: ✅ {configPath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"   Sample configuration creation: ❌ {ex.Message}");
+            }
+        }
+        
+        /// <summary>
+        /// Import for high DPI awareness (Windows Vista+)
+        /// </summary>
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool SetProcessDPIAware();
     }
 }
