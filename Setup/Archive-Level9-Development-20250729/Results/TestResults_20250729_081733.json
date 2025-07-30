@@ -1,0 +1,34 @@
+[
+    {
+        "TestID":  "SETUP-001-A",
+        "Error":  null,
+        "Success":  true,
+        "StartTime":  {
+                          "value":  "\/Date(1753773452381)\/",
+                          "DisplayHint":  2,
+                          "DateTime":  "Tuesday, July 29, 2025 8:17:32 AM"
+                      },
+        "EndTime":  {
+                        "value":  "\/Date(1753773452884)\/",
+                        "DisplayHint":  2,
+                        "DateTime":  "Tuesday, July 29, 2025 8:17:32 AM"
+                    },
+        "Duration":  0.5030411
+    },
+    {
+        "TestID":  "IM-001-A",
+        "Error":  "Simulated test failure",
+        "Success":  false,
+        "StartTime":  {
+                          "value":  "\/Date(1753773452886)\/",
+                          "DisplayHint":  2,
+                          "DateTime":  "Tuesday, July 29, 2025 8:17:32 AM"
+                      },
+        "EndTime":  {
+                        "value":  "\/Date(1753773453400)\/",
+                        "DisplayHint":  2,
+                        "DateTime":  "Tuesday, July 29, 2025 8:17:33 AM"
+                    },
+        "Duration":  0.5136907
+    }
+]

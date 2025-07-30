@@ -1,0 +1,102 @@
+{
+  "SETUP-001": {
+    "Name": "System Resource Validation", 
+    "Category": "Foundation Setup",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Validate system meets minimum requirements for trading platform",
+    "Details": "System meets minimum requirements: 8GB RAM, 100GB storage, Windows 10+",
+    "SimulationTime": 1000,
+    "Dependencies": []
+  },
+  "SETUP-002": {
+    "Name": "Platform Installation Validation",
+    "Category": "Foundation Setup", 
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Verify trading platform management system is properly installed",
+    "Details": "Trading platform management system installed and configured",
+    "SimulationTime": 1500,
+    "Dependencies": ["SETUP-001"]
+  },
+  "SETUP-003": {
+    "Name": "Core Services Initialization",
+    "Category": "Foundation Setup",
+    "Priority": "P0", 
+    "Automation": "Full",
+    "Objective": "Ensure all core system services start and respond correctly",
+    "Details": "All core system services started and responding",
+    "SimulationTime": 2000,
+    "Dependencies": ["SETUP-001", "SETUP-002"]
+  },
+  "SETUP-004": {
+    "Name": "Database Connectivity Validation",
+    "Category": "Foundation Setup",
+    "Priority": "P0",
+    "Automation": "Full", 
+    "Objective": "Validate database connections and basic operations",
+    "Details": "Database connections established, basic CRUD operations verified",
+    "SimulationTime": 1200,
+    "Dependencies": ["SETUP-002"]
+  },
+  "SETUP-005": {
+    "Name": "Network Connectivity Testing",
+    "Category": "Foundation Setup",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test network connectivity to required external services",
+    "Details": "Network connectivity to brokers, data feeds, and APIs verified", 
+    "SimulationTime": 800,
+    "Dependencies": ["SETUP-001"]
+  },
+  "SETUP-006": {
+    "Name": "Security Configuration Validation",
+    "Category": "Foundation Setup",
+    "Priority": "P0",
+    "Automation": "Partial",
+    "Objective": "Verify security settings and access controls are properly configured",
+    "Details": "Security policies enforced, access controls validated",
+    "SimulationTime": 1500,
+    "Dependencies": ["SETUP-002", "SETUP-003"]
+  },
+  "SETUP-007": {
+    "Name": "Configuration File Validation",
+    "Category": "Foundation Setup", 
+    "Priority": "P1",
+    "Automation": "Full",
+    "Objective": "Validate all configuration files are present and correctly formatted",
+    "Details": "Configuration files validated for syntax and completeness",
+    "SimulationTime": 600,
+    "Dependencies": ["SETUP-002"]
+  },
+  "SETUP-008": {
+    "Name": "Logging System Initialization",
+    "Category": "Foundation Setup",
+    "Priority": "P1", 
+    "Automation": "Full",
+    "Objective": "Verify logging system is operational and writing logs correctly",
+    "Details": "Logging system operational, log files created and accessible",
+    "SimulationTime": 400,
+    "Dependencies": ["SETUP-003"]
+  },
+  "SETUP-009": {
+    "Name": "Backup System Validation",
+    "Category": "Foundation Setup",
+    "Priority": "P2",
+    "Automation": "Partial",
+    "Objective": "Test backup system functionality and restore capability",
+    "Details": "Backup system functional, restore procedures verified",
+    "SimulationTime": 3000,
+    "Dependencies": ["SETUP-004", "SETUP-007"]
+  },
+  "SETUP-010": {
+    "Name": "Monitoring System Integration",
+    "Category": "Foundation Setup",
+    "Priority": "P1",
+    "Automation": "Full", 
+    "Objective": "Verify monitoring system is collecting and reporting system metrics",
+    "Details": "Monitoring system active, metrics collection verified",
+    "SimulationTime": 800,
+    "Dependencies": ["SETUP-003", "SETUP-008"]
+  }
+}

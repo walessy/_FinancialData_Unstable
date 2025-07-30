@@ -1,0 +1,50 @@
+[
+    {
+        "TestID":  "IM-001-A",
+        "Error":  null,
+        "Success":  true,
+        "StartTime":  {
+                          "value":  "\/Date(1753773432883)\/",
+                          "DisplayHint":  2,
+                          "DateTime":  "Tuesday, July 29, 2025 8:17:12 AM"
+                      },
+        "EndTime":  {
+                        "value":  "\/Date(1753773433398)\/",
+                        "DisplayHint":  2,
+                        "DateTime":  "Tuesday, July 29, 2025 8:17:13 AM"
+                    },
+        "Duration":  0.5141396
+    },
+    {
+        "TestID":  "SETUP-001-A",
+        "Error":  null,
+        "Success":  true,
+        "StartTime":  {
+                          "value":  "\/Date(1753773433400)\/",
+                          "DisplayHint":  2,
+                          "DateTime":  "Tuesday, July 29, 2025 8:17:13 AM"
+                      },
+        "EndTime":  {
+                        "value":  "\/Date(1753773433913)\/",
+                        "DisplayHint":  2,
+                        "DateTime":  "Tuesday, July 29, 2025 8:17:13 AM"
+                    },
+        "Duration":  0.51344899999999993
+    },
+    {
+        "TestID":  "PC-001-A",
+        "Error":  null,
+        "Success":  true,
+        "StartTime":  {
+                          "value":  "\/Date(1753773433915)\/",
+                          "DisplayHint":  2,
+                          "DateTime":  "Tuesday, July 29, 2025 8:17:13 AM"
+                      },
+        "EndTime":  {
+                        "value":  "\/Date(1753773434432)\/",
+                        "DisplayHint":  2,
+                        "DateTime":  "Tuesday, July 29, 2025 8:17:14 AM"
+                    },
+        "Duration":  0.5167105
+    }
+]

@@ -1,0 +1,307 @@
+{
+  "IM-001": {
+    "Name": "Single Instance Testing",
+    "Category": "Instance Management",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test single instance startup with various autoStart, enabled, delay, and priority combinations",
+    "Details": "Validates autoStart=true/false, enabled=true/false, delay timing accuracy, and priority assignment",
+    "SimulationTime": 2000,
+    "Dependencies": ["SETUP-001", "SETUP-002"],
+    "TestScenarios": [
+      "autoStart=true, enabled=true, delay=0, priority=high",
+      "autoStart=true, enabled=true, delay=15, priority=normal", 
+      "autoStart=false, enabled=true, delay=0, priority=low",
+      "autoStart=true, enabled=false"
+    ],
+    "PassCriteria": [
+      "Instance starts immediately when autoStart=true, delay=0",
+      "Delay timing accurate within ±2 seconds",
+      "Priority set correctly (high/normal/low)",
+      "Disabled instances do not start"
+    ]
+  },
+  "IM-003": {
+    "Name": "Development Environment Testing",
+    "Category": "Instance Management",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test multiple MT4 instances for development workflow with primary, testing, and backup instances",
+    "Details": "Validates Dev_Primary_MT4_Instance, Dev_Testing_MT4_Instance, and Dev_Backup_MT4_Instance configurations",
+    "SimulationTime": 3000,
+    "Dependencies": ["IM-001"],
+    "TestScenarios": [
+      "Dev_Primary_MT4_Instance: auto-start, high priority",
+      "Dev_Testing_MT4_Instance: manual start, isolation from primary",
+      "Dev_Backup_MT4_Instance: disabled by default, enable when needed"
+    ],
+    "PassCriteria": [
+      "Primary instance auto-starts with high priority",
+      "Testing instance can run simultaneously with primary",
+      "Data isolation maintained between instances",
+      "Backup instance remains disabled until manually enabled"
+    ]
+  },
+  "IM-004": {
+    "Name": "Strategy Backtesting Testing",
+    "Category": "Instance Management", 
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test backtesting instances with dedicated data folders and isolation from live trading",
+    "Details": "Validates Backtest_Strategy1_Instance, Backtest_Strategy2_Instance, and Live_Trading_Instance",
+    "SimulationTime": 4000,
+    "Dependencies": ["IM-003"],
+    "TestScenarios": [
+      "Backtest_Strategy1_Instance: dedicated Backtest_Strategy1 folder, low priority",
+      "Backtest_Strategy2_Instance: dedicated Backtest_Strategy2 folder, isolation",
+      "Live_Trading_Instance: high priority, unaffected by backtest instances"
+    ],
+    "PassCriteria": [
+      "Each backtest instance uses dedicated data folder",
+      "Data isolation between Strategy1 and Strategy2",
+      "Live trading instance maintains high priority",
+      "No interference between backtest and live instances"
+    ]
+  },
+  "IM-005": {
+    "Name": "A/B Testing Configuration",
+    "Category": "Instance Management",
+    "Priority": "P1", 
+    "Automation": "Full",
+    "Objective": "Test A/B testing setup with EA Version A and B instances running simultaneously",
+    "Details": "Validates EA_Version_A_Instance and EA_Version_B_Instance with timing and data isolation",
+    "SimulationTime": 2500,
+    "Dependencies": ["IM-002"],
+    "TestScenarios": [
+      "EA_Version_A_Instance: starts immediately (delay=0), uses EA_Test_A folder",
+      "EA_Version_B_Instance: starts 15 seconds after A, uses EA_Test_B folder"
+    ],
+    "PassCriteria": [
+      "Version A starts immediately",
+      "Version B starts exactly 15 seconds after A",
+      "Both instances run simultaneously without conflicts",
+      "Data isolation maintained between EA_Test_A and EA_Test_B folders"
+    ]
+  },
+  "AS-001": {
+    "Name": "Intelligent Sequencing Testing",
+    "Category": "Automation & Sequencing",
+    "Priority": "P0",
+    "Automation": "Full", 
+    "Objective": "Test dependency chain startup sequence MT4 → MT5 → TraderEvolution with stability waits",
+    "Details": "Validates normal dependency chain, failure scenarios, and timeout handling",
+    "SimulationTime": 5000,
+    "Dependencies": ["SETUP-003"],
+    "TestScenarios": [
+      "Normal sequence: MT4 → 45s wait → MT5 → 45s wait → TraderEvolution",
+      "MT4 failure: sequence stops, no MT5/TE startup",
+      "MT5 failure: MT4 starts, sequence stops at MT5",
+      "Timeout scenario: emergency shutdown at 300s"
+    ],
+    "PassCriteria": [
+      "MT4 starts first and achieves stability",
+      "45-second stability wait after each platform",
+      "Sequence stops on any platform failure",
+      "Total time under 300 seconds or emergency shutdown"
+    ]
+  },
+  "AS-002": {
+    "Name": "Resource Dependency Testing",
+    "Category": "Automation & Sequencing",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test resource validation before startup including memory, disk space, and network connectivity",
+    "Details": "Validates startup blocking on insufficient resources and warning systems",
+    "SimulationTime": 1500,
+    "Dependencies": ["AS-001"],
+    "TestScenarios": [
+      "Low memory test: < 4GB available blocks startup",
+      "Low disk space: < 10GB shows warning but continues", 
+      "Network connectivity: no network blocks startup"
+    ],
+    "PassCriteria": [
+      "Startup blocked when memory < 4GB",
+      "Warning displayed for disk space < 10GB",
+      "Startup blocked when no network connectivity",
+      "System remains stable during resource checks"
+    ]
+  },
+  "MA-001": {
+    "Name": "Trading Hours Testing",
+    "Category": "Market Awareness",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test market hours awareness for different times including open, closed, and weekend periods",
+    "Details": "Validates Monday market open, Friday close, weekend closure, and Sunday transition times",
+    "SimulationTime": 1000,
+    "Dependencies": ["SETUP-005"],
+    "TestScenarios": [
+      "Monday 12:00: market open, instances start normally",
+      "Friday 23:00: market closed, no auto-starting",
+      "Saturday 12:00: weekend, all instances stopped",
+      "Sunday 16:00 vs 18:00: before/after 17:00 market open"
+    ],
+    "PassCriteria": [
+      "System correctly identifies market open/closed status",
+      "Instance startup respects market hours",
+      "Weekend closure properly recognized",
+      "Sunday market open time transition accurate"
+    ]
+  },
+  "MA-002": {
+    "Name": "Holiday Testing", 
+    "Category": "Market Awareness",
+    "Priority": "P1",
+    "Automation": "Full",
+    "Objective": "Test holiday awareness for global, US, and regional holidays",
+    "Details": "Validates New Year's Day, US Independence Day, Japan holidays, and regular trading days",
+    "SimulationTime": 800,
+    "Dependencies": ["MA-001"],
+    "TestScenarios": [
+      "New Year's Day 2025-01-01: global holiday, all markets closed",
+      "US Independence Day 2025-07-04: US closed, others normal",
+      "Japan Holiday 2025-08-11: Tokyo closed, others normal",
+      "Regular Trading Day 2025-07-15: all markets normal"
+    ],
+    "PassCriteria": [
+      "Global holidays close all markets",
+      "Regional holidays affect only relevant markets",
+      "Other markets operate normally during regional holidays",
+      "Regular days have no holiday restrictions"
+    ]
+  },
+  "HM-001": {
+    "Name": "Memory and CPU Monitoring",
+    "Category": "Health Monitoring",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test memory and CPU monitoring with warning and critical thresholds",
+    "Details": "Validates normal < 1.5GB/70%, warning 1.5-2.5GB/70-90%, critical > 2.5GB/90%",
+    "SimulationTime": 2000,
+    "Dependencies": ["SETUP-008"],
+    "TestScenarios": [
+      "Normal usage: memory < 1.5GB, CPU < 70%",
+      "Warning level: memory 1.5-2.5GB, CPU 70-90%", 
+      "Critical level: memory > 2.5GB, CPU > 90%"
+    ],
+    "PassCriteria": [
+      "No alerts during normal usage levels",
+      "Warning alerts trigger at threshold levels",
+      "Critical alerts trigger emergency procedures",
+      "System protected from crash at critical levels"
+    ]
+  },
+  "HM-002": {
+    "Name": "Network Connectivity Testing",
+    "Category": "Health Monitoring",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test network latency monitoring and failure detection",
+    "Details": "Validates normal < 500ms, warning 500-1000ms, critical > 1000ms, and complete failure",
+    "SimulationTime": 1500,
+    "Dependencies": ["HM-001"],
+    "TestScenarios": [
+      "Normal network: < 500ms latency",
+      "Warning level: 500-1000ms latency",
+      "Critical level: > 1000ms latency",
+      "Complete failure: no connectivity"
+    ],
+    "PassCriteria": [
+      "No warnings for latency < 500ms",
+      "Latency warnings for 500-1000ms range",
+      "Critical alerts for > 1000ms latency",
+      "Emergency shutdown on complete network failure"
+    ]
+  },
+  "PO-001": {
+    "Name": "Adaptive Priority Testing",
+    "Category": "Performance Optimization",
+    "Priority": "P1",
+    "Automation": "Full",
+    "Objective": "Test adaptive priority management under high and low load scenarios",
+    "Details": "Validates priority adjustment when CPU > 80% and restoration when CPU < 50%",
+    "SimulationTime": 3000,
+    "Dependencies": ["HM-001"],
+    "TestScenarios": [
+      "High load: CPU > 80%, lower non-critical instance priority",
+      "Low load: CPU < 50%, restore normal priorities",
+      "Memory pressure: RAM > 80%, aggressive memory management"
+    ],
+    "PassCriteria": [
+      "Non-critical instances lowered priority during high CPU",
+      "Critical instances maintain high priority",
+      "Normal priorities restored during low load",
+      "Memory optimization activated under pressure"
+    ]
+  },
+  "CM-001": {
+    "Name": "JSON Configuration Validation",
+    "Category": "Configuration Management",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test configuration file validation with various JSON scenarios and error conditions",
+    "Details": "Validates valid configs, invalid syntax, missing fields, invalid values, and corruption",
+    "SimulationTime": 1200,
+    "Dependencies": ["SETUP-007"],
+    "TestScenarios": [
+      "Valid configuration: loads without errors",
+      "Invalid JSON syntax: error detected, defaults used",
+      "Missing required fields: defaults applied, warnings generated",
+      "Invalid parameter values: rejected, valid defaults used",
+      "Corrupted file: backup configuration loaded"
+    ],
+    "PassCriteria": [
+      "Valid configurations load correctly",
+      "Invalid syntax detected with clear error messages",
+      "Missing fields handled gracefully with defaults",
+      "System remains stable with invalid configurations"
+    ]
+  },
+  "IE-001": {
+    "Name": "Complete System Startup Workflow",
+    "Category": "Integration & End-to-End",
+    "Priority": "P0",
+    "Automation": "Partial",
+    "Objective": "Test complete system startup from cold boot to fully operational trading environment",
+    "Details": "Validates full production scenario with all configured instances, market awareness, and monitoring",
+    "SimulationTime": 6000,
+    "Dependencies": ["AS-001", "MA-001", "HM-001", "CM-001"],
+    "TestScenarios": [
+      "System startup from cold boot",
+      "All configured instances start correctly",
+      "Market awareness functions properly",
+      "Health monitoring active",
+      "Total startup time < 300 seconds"
+    ],
+    "PassCriteria": [
+      "Complete system operational within 300 seconds",
+      "All critical components functional",
+      "Market awareness working correctly",
+      "Health monitoring active and reporting",
+      "Ready for live trading operations"
+    ]
+  },
+  "IE-030": {
+    "Name": "Final Integration Certification",
+    "Category": "Integration & End-to-End", 
+    "Priority": "P0",
+    "Automation": "Manual",
+    "Objective": "Comprehensive final validation that all system components work together in production-like scenario",
+    "Details": "Complete certification with performance benchmarking and emergency scenario testing",
+    "SimulationTime": 2000,
+    "ForceStatus": "PARTIAL",
+    "Dependencies": ["IE-001", "PO-001"],
+    "TestScenarios": [
+      "Full production scenario execution",
+      "Emergency scenario testing",
+      "Performance benchmarking validation",
+      "System health final check"
+    ],
+    "PassCriteria": [
+      "All test phases completed successfully",
+      "Performance within acceptable limits",
+      "Emergency procedures functional",
+      "System certified for production deployment"
+    ]
+  }
+}

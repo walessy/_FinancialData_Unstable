@@ -1,0 +1,16 @@
+{
+    "TestID":  "SETUP-001-A",
+    "Error":  null,
+    "Success":  true,
+    "StartTime":  {
+                      "value":  "\/Date(1753773175493)\/",
+                      "DisplayHint":  2,
+                      "DateTime":  "Tuesday, July 29, 2025 8:12:55 AM"
+                  },
+    "EndTime":  {
+                    "value":  "\/Date(1753773176001)\/",
+                    "DisplayHint":  2,
+                    "DateTime":  "Tuesday, July 29, 2025 8:12:56 AM"
+                },
+    "Duration":  0.50837219999999994
+}

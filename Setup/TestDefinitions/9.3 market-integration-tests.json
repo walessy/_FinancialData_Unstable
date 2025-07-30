@@ -1,0 +1,253 @@
+{
+  "MI-001": {
+    "Name": "Market Data Connection Establishment",
+    "Category": "Market Integration", 
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Establish and validate connections to market data providers",
+    "Details": "Market data connections established to all configured providers",
+    "SimulationTime": 2000,
+    "Dependencies": ["SETUP-002", "SETUP-005"]
+  },
+  "MI-002": {
+    "Name": "Real-time Price Feed Validation",
+    "Category": "Market Integration",
+    "Priority": "P0", 
+    "Automation": "Full",
+    "Objective": "Verify real-time price feeds are accurate and timely",
+    "Details": "Real-time price feeds operational with <100ms latency",
+    "SimulationTime": 1500,
+    "Dependencies": ["MI-001"]
+  },
+  "MI-003": {
+    "Name": "Historical Data Retrieval Testing",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Full", 
+    "Objective": "Test historical data retrieval and accuracy",
+    "Details": "Historical data retrieved successfully with data integrity verified",
+    "SimulationTime": 3000,
+    "Dependencies": ["MI-001"]
+  },
+  "MI-004": {
+    "Name": "Market Session Schedule Validation",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Full",
+    "Objective": "Verify market session schedules and trading hours are correct",
+    "Details": "Market session schedules validated for all supported markets",
+    "SimulationTime": 800,
+    "Dependencies": ["MI-002"]
+  },
+  "MI-005": {
+    "Name": "Symbol Mapping and Conversion",
+    "Category": "Market Integration", 
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Test symbol mapping between different broker conventions",
+    "Details": "Symbol mapping functional for all supported instruments",
+    "SimulationTime": 1200,
+    "Dependencies": ["MI-001"]
+  },
+  "MI-006": {
+    "Name": "Market Data Failover Testing",
+    "Category": "Market Integration",
+    "Priority": "P0",
+    "Automation": "Partial",
+    "Objective": "Test failover to backup market data sources",
+    "Details": "Market data failover successful with minimal interruption",
+    "SimulationTime": 2500,
+    "Dependencies": ["MI-002"]
+  },
+  "MI-007": {
+    "Name": "Trading Hours Compliance",
+    "Category": "Market Integration",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Verify trading operations respect market hours and holidays",
+    "Details": "Trading operations properly restricted during market closure",
+    "SimulationTime": 1000,
+    "Dependencies": ["MI-004"]
+  },
+  "MI-008": {
+    "Name": "Spread and Commission Calculation",
+    "Category": "Market Integration",
+    "Priority": "P0", 
+    "Automation": "Full",
+    "Objective": "Validate spread and commission calculations for different brokers",
+    "Details": "Spread and commission calculations accurate for all instruments",
+    "SimulationTime": 1500,
+    "Dependencies": ["MI-005"]
+  },
+  "MI-009": {
+    "Name": "Order Book Data Integration",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Full",
+    "Objective": "Test order book data reception and processing",
+    "Details": "Order book data processed correctly with proper depth levels",
+    "SimulationTime": 1800,
+    "Dependencies": ["MI-002"]
+  },
+  "MI-010": {
+    "Name": "News Feed Integration",
+    "Category": "Market Integration",
+    "Priority": "P2",
+    "Automation": "Partial",
+    "Objective": "Validate news feed integration and filtering",
+    "Details": "News feeds integrated with appropriate filtering and categorization",
+    "SimulationTime": 1200,
+    "Dependencies": ["MI-001"]
+  },
+  "MI-011": {
+    "Name": "Economic Calendar Integration", 
+    "Category": "Market Integration",
+    "Priority": "P2",
+    "Automation": "Full",
+    "Objective": "Test economic calendar data integration and notifications",
+    "Details": "Economic calendar data synchronized and notifications functional",
+    "SimulationTime": 800,
+    "Dependencies": ["MI-001"]
+  },
+  "MI-012": {
+    "Name": "Market Volatility Monitoring",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Full",
+    "Objective": "Validate market volatility monitoring and alerts",
+    "Details": "Volatility monitoring active with appropriate alert thresholds",
+    "SimulationTime": 1000,
+    "Dependencies": ["MI-002"]
+  },
+  "MI-013": {
+    "Name": "Cross-Market Arbitrage Detection",
+    "Category": "Market Integration",
+    "Priority": "P2", 
+    "Automation": "Partial",
+    "Objective": "Test cross-market price comparison and arbitrage detection",
+    "Details": "Cross-market price analysis functional with arbitrage alerts",
+    "SimulationTime": 2000,
+    "Dependencies": ["MI-002", "MI-005"]
+  },
+  "MI-014": {
+    "Name": "Market Depth Analysis",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Full",
+    "Objective": "Validate market depth analysis and liquidity assessment",
+    "Details": "Market depth analysis accurate with liquidity metrics calculated",
+    "SimulationTime": 1500,
+    "Dependencies": ["MI-009"]
+  },
+  "MI-015": {
+    "Name": "Price Alert System Testing",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Full",
+    "Objective": "Test price alert system functionality and notifications",
+    "Details": "Price alerts trigger correctly with timely notifications",
+    "SimulationTime": 1200,
+    "Dependencies": ["MI-002"]
+  },
+  "MI-016": {
+    "Name": "Market Correlation Analysis",
+    "Category": "Market Integration",
+    "Priority": "P2",
+    "Automation": "Full",
+    "Objective": "Validate market correlation analysis between instruments",
+    "Details": "Correlation analysis functional with accurate relationship metrics",
+    "SimulationTime": 2500,
+    "Dependencies": ["MI-002", "MI-003"]
+  },
+  "MI-017": {
+    "Name": "Settlement Price Validation",
+    "Category": "Market Integration",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Verify settlement price calculations and end-of-day processing",
+    "Details": "Settlement prices calculated correctly for all instruments",
+    "SimulationTime": 1800,
+    "Dependencies": ["MI-007"]
+  },
+  "MI-018": {
+    "Name": "Market Data Quality Monitoring",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Full",
+    "Objective": "Monitor market data quality and detect anomalies",
+    "Details": "Data quality monitoring active with anomaly detection alerts",
+    "SimulationTime": 1000,
+    "Dependencies": ["MI-002"]
+  },
+  "MI-019": {
+    "Name": "Dividend and Corporate Action Processing",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Partial",
+    "Objective": "Test dividend and corporate action data processing",
+    "Details": "Corporate action data processed with position adjustments applied",
+    "SimulationTime": 2000,
+    "Dependencies": ["MI-001", "MI-003"]
+  },
+  "MI-020": {
+    "Name": "Market Data Storage and Archival",
+    "Category": "Market Integration",
+    "Priority": "P2",
+    "Automation": "Full",
+    "Objective": "Validate market data storage and archival processes",
+    "Details": "Market data stored efficiently with proper archival procedures",
+    "SimulationTime": 3000,
+    "Dependencies": ["MI-002", "MI-003"]
+  },
+  "MI-021": {
+    "Name": "Regulatory Compliance Monitoring",
+    "Category": "Market Integration",
+    "Priority": "P0",
+    "Automation": "Partial",
+    "Objective": "Monitor compliance with market regulations and reporting requirements",
+    "Details": "Regulatory compliance monitoring active with automated reporting",
+    "SimulationTime": 1500,
+    "Dependencies": ["MI-007", "MI-017"]
+  },
+  "MI-022": {
+    "Name": "Market Stress Testing",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Partial",
+    "Objective": "Test system behavior during extreme market conditions", 
+    "Details": "System remains stable during high volatility and volume stress tests",
+    "SimulationTime": 4000,
+    "Dependencies": ["MI-002", "MI-012"]
+  },
+  "MI-023": {
+    "Name": "Multi-Currency Rate Management",
+    "Category": "Market Integration",
+    "Priority": "P0",
+    "Automation": "Full",
+    "Objective": "Validate multi-currency exchange rate management",
+    "Details": "Currency rates updated correctly with proper conversion calculations",
+    "SimulationTime": 1200,
+    "Dependencies": ["MI-002"]
+  },
+  "MI-024": {
+    "Name": "Market Data Backup and Recovery",
+    "Category": "Market Integration",
+    "Priority": "P1",
+    "Automation": "Partial",
+    "Objective": "Test market data backup and recovery procedures",
+    "Details": "Market data backup successful with verified recovery capability",
+    "SimulationTime": 3500,
+    "Dependencies": ["MI-020"]
+  },
+  "MI-025": {
+    "Name": "Integration Certification Testing",
+    "Category": "Market Integration",
+    "Priority": "P0",
+    "Automation": "Manual",
+    "Objective": "Final certification that all market integration components work together",
+    "Details": "Complete market integration certification with all components validated",
+    "SimulationTime": 2000,
+    "ForceStatus": "PARTIAL",
+    "Dependencies": ["MI-002", "MI-005", "MI-007", "MI-017", "MI-021", "MI-023"]
+  }
+}
